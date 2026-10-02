@@ -1,0 +1,6 @@
+# Normalise to LF in the repo. Recorded SPL XML and JSON fixtures are
+# byte-compared by tests; CRLF conversion on Windows would corrupt them.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.npy binary
