@@ -72,6 +72,32 @@ def test_repeated_rxcui_collapses_to_its_best_scoring_entry():
 
 
 @respx.mock
+def test_best_available_name_is_kept_even_when_the_top_entry_has_none():
+    """RxNorm's highest-scoring entry for a concept often has a null name.
+
+    The name is what the user is shown when we ask them to confirm an
+    ambiguous match, so taking the top entry's null and stopping there leaves
+    them choosing between blanks.
+    """
+    respx.get(url__startswith=ENDPOINT).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "approximateGroup": {
+                    "candidate": [
+                        {"rxcui": "6809", "name": None, "score": "14.35"},
+                        {"rxcui": "6809", "name": "metformin", "score": "14.32"},
+                    ]
+                }
+            },
+        )
+    )
+    cands = approximate_match("METFORMIN")
+    assert len(cands) == 1
+    assert cands[0].display_name == "metformin"
+
+
+@respx.mock
 def test_approximate_match_returns_empty_list_when_nothing_matches():
     respx.get(url__startswith=ENDPOINT).mock(
         return_value=httpx.Response(200, json={"approximateGroup": {}})

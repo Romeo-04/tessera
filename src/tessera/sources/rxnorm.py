@@ -36,7 +36,12 @@ def approximate_match(term: str, max_entries: int = 20) -> list[Candidate]:
     r.raise_for_status()
     raw = r.json().get("approximateGroup", {}).get("candidate", []) or []
 
-    best_by_rxcui: dict[str, tuple[float, str]] = {}
+    # Score and name are tracked independently per concept. RxNorm's
+    # highest-scoring entry for an rxcui frequently has a null name while a
+    # slightly lower-scoring duplicate carries the real one, so taking the top
+    # entry wholesale leaves the user confirming a blank.
+    best_score: dict[str, float] = {}
+    best_name: dict[str, str] = {}
     for c in raw:
         rxcui = c.get("rxcui")
         if not rxcui:
@@ -45,11 +50,15 @@ def approximate_match(term: str, max_entries: int = 20) -> list[Candidate]:
             score = float(c.get("score", 0))
         except (TypeError, ValueError):
             continue
-        name = c.get("name") or ""
-        prev = best_by_rxcui.get(rxcui)
-        if prev is None or score > prev[0]:
-            # Keep the better score, and prefer a real name over a null one.
-            best_by_rxcui[rxcui] = (score, name or (prev[1] if prev else ""))
+        if score > best_score.get(rxcui, float("-inf")):
+            best_score[rxcui] = score
+        name = (c.get("name") or "").strip()
+        if name and not best_name.get(rxcui):
+            best_name[rxcui] = name
+
+    best_by_rxcui: dict[str, tuple[float, str]] = {
+        rxcui: (score, best_name.get(rxcui, "")) for rxcui, score in best_score.items()
+    }
 
     if not best_by_rxcui:
         return []
