@@ -68,7 +68,12 @@ def approximate_match(term: str, max_entries: int = 20) -> list[Candidate]:
         return []
 
     out = [
-        Candidate(rxcui=f"RXCUI:{rxcui}", display_name=name, score=score / top)
+        Candidate(
+            rxcui=f"RXCUI:{rxcui}",
+            display_name=name,
+            score=score / top,
+            raw_score=score,
+        )
         for rxcui, (score, name) in best_by_rxcui.items()
     ]
     return sorted(out, key=lambda c: -c.score)
