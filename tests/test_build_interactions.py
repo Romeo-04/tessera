@@ -72,3 +72,46 @@ def test_the_same_pair_is_not_asserted_twice_from_one_span():
     ]})
     out = extract_assertions("text", "RXCUI:11289", "s", FORMULARY, router)
     assert len(out) == 1
+
+
+def test_the_prompt_names_the_subject_drug_not_its_code():
+    """I11: asking which drugs interact with "RXCUI:11289" while also saying
+    "do not infer" gives the model no way to answer well."""
+    seen = {}
+
+    class Capturing:
+        def complete(self, tier, messages, **kw):
+            seen["prompt"] = messages[0]["content"]
+            return json.dumps({"interactions": []})
+
+    extract_assertions("some label text", "RXCUI:11289", "s", FORMULARY, Capturing())
+    assert "warfarin" in seen["prompt"].lower()
+    assert "RXCUI:11289" not in seen["prompt"]
+
+
+def test_a_salt_or_brand_qualified_name_still_matches_its_ingredient():
+    """I12: labels say "warfarin sodium" and "aspirin 81 mg", not the bare
+    ingredient. Exact lowercase matching drops nearly all of them."""
+    router = StubRouter({"interactions": [
+        {"drug": "aspirin 81 mg", "severity": "warning"},
+    ]})
+    out = extract_assertions("text", "RXCUI:11289", "s", FORMULARY, router)
+    assert len(out) == 1
+    assert out[0].object_rxcui == "RXCUI:1191"
+
+
+def test_matching_is_on_whole_words_so_unrelated_drugs_do_not_collide():
+    router = StubRouter({"interactions": [
+        {"drug": "metformin-containing products", "severity": "monitor"},
+    ]})
+    out = extract_assertions("text", "RXCUI:11289", "s", FORMULARY, router)
+    assert len(out) == 1
+    assert out[0].object_rxcui == "RXCUI:860975"
+
+
+def test_a_drug_class_rather_than_an_ingredient_is_still_ignored():
+    """"CYP3A4 inhibitors" names no drug we can resolve; dropping it is right."""
+    router = StubRouter({"interactions": [
+        {"drug": "CYP3A4 inhibitors", "severity": "warning"},
+    ]})
+    assert extract_assertions("text", "RXCUI:11289", "s", FORMULARY, router) == []
