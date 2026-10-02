@@ -23,7 +23,12 @@ class DrugRecord(BaseModel):
 class Candidate(BaseModel):
     rxcui: str
     display_name: str
+    # Relative to the best candidate in the same response: the top is 1.0.
+    # Good for "is the winner clearly ahead?", useless as match quality.
     score: float
+    # The source's own unbounded score, carried because `score` is 1.0 for the
+    # top candidate by construction and so cannot say whether ANY match is good.
+    raw_score: float | None = None
 
 
 class NormalizedDrug(BaseModel):
@@ -71,15 +76,53 @@ class InteractionAssertion(BaseModel):
 class RankedRisk(BaseModel):
     subject: str
     object: str
+    # Attached on the device AFTER the server returns, from the local code ->
+    # name map. The names never crossed the gate; they are re-joined on the
+    # side that already had them. None when we cannot name the code locally -
+    # an unnamed code is better than an invented name.
+    subject_name: str | None = None
+    object_name: str | None = None
     severity: Literal["contraindicated", "warning", "monitor"]
     mechanism: str
     span_id: str
     source_url: str
     action: str
 
+    @property
+    def subject_label(self) -> str:
+        return self.subject_name or self.subject
+
+    @property
+    def object_label(self) -> str:
+        return self.object_name or self.object
+
+
+class ConfirmationRequest(BaseModel):
+    """A drug we refused to identify, and the options we could not choose between.
+
+    Abstaining is only useful if the caller can actually ask, so the options
+    travel with the refusal instead of being discarded at the boundary.
+    """
+
+    raw_name: str
+    options: list[Candidate]
+
 
 class SessionResult(BaseModel):
     risks: list[RankedRisk]
     excluded_drugs: list[str] = Field(default_factory=list)
-    status: Literal["ok", "insufficient_drugs", "partial"] = "ok"
+    # In the formulary, but we hold no label evidence for them. Distinct from
+    # excluded: we recognise the drug, we just cannot speak to it.
+    unchecked_drugs: list[str] = Field(default_factory=list)
+    needs_confirmation: list[ConfirmationRequest] = Field(default_factory=list)
+    # Ordered by how badly the user is misled if the status is wrong:
+    #   no_drugs_detected    - we could not read the photographs at all
+    #   insufficient_drugs   - fewer than two drugs identified; nothing to pair
+    #   analysis_incomplete  - interactions were found but could not be explained
+    #   partial              - some drugs are outside scope or lack evidence
+    #   ok                   - everything identified was checked
+    status: Literal[
+        "ok", "partial", "analysis_incomplete", "insufficient_drugs",
+        "no_drugs_detected",
+    ] = "ok"
     notes: list[str] = Field(default_factory=list)

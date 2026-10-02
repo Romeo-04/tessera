@@ -1,10 +1,26 @@
 from __future__ import annotations
 
 import json
+import re
 
 from tessera.resolve import SEVERITY_RANK
 from tessera.router import Tier
 from tessera.schemas import InteractionAssertion, RankedRisk
+
+SAFE_ACTION = "Ask a pharmacist before combining these."
+
+# The safety boundary cannot live only in the prompt. NeMo Guardrails is Plan 2,
+# but the CLI ships now, so a deterministic backstop runs today: any action that
+# reads as dosing or treatment advice is replaced rather than shown.
+UNSAFE_ACTION = re.compile(
+    r"\b("
+    r"reduce|increase|lower|raise|double|halve|adjust|titrate"
+    r"|stop|discontinue|start|begin|switch|replace|skip|split"
+    r"|\d+\s*(mg|mcg|ml|g|units?)"
+    r"|take\s+(only|just|fewer|less|more|half|one|two|\d)"
+    r")\b",
+    re.IGNORECASE,
+)
 
 # Showing fourteen warnings is the same as showing none. Alert fatigue is the
 # documented failure mode of clinical decision support, so this is a clinical
@@ -72,18 +88,27 @@ def adjudicate(assertions, index, router) -> list[RankedRisk]:
         if not got:
             # No explanation means no risk shown. A severity grade with no
             # plain-language mechanism is not something a caregiver can act on.
+            # The caller counts what went missing and says so - see pipeline.
             continue
+
+        mechanism = str(got.get("mechanism", "")).strip()
+        if not mechanism:
+            continue
+
+        action = str(got.get("action") or "").strip()
+        if not action or UNSAFE_ACTION.search(action):
+            action = SAFE_ACTION
+
         span = index.by_id(a.span_id)
         out.append(
             RankedRisk(
                 subject=a.subject_rxcui,
                 object=a.object_rxcui,
                 severity=a.severity,
-                mechanism=str(got.get("mechanism", "")).strip(),
+                mechanism=mechanism,
                 span_id=a.span_id,
                 source_url=span.source_url,
-                action=str(got.get("action") or "").strip()
-                or "Ask a pharmacist before combining these.",
+                action=action,
             )
         )
     return out
