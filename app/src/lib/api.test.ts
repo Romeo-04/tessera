@@ -63,3 +63,27 @@ describe("photoParts", () => {
     expect(parts[0]).toBeInstanceOf(Blob);
   });
 });
+
+describe("transcribe", () => {
+  it("posts the clip as 'audio' and returns only the text", async () => {
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
+      vi.stubGlobal("lastBody", init.body);
+      return new Response(JSON.stringify({ text: "is warfarin ok" }), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const { transcribe } = await import("./api");
+    const r = await transcribe({ uri: "file:///q.m4a", name: "q.m4a", type: "audio/mp4" }, false);
+    expect(r).toEqual({ ok: true, value: { text: "is warfarin ok" } });
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toContain("/api/transcribe");
+    expect((init.body as FormData).has("audio")).toBe(true);
+  });
+
+  it("reports a refusal so the user can type instead", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(
+      JSON.stringify({ detail: "Spoken questions are not available here. Type the question instead." }), { status: 503 })));
+    const { transcribe } = await import("./api");
+    const r = await transcribe({ uri: "file:///q.m4a", name: "q.m4a", type: "audio/mp4" }, false);
+    expect(r.ok).toBe(false);
+  });
+});

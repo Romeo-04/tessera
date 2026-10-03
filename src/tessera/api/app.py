@@ -34,12 +34,16 @@ from tessera.api.limits import RateLimiter, SpendCeiling
 from tessera.errors import RateLimitedError, TesseraError, UpstreamError
 from tessera.pipeline import Perception
 from tessera.schemas import RXCUI_RE, Candidate, CodeSet, SessionResult
+from tessera.transcribe import audio_kind
 
 log = logging.getLogger("tessera.api")
 
 MAX_PHOTOS = 8
 MAX_PHOTO_BYTES = 8 * 1024 * 1024
 MAX_CODES = 40
+# ~60 s of compressed speech. A question, not a recording session.
+MAX_AUDIO_BYTES = 2 * 1024 * 1024
+SUFFIX = {"audio/mp4": ".m4a", "audio/webm": ".webm", "audio/wav": ".wav", "audio/ogg": ".ogg"}
 MAX_BODY_BYTES = MAX_PHOTOS * MAX_PHOTO_BYTES + 1024 * 1024
 
 # Magic numbers, not the client's Content-Type, decide what an upload is.
@@ -103,6 +107,8 @@ class Deps:
     limiter: RateLimiter
     ceiling: SpendCeiling | None
     alerts_path: Path | None
+    # Optional: without it, spoken questions degrade to typing.
+    transcribe_fn: Callable[[Path, str], str] | None = None
 
     @property
     def live(self) -> bool:
@@ -130,6 +136,8 @@ def default_deps() -> Deps:
 
     limiter = RateLimiter(settings.calls_per_window, settings.window_seconds)
     alerts = settings.data_dir / "watch" / "alerts.json"
+    from tessera.transcribe import transcribe
+
     try:
         from tessera.cli import _load_corpus
         from tessera.pipeline import assess, perceive
@@ -147,6 +155,7 @@ def default_deps() -> Deps:
         limiter=limiter,
         ceiling=SpendCeiling(router.spent_since, settings.daily_usd),
         alerts_path=alerts,
+        transcribe_fn=lambda path, mime: transcribe(path, mime, router),
     )
 
 
@@ -160,9 +169,9 @@ def create_app(deps: Deps | None = None) -> FastAPI:
         allow_headers=["Content-Type"],
     )
 
-    def guard(request: Request) -> JSONResponse | None:
+    def guard(request: Request, needs_live: bool = True) -> JSONResponse | None:
         """Checks every live call passes before any model is touched."""
-        if not deps.live:
+        if needs_live and not deps.live:
             return _fallback(503, "Live checking is not configured on this server.")
         caller = request.client.host if request.client else "unknown"
         if not deps.limiter.allow(caller):
@@ -254,6 +263,29 @@ def create_app(deps: Deps | None = None) -> FastAPI:
                            for c in perception.confirmations],
             unreadable=perception.unreadable,
         )
+
+    @app.post("/api/transcribe")
+    async def transcribe_route(request: Request, audio: UploadFile = File(...)):
+        """A spoken question to text. Only the transcript comes back; the clip
+        is deleted. The device screens the transcript, not this server."""
+        data = await audio.read(MAX_AUDIO_BYTES + 1)
+        if len(data) > MAX_AUDIO_BYTES:
+            return JSONResponse(status_code=422, content={
+                "detail": "That recording is too long. Keep the question short, or type it."})
+        kind = audio_kind(data[:16])
+        if kind is None:
+            return JSONResponse(status_code=422, content={"detail": "Not an audio recording."})
+        if deps.transcribe_fn is None:
+            return JSONResponse(status_code=503, content={
+                "detail": "Spoken questions are not available here. Type the question instead."})
+        if (refused := guard(request, needs_live=False)) is not None:
+            return refused
+
+        with tempfile.TemporaryDirectory(prefix="tessera-") as tmp:
+            clip = Path(tmp) / f"question{SUFFIX[kind]}"
+            clip.write_bytes(data)
+            text, err = await run_in_threadpool(upstream, lambda: deps.transcribe_fn(clip, kind))
+        return err or {"text": text}
 
     @app.get("/api/alerts")
     def alerts():

@@ -217,3 +217,55 @@ def test_an_oversized_upload_is_refused_before_it_is_read():
         "content-type": "multipart/form-data; boundary=x",
         "content-length": str(80 * 1024 * 1024)})
     assert r.status_code == 413
+
+
+# ---- spoken questions -----------------------------------------------------------
+
+M4A = b"\x00\x00\x00\x20ftypM4A " + b"\x00" * 64
+
+
+def _audio(content=M4A, ctype="audio/mp4"):
+    return {"audio": ("q.m4a", io.BytesIO(content), ctype)}
+
+
+def make_t(transcribe=None, **kw):
+    deps = Deps(read_fn=Recorder(), assess_fn=Recorder(), transcribe_fn=transcribe,
+                limiter=kw.get("limiter") or RateLimiter(max_calls=100, per_seconds=60),
+                ceiling=kw.get("ceiling"), alerts_path=None)
+    return TestClient(create_app(deps))
+
+
+def test_transcribe_returns_only_text_and_deletes_the_clip():
+    seen = []
+
+    def fake(path, kind):
+        seen.append(path)
+        assert path.exists()
+        return "is warfarin ok with atorvastatin"
+
+    r = make_t(fake).post("/api/transcribe", files=_audio())
+    assert r.status_code == 200
+    assert r.json() == {"text": "is warfarin ok with atorvastatin"}
+    assert not seen[0].exists()
+
+
+def test_transcribe_refuses_a_file_that_is_not_audio():
+    r = make_t(lambda p, k: "x").post("/api/transcribe", files=_audio(b"%PDF-1.7", "application/pdf"))
+    assert r.status_code == 422
+
+
+def test_transcribe_refuses_a_long_recording():
+    r = make_t(lambda p, k: "x").post("/api/transcribe", files=_audio(M4A + b"\x00" * (2 * 1024 * 1024)))
+    assert r.status_code == 422
+
+
+def test_transcribe_without_a_model_says_type_instead():
+    r = make_t(None).post("/api/transcribe", files=_audio())
+    assert r.status_code == 503
+    assert "type" in r.json()["detail"].lower()
+
+
+def test_transcribe_is_rate_limited_like_every_live_route():
+    client = make_t(lambda p, k: "x", limiter=RateLimiter(max_calls=1, per_seconds=600))
+    assert client.post("/api/transcribe", files=_audio()).status_code == 200
+    assert client.post("/api/transcribe", files=_audio()).status_code == 429

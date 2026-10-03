@@ -109,3 +109,12 @@ export async function fetchAlerts(): Promise<AlertsFile | null> {
   const r = await call<AlertsFile>("/api/alerts", { method: "GET" });
   return r.ok ? r.value : null;
 }
+
+/** A spoken question to text. The clip is deleted server-side; only the words return. */
+export async function transcribe(clip: PhotoInput, web = IS_WEB): Promise<Outcome<{ text: string }>> {
+  const form = new FormData();
+  const [part] = await photoParts([clip], web);
+  if (part instanceof Blob) form.append("audio", part, clip.name);
+  else form.append("audio", part as unknown as Blob);
+  return call<{ text: string }>("/api/transcribe", { method: "POST", body: form });
+}

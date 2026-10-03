@@ -1,11 +1,13 @@
 import { Redirect } from "expo-router";
-import { useState } from "react";
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import Svg, { Path, Rect } from "react-native-svg";
 import { ResultTabs } from "../components/chrome";
 import { Screen, T } from "../components/ui";
 import { screenQuestion } from "../lib/guardrail";
 import { pairLabel } from "../lib/status";
 import type { Drug, SessionResult } from "../lib/types";
+import { useQuestionRecorder } from "../media/useQuestionRecorder";
 import { useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space } from "../theme";
 
@@ -41,9 +43,12 @@ function respond(q: string, drugs: Drug[], result: SessionResult): Turn[] {
 }
 
 export default function Ask() {
-  const { checked, result } = useSession();
+  const { checked, result, live } = useSession();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
+  const [heard, setHeard] = useState(false);
+  const onText = useCallback((text: string) => { setQ(text); setHeard(true); }, []);
+  const mic = useQuestionRecorder(onText);
   if (!result) return <Redirect href="/" />;
 
   const ask = (question: string) => {
@@ -51,12 +56,32 @@ export default function Ask() {
     if (!text) return;
     setTurns((t) => [...t, { who: "me", text }, ...respond(text, checked, result)]);
     setQ("");
+    setHeard(false);
   };
 
   const bar = (
     <View>
+      {heard && <Text style={s.heard}>This is what was heard. Fix anything that is wrong, then ask.</Text>}
+      {mic.state.kind === "error" && <Text style={[s.heard, { color: color.warn }]}>{mic.state.message}</Text>}
       <View style={s.bar}>
-        <TextInput value={q} onChangeText={setQ} onSubmitEditing={() => ask(q)} placeholder="Type a question"
+        {live && (
+          <Pressable accessibilityRole="button"
+                     accessibilityLabel={mic.state.kind === "recording" ? "Stop recording" : "Ask out loud"}
+                     accessibilityState={{ busy: mic.state.kind === "transcribing" }}
+                     onPress={mic.toggle}
+                     style={[s.mic, mic.state.kind === "recording" && s.micOn]}>
+            {mic.state.kind === "recording" ? <Text style={[s.micText, { color: "#fff" }]}>■</Text>
+              : mic.state.kind === "transcribing" ? <ActivityIndicator color={color.ink} />
+              : (
+                <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                  <Rect x={9} y={3} width={6} height={11} rx={3} stroke={color.ink} strokeWidth={2} />
+                  <Path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke={color.ink} strokeWidth={2} strokeLinecap="round" />
+                </Svg>
+              )}
+          </Pressable>
+        )}
+        <TextInput value={q} onChangeText={setQ} onSubmitEditing={() => ask(q)}
+                   placeholder={mic.state.kind === "recording" ? "Listening… tap ■ when done" : "Type a question"}
                    placeholderTextColor={color.muted2} accessibilityLabel="Your question" returnKeyType="send"
                    style={s.input} />
         <Pressable accessibilityRole="button" onPress={() => ask(q)} style={s.send}>
@@ -122,6 +147,11 @@ const s = StyleSheet.create({
          borderTopWidth: 1, borderTopColor: color.border2, backgroundColor: color.paper },
   input: { flex: 1, minWidth: 0, fontFamily: font.body, fontSize: size.sm, color: color.ink, paddingVertical: 10,
            paddingHorizontal: space.s3, borderWidth: 1, borderColor: color.border, borderRadius: radius.pill, backgroundColor: color.surface },
+  heard: { fontFamily: font.body, fontSize: size.xs, color: color.ink3, paddingHorizontal: space.s4, paddingTop: space.s2 },
+  mic: { width: 44, height: 44, borderRadius: 22, backgroundColor: color.lime, borderWidth: 2, borderColor: color.ink,
+         alignItems: "center", justifyContent: "center" },
+  micOn: { backgroundColor: color.danger, borderColor: color.danger },
+  micText: { fontSize: size.sm, color: color.ink },
   send: { backgroundColor: color.ink, borderRadius: radius.pill, paddingHorizontal: space.s4, justifyContent: "center" },
   sendText: { fontFamily: font.bodySemi, fontSize: size.sm, color: "#fff" },
 });
