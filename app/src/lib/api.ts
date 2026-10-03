@@ -2,8 +2,10 @@ import { codeSetFor } from "./session";
 import type { ConfirmationRequest, Drug, SessionResult } from "./types";
 import type { AlertsFile } from "./watch";
 
-/** Empty means same origin (the dev proxy, or the API serving the app). */
-const BASE = (import.meta.env?.VITE_API_URL as string | undefined) ?? "";
+
+// Expo inlines EXPO_PUBLIC_* at build time. Empty means same origin, which only
+// works on web; a native build without it simply runs the demo.
+const BASE = process.env.EXPO_PUBLIC_API_URL ?? "";
 
 export type Outcome<T> =
   | { ok: true; value: T }
@@ -51,9 +53,34 @@ export async function liveAvailable(): Promise<boolean> {
   return r.ok && r.value.live === true;
 }
 
-export function readLive(photos: File[]): Promise<Outcome<ReadResult>> {
+/** A photo as the camera or picker hands it over. */
+export interface PhotoInput {
+  uri: string;
+  name: string;
+  type: string;
+  bytes?: number;
+}
+
+type NativePart = { uri: string; name: string; type: string };
+
+const IS_WEB = typeof document !== "undefined";
+
+/**
+ * React Native's FormData takes { uri, name, type } and streams the file;
+ * a browser needs a real Blob. The picker and camera return URIs on both.
+ */
+export async function photoParts(photos: PhotoInput[], web = IS_WEB): Promise<(Blob | NativePart)[]> {
+  if (!web) return photos.map(({ uri, name, type }) => ({ uri, name, type }));
+  return Promise.all(photos.map(async (p) => (await fetch(p.uri)).blob()));
+}
+
+export async function readLive(photos: PhotoInput[]): Promise<Outcome<ReadResult>> {
   const form = new FormData();
-  for (const p of photos) form.append("photos", p);
+  const parts = await photoParts(photos);
+  parts.forEach((part, i) => {
+    if (part instanceof Blob) form.append("photos", part, photos[i].name);
+    else form.append("photos", part as unknown as Blob);
+  });
   return call<ReadResult>("/api/read", { method: "POST", body: form });
 }
 

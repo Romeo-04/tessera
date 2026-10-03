@@ -1,4 +1,9 @@
-import type { Status } from "./types";
+import type { RankedRisk, Status } from "./types";
+
+/** "Warfarin + Atorvastatin", or the bare code where the device has no name - never an invented one. */
+export function pairLabel(r: RankedRisk): string {
+  return `${r.subject_name ?? r.subject} + ${r.object_name ?? r.object}`;
+}
 
 /**
  * What each status means to a caregiver. An empty risk list is ambiguous, and

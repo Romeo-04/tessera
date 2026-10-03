@@ -48,3 +48,18 @@ describe("a static host with no API behind it", () => {
     expect(await fetchAlerts()).toBeNull();
   });
 });
+
+describe("photoParts", () => {
+  it("on native, sends the file by uri so the bridge streams it", async () => {
+    const { photoParts } = await import("./api");
+    const parts = await photoParts([{ uri: "file:///p.jpg", name: "p.jpg", type: "image/jpeg" }], false);
+    expect(parts[0]).toEqual({ uri: "file:///p.jpg", name: "p.jpg", type: "image/jpeg" });
+  });
+
+  it("on web, turns the picker's uri into a Blob", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(new Blob(["x"], { type: "image/jpeg" }))));
+    const { photoParts } = await import("./api");
+    const parts = await photoParts([{ uri: "blob:abc", name: "p.jpg", type: "image/jpeg" }], true);
+    expect(parts[0]).toBeInstanceOf(Blob);
+  });
+});
