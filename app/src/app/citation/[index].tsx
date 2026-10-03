@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { Redirect, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { Note, Screen, Sev, T } from "../../components/ui";
@@ -13,7 +13,7 @@ export default function Citation() {
   const { result, mode } = useSession();
   const [full, setFull] = useState(false);
   const risk = result?.risks[Number(index)];
-  if (!risk) return <Screen><T>This risk is no longer in the current result.</T></Screen>;
+  if (!risk) return <Redirect href="/" />;
 
   const demo = mode === "demo";
   const quote = risk.quote ?? "";

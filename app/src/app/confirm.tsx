@@ -1,3 +1,4 @@
+import { Redirect } from "expo-router";
 import { View } from "react-native";
 import { Button, Note, Row, Screen, T } from "../components/ui";
 import { useSession } from "../session/SessionProvider";
@@ -6,6 +7,7 @@ import { space } from "../theme";
 export default function Confirm() {
   const { ambiguities, choices, decide, busy, notice, runAssess } = useSession();
   const ready = ambiguities.every((a) => a.raw_name in choices);
+  if (ambiguities.length === 0) return <Redirect href="/" />;
 
   return (
     <Screen>

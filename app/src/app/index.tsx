@@ -3,13 +3,15 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button, Note, Screen, T } from "../components/ui";
 import { pickPhotos } from "../media/photos";
+import { useSaved } from "../session/SavedProvider";
 import { useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space } from "../theme";
 
 const HEIGHTS = [74, 92, 66, 84, 70, 88, 62];
 
 export default function Capture() {
-  const { live, notice, startDemo, startLive } = useSession();
+  const { live, notice, startDemo, startLive, recheck } = useSession();
+  const { saved } = useSaved();
   const [picking, setPicking] = useState(false);
 
   const choose = async () => {
@@ -44,6 +46,20 @@ export default function Capture() {
         </T>
         {notice && <Note tone="warn" role="status">{notice}</Note>}
 
+        {saved && (
+          <View style={s.saved}>
+            <T v="eyebrow">Saved on this device</T>
+            <Text style={s.savedTitle}>{`${saved.drugs.length} medications · ${saved.savedAt.slice(0, 10)}`}</Text>
+            <T v="muted" style={{ marginBottom: space.s2 }}>
+              {saved.drugs.map((d) => d.display_name ?? d.raw_name).join(", ")}
+            </T>
+            <View style={{ flexDirection: "row", gap: space.s2 }}>
+              <Button label="Re-check" style={{ flex: 1 }} onPress={() => void recheck(saved.drugs)} />
+              <Button tone="ghost" label="View" style={{ flex: 1 }} onPress={() => router.push("/list")} />
+            </View>
+          </View>
+        )}
+
         <Button tone="lime" label="See it with seven real medications" onPress={() => startDemo()} />
         <Button tone="ghost" label="Photograph your own bottles" disabled={!live}
                 onPress={() => router.push("/camera")} />
@@ -66,6 +82,8 @@ const s = StyleSheet.create({
   label: { height: "36%", backgroundColor: "#FBFAF6", borderRadius: 2 },
   box: { position: "absolute", left: -3, right: -3, bottom: -4, borderWidth: 2, borderColor: color.lime, borderRadius: 5 },
   boxN: { position: "absolute", top: -9, left: -2, backgroundColor: color.lime, color: color.ink, fontFamily: font.monoMedium, fontSize: size.xs, paddingHorizontal: 4, borderRadius: 3, overflow: "hidden" },
+  saved: { borderWidth: 1, borderColor: color.ink, borderRadius: radius.card, padding: space.s3, gap: 2, marginBottom: space.s2 },
+  savedTitle: { fontFamily: font.display, fontSize: size.sm, color: color.ink },
   hint: { position: "absolute", bottom: space.s3, left: space.s3, right: space.s3, textAlign: "center", color: "#fff",
           fontFamily: font.body, fontSize: size.xs, backgroundColor: "rgba(10,10,10,0.6)", padding: 7, borderRadius: radius.ctrl, overflow: "hidden" },
 });

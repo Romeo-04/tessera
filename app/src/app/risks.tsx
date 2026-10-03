@@ -1,14 +1,18 @@
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
-import { Note, Screen, Sev, T } from "../components/ui";
+import { Button, Note, Screen, Sev, T } from "../components/ui";
 import { pairLabel, statusCopy } from "../lib/status";
+import { sameList, useSaved } from "../session/SavedProvider";
 import { useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space } from "../theme";
 
 export default function Risks() {
-  const { result, notice } = useSession();
-  if (!result) return <Screen><T>Nothing has been checked yet.</T></Screen>;
+  const { result, notice, checked } = useSession();
+  const { saved, save } = useSaved();
+  const isSaved = !!saved && sameList(saved.drugs, checked);
+  const canSave = checked.some((d) => d.rxcui);
+  if (!result) return <Redirect href="/" />;
 
   const { title, body } = statusCopy(result.status, result.risks.length);
   const unchecked = result.unchecked_drugs.length;
@@ -36,6 +40,14 @@ export default function Risks() {
 
       {unchecked > 0 && (
         <Note>{`${unchecked} medication${unchecked === 1 ? " is" : "s are"} recognised but Tessera holds no label evidence for ${unchecked === 1 ? "it" : "them"}, so ${unchecked === 1 ? "it was" : "they were"} not checked.`}</Note>
+      )}
+      {canSave && (
+        <View style={{ marginBottom: space.s3 }}>
+          {isSaved
+            ? <Note>Saved on this device. Re-check it from the start screen any time.</Note>
+            : <Button tone="ghost" label={saved ? "Replace the saved list with this one" : "Save this list on this device"}
+                      onPress={() => void save(checked)} />}
+        </View>
       )}
       <Note tone="lime">
         Tessera shows what FDA labels document and cites them. It is not medical advice and never

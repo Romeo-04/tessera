@@ -1,3 +1,4 @@
+import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
@@ -8,7 +9,7 @@ import { useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space } from "../theme";
 
 export default function Watch() {
-  const { checked, mode } = useSession();
+  const { checked, mode, result } = useSession();
   const [file, setFile] = useState<AlertsFile | null | "loading">("loading");
   const coded = checked.filter((d) => d.rxcui);
   const codes = coded.map((d) => d.rxcui as string);
@@ -21,6 +22,7 @@ export default function Watch() {
   }, []);
 
   const view = file === "loading" ? null : watchView(file, codes);
+  if (!result) return <Redirect href="/" />;
 
   return (
     <Screen footer={<ResultTabs />}>

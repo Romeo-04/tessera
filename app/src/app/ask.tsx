@@ -1,3 +1,4 @@
+import { Redirect } from "expo-router";
 import { useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
@@ -43,7 +44,7 @@ export default function Ask() {
   const { checked, result } = useSession();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
-  if (!result) return <Screen><T>Check a list first.</T></Screen>;
+  if (!result) return <Redirect href="/" />;
 
   const ask = (question: string) => {
     const text = question.trim();

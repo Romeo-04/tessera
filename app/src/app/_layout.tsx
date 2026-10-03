@@ -12,6 +12,7 @@ import { BackHandler, Platform, ScrollView, StyleSheet, Text, useWindowDimension
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AppBar, Mark } from "../components/chrome";
 import { Panel } from "../components/Panel";
+import { SavedProvider } from "../session/SavedProvider";
 import { SessionProvider, useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space, WIDE } from "../theme";
 
@@ -106,10 +107,12 @@ export default function RootLayout() {
   if (!loaded) return null;
   return (
     <SafeAreaProvider>
-      <SessionProvider>
-        <StatusBar style="dark" />
-        <Shell />
-      </SessionProvider>
+      <SavedProvider>
+        <SessionProvider>
+          <StatusBar style="dark" />
+          <Shell />
+        </SessionProvider>
+      </SavedProvider>
     </SafeAreaProvider>
   );
 }

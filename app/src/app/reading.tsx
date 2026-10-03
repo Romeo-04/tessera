@@ -1,3 +1,4 @@
+import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { Button, Note, Row, Screen, T } from "../components/ui";
 import { useSession } from "../session/SessionProvider";
@@ -9,6 +10,7 @@ export default function Reading() {
   const total = drugs.length + excluded.length;
   // A saved-list re-check passes through here while /api/assess runs.
   const assessing = busy && drugs.length > 0;
+  if (!busy && drugs.length === 0 && excluded.length === 0 && !notice) return <Redirect href="/" />;
 
   return (
     <Screen>
