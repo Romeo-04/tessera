@@ -3,12 +3,14 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 
 from tessera.schemas import Candidate, DrugRecord, NormalizedDrug
-from tessera.sources.rxnorm import approximate_match
+from tessera.sources.rxnorm import match_ingredients
 
 # Scores are normalised per response (top candidate = 1.0), so this margin is a
-# share of the best score, not an absolute. Tuned against live RxNorm output:
-# "METF0RMIN 500" separates its top two by 0.055 and is accepted; "WARFARIN
-# SODIUM 5MG" separates by 0.037 and is sent back for confirmation.
+# share of the best score, not an absolute. It is applied between distinct
+# INGREDIENTS (see match_ingredients), so strengths of one drug never count as
+# an ambiguity. Live, 2026-10-03: "WARF SOD" puts warfarin 0.039 ahead of
+# sulfacetamide and is sent back for confirmation; "WARFARIN SOD 5MG" and
+# "METF0RMIN 500 mg" resolve cleanly to their ingredients.
 AMBIGUITY_MARGIN = 0.05
 
 # Relative scoring makes the top candidate 1.0 by construction, so it cannot
@@ -22,7 +24,7 @@ MIN_RAW_SCORE = 5.0
 def normalize_drugs(
     records: Iterable[DrugRecord],
     formulary_rxcuis: set[str],
-    match_fn: Callable[..., list[Candidate]] = approximate_match,
+    match_fn: Callable[..., list[Candidate]] = match_ingredients,
 ) -> list[NormalizedDrug]:
     """Resolve each read label to one RXCUI, or refuse to.
 

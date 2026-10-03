@@ -35,3 +35,12 @@ def test_normalized_drug_marks_low_confidence_as_needing_confirmation():
         candidates=[],
     )
     assert d.needs_confirmation is True
+
+
+def test_rxcui_pattern_rejects_a_trailing_newline_and_non_ascii_digits():
+    import pytest
+    from pydantic import ValidationError
+    from tessera.schemas import CodeSet
+    for bad in ["RXCUI:1\n", "RXCUI:١٢"]:
+        with pytest.raises(ValidationError):
+            CodeSet(codes=[bad])

@@ -1,0 +1,278 @@
+{
+  "about": "Seeded demo built by scripts/build_demo.py from FDA label text in the Tessera corpus. Explanations are written from the quoted span only; ranking and the five-risk cap come from the real resolver.",
+  "drugs": [
+    {
+      "raw_name": "LISINOPRIL 10MG TAB",
+      "strength": "10 mg",
+      "form": "tablet",
+      "directions": "Take one tablet by mouth every morning",
+      "rxcui": "RXCUI:29046",
+      "display_name": "Lisinopril"
+    },
+    {
+      "raw_name": "SPIRONOLACTONE 25MG",
+      "strength": "25 mg",
+      "form": "tablet",
+      "directions": "Take one tablet daily",
+      "rxcui": "RXCUI:9997",
+      "display_name": "Spironolactone"
+    },
+    {
+      "raw_name": "FUROSEMIDE 40 MG",
+      "strength": "40 mg",
+      "form": "tablet",
+      "directions": "Take one tablet every morning",
+      "rxcui": "RXCUI:4603",
+      "display_name": "Furosemide"
+    },
+    {
+      "raw_name": "DIGOXIN 0.125MG",
+      "strength": "0.125 mg",
+      "form": "tablet",
+      "directions": "Take one tablet daily",
+      "rxcui": "RXCUI:3407",
+      "display_name": "Digoxin"
+    },
+    {
+      "raw_name": "METFORMIN ER 500MG",
+      "strength": "500 mg",
+      "form": "extended-release tablet",
+      "directions": "Take one tablet with evening meal",
+      "rxcui": "RXCUI:6809",
+      "display_name": "Metformin"
+    },
+    {
+      "raw_name": "ATORVASTATIN 20MG",
+      "strength": "20 mg",
+      "form": "tablet",
+      "directions": "Take one tablet at bedtime",
+      "rxcui": "RXCUI:83367",
+      "display_name": "Atorvastatin"
+    },
+    {
+      "raw_name": "WARF SOD",
+      "strength": null,
+      "form": "tablet",
+      "directions": "Take as directed",
+      "rxcui": null,
+      "display_name": null,
+      "margin": 0.039,
+      "precomputed": [
+        "RXCUI:11289"
+      ],
+      "options": [
+        {
+          "rxcui": "RXCUI:11289",
+          "display_name": "warfarin",
+          "score": 1.0
+        },
+        {
+          "rxcui": "RXCUI:10169",
+          "display_name": "sulfacetamide",
+          "score": 0.961
+        },
+        {
+          "rxcui": "RXCUI:46041",
+          "display_name": "alendronate",
+          "score": 0.938
+        }
+      ]
+    }
+  ],
+  "variants": {
+    "RXCUI:11289,RXCUI:29046,RXCUI:3407,RXCUI:4603,RXCUI:6809,RXCUI:83367,RXCUI:9997": {
+      "risks": [
+        {
+          "subject": "RXCUI:4603",
+          "object": "RXCUI:29046",
+          "subject_name": "Furosemide",
+          "object_name": "Lisinopril",
+          "severity": "warning",
+          "mechanism": "Furosemide's label warns that combining it with ACE inhibitors, the group lisinopril belongs to, may cause severe low blood pressure and worsening kidney function.",
+          "span_id": "d5b9f12e-34073-7-1-b0fcb6515dc7",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d5b9f12e-d1e9-42de-90f2-c9ba33a86457",
+          "action": "Bring this combination up with his pharmacist or prescriber.",
+          "quote": "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin II receptor blockers may lead to severe hypotension and deterioration in renal function, including renal failure. An interruption or reduction in the dosage of furosemide, angiotensin converting enzyme inhibitors, or angiotensin receptor blockers may be necessary. Furosemide may add to or potentiate the therapeutic effect of other antihypertensive drugs. Potentiation occurs with ganglionic or peripheral adrenergic blocking drugs. Furosemide may decrease arterial responsiveness to norepinephrine. However, norepinephrine may still be used effectively. In isolated cases, intravenous administration of furosemide within 24 hours of taking chloral hydrate may lead to flushing, sweating attacks, restlessness, nausea, increase in blood pressure and tachycardia. Use of furosemide concomitantly with chloral hydrate is therefore not recommended. Phenytoin interferes directly with renal action of furosemide. Methotrexate and other drugs that, like furosemide, undergo significant renal tubular secretion may reduce the effect of furosemide."
+        },
+        {
+          "subject": "RXCUI:29046",
+          "object": "RXCUI:6809",
+          "subject_name": "Lisinopril",
+          "object_name": "Metformin",
+          "severity": "warning",
+          "mechanism": "Lisinopril's label says that with diabetes medicines it may lower blood sugar further, with a risk of hypoglycemia.",
+          "span_id": "f2e09150-34073-7-1-c6f222b9c352",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad",
+          "action": "Ask a pharmacist which signs of low blood sugar to watch for.",
+          "quote": "Therefore, if concomitant use of such agents is indicated, monitor the patient's serum potassium frequently. 7.2 Antidiabetics Concomitant administration of lisinopril and antidiabetic medicines (insulins, oral hypoglycemic agents) may cause an increased blood-glucose-lowering effect with risk of hypoglycemia. 7.3 Non-Steroidal Anti-Inflammatory Agents Including Selective Cyclooxygenase-2 Inhibitors (COX-2 Inhibitors) In patients who are elderly, volume-depleted (including those on diuretic therapy), or with compromised renal function, coadministration of NSAIDs, including selective COX-2 inhibitors, with ACE inhibitors, including lisinopril, may result in deterioration of renal function, including possible acute renal failure. These effects are usually reversible. Monitor renal function periodically in patients receiving lisinopril and NSAID therapy. The antihypertensive effect of ACE inhibitors, including lisinopril, may be attenuated by NSAIDs."
+        },
+        {
+          "subject": "RXCUI:29046",
+          "object": "RXCUI:9997",
+          "subject_name": "Lisinopril",
+          "object_name": "Spironolactone",
+          "severity": "warning",
+          "mechanism": "Lisinopril's label says spironolactone can increase the risk of high blood potassium (hyperkalemia).",
+          "span_id": "f2e09150-34073-7-0-4780fa506b19",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad",
+          "action": "Ask a pharmacist whether his potassium should be checked while he takes both.",
+          "quote": "7 DRUG INTERACTIONS Diuretics: Excessive drop in blood pressure ( 7.1 ) NSAIDS: Increased risk of renal impairment and loss of      antihypertensive efficacy ( 7.3 ) Dual inhibition of the renin-angiotensin system: Increased      risk of renal impairment, hypotension and hyperkalemia ( 7.4 ) Lithium: Symptoms of lithium toxicity ( 7.5 ) Gold: Nitritoid reactions have been reported ( 7.6 ) Concomitant mTOR inhibitor or neprilysin inhibitor use may      increase angioedema risk ( 7.7 , 7.8 ) 7.1 Diuretics Initiation of lisinopril in patients on diuretics may result in excessive reduction of blood pressure. The possibility of hypotensive effects with lisinopril can be minimized by either decreasing or discontinuing the diuretic or increasing the salt intake prior to initiation of treatment with lisinopril. If this is not possible, reduce the starting dose of lisinopril tablets [see DOSAGE AND ADMINISTRATION ( 2.2 ) and WARNINGS AND PRECAUTIONS ( 5.4 )] . Lisinopril attenuates potassium loss caused by thiazide-type diuretics. Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) can increase the risk of hyperkalemia."
+        },
+        {
+          "subject": "RXCUI:11289",
+          "object": "RXCUI:83367",
+          "subject_name": "Warfarin",
+          "object_name": "Atorvastatin",
+          "severity": "monitor",
+          "mechanism": "Warfarin's label lists atorvastatin in its table of drugs that interact with warfarin through CYP450 enzymes.",
+          "span_id": "654ca5d2-34073-7-3-66787ca22576",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=654ca5d2-d4c1-48f8-90c4-130a21162bb0",
+          "action": "Ask his prescriber whether this pairing calls for extra INR checks.",
+          "quote": "Table 2: Examples of CYP450 Interactions with Warfarin Enzyme Inhibitors Inducers CYP2C9 amiodarone, capecitabine, cotrimoxazole, etravirine, fluconazole, fluvastatin, fluvoxamine, metronidazole, miconazole, oxandrolone, sulfinpyrazone, tigecycline, voriconazole, zafirlukast aprepitant, bosentan, carbamazepine, phenobarbital, rifampin CYP1A2 acyclovir, allopurinol, caffeine, cimetidine, ciprofloxacin, disulfiram, enoxacin, famotidine, fluvoxamine, methoxsalen, mexiletine, norfloxacin, oral contraceptives, phenylpropanolamine, propafenone, propranolol, terbinafine, thiabendazole, ticlopidine, verapamil, zileuton montelukast, moricizine, omeprazole, phenobarbital, phenytoin, cigarette smoking CYP3A4 alprazolam, amiodarone, amlodipine, amprenavir, aprepitant, atorvastatin, atazanavir, bicalutamide, cilostazol, cimetidine, ciprofloxacin, clarithromycin, conivaptan, cyclosporine, darunavir/ritonavir, diltiazem, erythromycin, fluconazole, fluoxetine, fluvoxamine, fosamprenavir, imatinib, indinavir, isoniazid, itraconazole, ketoconazole, lopinavir/ritonavir, nefazodone, nelfinavir, nilotinib, oral contraceptives, posaconazole, ranitidine, ranolazine, ritonavir, saquinavir, telithromycin, tipranavir, voriconazole, zileuton armodafinil, amprenavir, aprepitant, bosentan, carbamazepine, efavirenz, etravirine, modafinil, nafcillin, phenytoin, pioglitazone, prednisone, rifampin, rufinamide 7.3 Drugs that Increase Bleeding Risk Examples of drugs known to increase the risk of bleeding are presented in Table 3 ."
+        },
+        {
+          "subject": "RXCUI:83367",
+          "object": "RXCUI:3407",
+          "subject_name": "Atorvastatin",
+          "object_name": "Digoxin",
+          "severity": "monitor",
+          "mechanism": "Atorvastatin's label says it may increase the level of digoxin in the blood.",
+          "span_id": "d57720ab-34073-7-0-64e14c3b3998",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d57720ab-9f83-4da9-a57f-0d55e00a605c",
+          "action": "Ask a pharmacist whether his digoxin levels need watching.",
+          "quote": "7 DRUG INTERACTIONS See full prescribing information for details regarding concomitant use of atorvastatin calcium with other drugs or grapefruit juice that increase the risk of myopathy and rhabdomyolysis ( 2.5 , 7.1 ). Rifampin: May reduce atorvastatin plasma concentrations. Administer simultaneously with atorvastatin ( 7.2 ). Oral Contraceptives: May increase plasma levels of norethindrone and ethinyl estradiol; consider this effect when selecting an oral contraceptive  ( 7.3 ). Digoxin: May increase digoxin plasma levels; monitor patients appropriately ( 7.3 ). 7.1 Drug Interactions that may Increase the Risk of Myopathy and Rhabdomyolysis with Atorvastatin Calcium Atorvastatin calcium is a substrate of CYP3A4 and transporters (e.g., OATP1B1/1B3, P-gp, or BCRP). Atorvastatin calcium plasma levels can be significantly increased with concomitant administration of inhibitors of CYP3A4 and transporters. Table 2 includes a list of drugs that may increase exposure to atorvastatin and may increase the risk of myopathy and rhabdomyolysis when used concomitantly and instructions for preventing or managing them [see Warnings and Precautions (5.1) and Clinical Pharmacology (12.3)]."
+        }
+      ],
+      "excluded_drugs": [],
+      "unchecked_drugs": [],
+      "needs_confirmation": [],
+      "status": "ok",
+      "notes": [
+        "6 documented interactions were found in this demo's curated set; showing the 5 most severe."
+      ]
+    },
+    "RXCUI:29046,RXCUI:3407,RXCUI:4603,RXCUI:6809,RXCUI:83367,RXCUI:9997": {
+      "risks": [
+        {
+          "subject": "RXCUI:4603",
+          "object": "RXCUI:29046",
+          "subject_name": "Furosemide",
+          "object_name": "Lisinopril",
+          "severity": "warning",
+          "mechanism": "Furosemide's label warns that combining it with ACE inhibitors, the group lisinopril belongs to, may cause severe low blood pressure and worsening kidney function.",
+          "span_id": "d5b9f12e-34073-7-1-b0fcb6515dc7",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d5b9f12e-d1e9-42de-90f2-c9ba33a86457",
+          "action": "Bring this combination up with his pharmacist or prescriber.",
+          "quote": "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin II receptor blockers may lead to severe hypotension and deterioration in renal function, including renal failure. An interruption or reduction in the dosage of furosemide, angiotensin converting enzyme inhibitors, or angiotensin receptor blockers may be necessary. Furosemide may add to or potentiate the therapeutic effect of other antihypertensive drugs. Potentiation occurs with ganglionic or peripheral adrenergic blocking drugs. Furosemide may decrease arterial responsiveness to norepinephrine. However, norepinephrine may still be used effectively. In isolated cases, intravenous administration of furosemide within 24 hours of taking chloral hydrate may lead to flushing, sweating attacks, restlessness, nausea, increase in blood pressure and tachycardia. Use of furosemide concomitantly with chloral hydrate is therefore not recommended. Phenytoin interferes directly with renal action of furosemide. Methotrexate and other drugs that, like furosemide, undergo significant renal tubular secretion may reduce the effect of furosemide."
+        },
+        {
+          "subject": "RXCUI:29046",
+          "object": "RXCUI:6809",
+          "subject_name": "Lisinopril",
+          "object_name": "Metformin",
+          "severity": "warning",
+          "mechanism": "Lisinopril's label says that with diabetes medicines it may lower blood sugar further, with a risk of hypoglycemia.",
+          "span_id": "f2e09150-34073-7-1-c6f222b9c352",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad",
+          "action": "Ask a pharmacist which signs of low blood sugar to watch for.",
+          "quote": "Therefore, if concomitant use of such agents is indicated, monitor the patient's serum potassium frequently. 7.2 Antidiabetics Concomitant administration of lisinopril and antidiabetic medicines (insulins, oral hypoglycemic agents) may cause an increased blood-glucose-lowering effect with risk of hypoglycemia. 7.3 Non-Steroidal Anti-Inflammatory Agents Including Selective Cyclooxygenase-2 Inhibitors (COX-2 Inhibitors) In patients who are elderly, volume-depleted (including those on diuretic therapy), or with compromised renal function, coadministration of NSAIDs, including selective COX-2 inhibitors, with ACE inhibitors, including lisinopril, may result in deterioration of renal function, including possible acute renal failure. These effects are usually reversible. Monitor renal function periodically in patients receiving lisinopril and NSAID therapy. The antihypertensive effect of ACE inhibitors, including lisinopril, may be attenuated by NSAIDs."
+        },
+        {
+          "subject": "RXCUI:29046",
+          "object": "RXCUI:9997",
+          "subject_name": "Lisinopril",
+          "object_name": "Spironolactone",
+          "severity": "warning",
+          "mechanism": "Lisinopril's label says spironolactone can increase the risk of high blood potassium (hyperkalemia).",
+          "span_id": "f2e09150-34073-7-0-4780fa506b19",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad",
+          "action": "Ask a pharmacist whether his potassium should be checked while he takes both.",
+          "quote": "7 DRUG INTERACTIONS Diuretics: Excessive drop in blood pressure ( 7.1 ) NSAIDS: Increased risk of renal impairment and loss of      antihypertensive efficacy ( 7.3 ) Dual inhibition of the renin-angiotensin system: Increased      risk of renal impairment, hypotension and hyperkalemia ( 7.4 ) Lithium: Symptoms of lithium toxicity ( 7.5 ) Gold: Nitritoid reactions have been reported ( 7.6 ) Concomitant mTOR inhibitor or neprilysin inhibitor use may      increase angioedema risk ( 7.7 , 7.8 ) 7.1 Diuretics Initiation of lisinopril in patients on diuretics may result in excessive reduction of blood pressure. The possibility of hypotensive effects with lisinopril can be minimized by either decreasing or discontinuing the diuretic or increasing the salt intake prior to initiation of treatment with lisinopril. If this is not possible, reduce the starting dose of lisinopril tablets [see DOSAGE AND ADMINISTRATION ( 2.2 ) and WARNINGS AND PRECAUTIONS ( 5.4 )] . Lisinopril attenuates potassium loss caused by thiazide-type diuretics. Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) can increase the risk of hyperkalemia."
+        },
+        {
+          "subject": "RXCUI:83367",
+          "object": "RXCUI:3407",
+          "subject_name": "Atorvastatin",
+          "object_name": "Digoxin",
+          "severity": "monitor",
+          "mechanism": "Atorvastatin's label says it may increase the level of digoxin in the blood.",
+          "span_id": "d57720ab-34073-7-0-64e14c3b3998",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d57720ab-9f83-4da9-a57f-0d55e00a605c",
+          "action": "Ask a pharmacist whether his digoxin levels need watching.",
+          "quote": "7 DRUG INTERACTIONS See full prescribing information for details regarding concomitant use of atorvastatin calcium with other drugs or grapefruit juice that increase the risk of myopathy and rhabdomyolysis ( 2.5 , 7.1 ). Rifampin: May reduce atorvastatin plasma concentrations. Administer simultaneously with atorvastatin ( 7.2 ). Oral Contraceptives: May increase plasma levels of norethindrone and ethinyl estradiol; consider this effect when selecting an oral contraceptive  ( 7.3 ). Digoxin: May increase digoxin plasma levels; monitor patients appropriately ( 7.3 ). 7.1 Drug Interactions that may Increase the Risk of Myopathy and Rhabdomyolysis with Atorvastatin Calcium Atorvastatin calcium is a substrate of CYP3A4 and transporters (e.g., OATP1B1/1B3, P-gp, or BCRP). Atorvastatin calcium plasma levels can be significantly increased with concomitant administration of inhibitors of CYP3A4 and transporters. Table 2 includes a list of drugs that may increase exposure to atorvastatin and may increase the risk of myopathy and rhabdomyolysis when used concomitantly and instructions for preventing or managing them [see Warnings and Precautions (5.1) and Clinical Pharmacology (12.3)]."
+        },
+        {
+          "subject": "RXCUI:9997",
+          "object": "RXCUI:3407",
+          "subject_name": "Spironolactone",
+          "object_name": "Digoxin",
+          "severity": "monitor",
+          "mechanism": "Spironolactone can make some blood tests show more digoxin than is really there.",
+          "span_id": "8b76a904-34073-7-1-6e8dad30740a",
+          "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8b76a904-6c99-485a-a05f-13a36c5f720c",
+          "action": "Tell whoever orders his digoxin blood test that he also takes spironolactone.",
+          "quote": "Examples of drugs that can increase potassium include: ACE inhibitors angiotensin receptor blockers non-steroidal anti-inflammatory drugs (NSAIDs) heparin and low molecular weight heparin trimethoprim 7.2 Lithium Like other diuretics, spironolactone reduces the renal clearance of lithium, thus increasing the risk of lithium toxicity. Monitor lithium levels periodically when spironolactone is coadministered [see Clinical Pharmacology ( 12.3 )] . 7.3 Nonsteroidal Anti-Inflammatory Drugs (NSAIDs) In some patients, the administration of an NSAID can reduce the diuretic, natriuretic, and antihypertensive effect of diuretics. Therefore, when spironolactone and NSAIDs are used concomitantly, monitor closely to determine if the desired effect of the diuretic is obtained [see Clinical Pharmacology ( 12.3 )] . 7.4 Digoxin Spironolactone and its metabolites interfere with radioimmunoassays for digoxin and increase the apparent exposure to digoxin. It is unknown to what extent, if any, spironolactone may increase actual digoxin exposure. In patients taking concomitant digoxin, use an assay that does not interact with spironolactone."
+        }
+      ],
+      "excluded_drugs": [
+        "WARF SOD"
+      ],
+      "unchecked_drugs": [],
+      "needs_confirmation": [],
+      "status": "partial",
+      "notes": [
+        "You left these out rather than choose, so they were not checked: WARF SOD."
+      ]
+    }
+  },
+  "spans": {
+    "f2e09150-34073-7-0-4780fa506b19": {
+      "text": "7 DRUG INTERACTIONS Diuretics: Excessive drop in blood pressure ( 7.1 ) NSAIDS: Increased risk of renal impairment and loss of      antihypertensive efficacy ( 7.3 ) Dual inhibition of the renin-angiotensin system: Increased      risk of renal impairment, hypotension and hyperkalemia ( 7.4 ) Lithium: Symptoms of lithium toxicity ( 7.5 ) Gold: Nitritoid reactions have been reported ( 7.6 ) Concomitant mTOR inhibitor or neprilysin inhibitor use may      increase angioedema risk ( 7.7 , 7.8 ) 7.1 Diuretics Initiation of lisinopril in patients on diuretics may result in excessive reduction of blood pressure. The possibility of hypotensive effects with lisinopril can be minimized by either decreasing or discontinuing the diuretic or increasing the salt intake prior to initiation of treatment with lisinopril. If this is not possible, reduce the starting dose of lisinopril tablets [see DOSAGE AND ADMINISTRATION ( 2.2 ) and WARNINGS AND PRECAUTIONS ( 5.4 )] . Lisinopril attenuates potassium loss caused by thiazide-type diuretics. Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) can increase the risk of hyperkalemia.",
+      "highlight": "Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) can increase the risk of hyperkalemia.",
+      "setid": "f2e09150-22f2-4028-b214-917d686200ad",
+      "section": "Drug Interactions",
+      "label": "lisinopril",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad"
+    },
+    "d5b9f12e-34073-7-1-b0fcb6515dc7": {
+      "text": "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin II receptor blockers may lead to severe hypotension and deterioration in renal function, including renal failure. An interruption or reduction in the dosage of furosemide, angiotensin converting enzyme inhibitors, or angiotensin receptor blockers may be necessary. Furosemide may add to or potentiate the therapeutic effect of other antihypertensive drugs. Potentiation occurs with ganglionic or peripheral adrenergic blocking drugs. Furosemide may decrease arterial responsiveness to norepinephrine. However, norepinephrine may still be used effectively. In isolated cases, intravenous administration of furosemide within 24 hours of taking chloral hydrate may lead to flushing, sweating attacks, restlessness, nausea, increase in blood pressure and tachycardia. Use of furosemide concomitantly with chloral hydrate is therefore not recommended. Phenytoin interferes directly with renal action of furosemide. Methotrexate and other drugs that, like furosemide, undergo significant renal tubular secretion may reduce the effect of furosemide.",
+      "highlight": "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin II receptor blockers may lead to severe hypotension and deterioration in renal function, including renal failure.",
+      "setid": "d5b9f12e-d1e9-42de-90f2-c9ba33a86457",
+      "section": "Drug Interactions",
+      "label": "furosemide",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d5b9f12e-d1e9-42de-90f2-c9ba33a86457"
+    },
+    "f2e09150-34073-7-1-c6f222b9c352": {
+      "text": "Therefore, if concomitant use of such agents is indicated, monitor the patient's serum potassium frequently. 7.2 Antidiabetics Concomitant administration of lisinopril and antidiabetic medicines (insulins, oral hypoglycemic agents) may cause an increased blood-glucose-lowering effect with risk of hypoglycemia. 7.3 Non-Steroidal Anti-Inflammatory Agents Including Selective Cyclooxygenase-2 Inhibitors (COX-2 Inhibitors) In patients who are elderly, volume-depleted (including those on diuretic therapy), or with compromised renal function, coadministration of NSAIDs, including selective COX-2 inhibitors, with ACE inhibitors, including lisinopril, may result in deterioration of renal function, including possible acute renal failure. These effects are usually reversible. Monitor renal function periodically in patients receiving lisinopril and NSAID therapy. The antihypertensive effect of ACE inhibitors, including lisinopril, may be attenuated by NSAIDs.",
+      "highlight": "Concomitant administration of lisinopril and antidiabetic medicines (insulins, oral hypoglycemic agents) may cause an increased blood-glucose-lowering effect with risk of hypoglycemia.",
+      "setid": "f2e09150-22f2-4028-b214-917d686200ad",
+      "section": "Drug Interactions",
+      "label": "lisinopril",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f2e09150-22f2-4028-b214-917d686200ad"
+    },
+    "8b76a904-34073-7-1-6e8dad30740a": {
+      "text": "Examples of drugs that can increase potassium include: ACE inhibitors angiotensin receptor blockers non-steroidal anti-inflammatory drugs (NSAIDs) heparin and low molecular weight heparin trimethoprim 7.2 Lithium Like other diuretics, spironolactone reduces the renal clearance of lithium, thus increasing the risk of lithium toxicity. Monitor lithium levels periodically when spironolactone is coadministered [see Clinical Pharmacology ( 12.3 )] . 7.3 Nonsteroidal Anti-Inflammatory Drugs (NSAIDs) In some patients, the administration of an NSAID can reduce the diuretic, natriuretic, and antihypertensive effect of diuretics. Therefore, when spironolactone and NSAIDs are used concomitantly, monitor closely to determine if the desired effect of the diuretic is obtained [see Clinical Pharmacology ( 12.3 )] . 7.4 Digoxin Spironolactone and its metabolites interfere with radioimmunoassays for digoxin and increase the apparent exposure to digoxin. It is unknown to what extent, if any, spironolactone may increase actual digoxin exposure. In patients taking concomitant digoxin, use an assay that does not interact with spironolactone.",
+      "highlight": "Spironolactone and its metabolites interfere with radioimmunoassays for digoxin and increase the apparent exposure to digoxin.",
+      "setid": "8b76a904-6c99-485a-a05f-13a36c5f720c",
+      "section": "Drug Interactions",
+      "label": "spironolactone",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8b76a904-6c99-485a-a05f-13a36c5f720c"
+    },
+    "d57720ab-34073-7-0-64e14c3b3998": {
+      "text": "7 DRUG INTERACTIONS See full prescribing information for details regarding concomitant use of atorvastatin calcium with other drugs or grapefruit juice that increase the risk of myopathy and rhabdomyolysis ( 2.5 , 7.1 ). Rifampin: May reduce atorvastatin plasma concentrations. Administer simultaneously with atorvastatin ( 7.2 ). Oral Contraceptives: May increase plasma levels of norethindrone and ethinyl estradiol; consider this effect when selecting an oral contraceptive  ( 7.3 ). Digoxin: May increase digoxin plasma levels; monitor patients appropriately ( 7.3 ). 7.1 Drug Interactions that may Increase the Risk of Myopathy and Rhabdomyolysis with Atorvastatin Calcium Atorvastatin calcium is a substrate of CYP3A4 and transporters (e.g., OATP1B1/1B3, P-gp, or BCRP). Atorvastatin calcium plasma levels can be significantly increased with concomitant administration of inhibitors of CYP3A4 and transporters. Table 2 includes a list of drugs that may increase exposure to atorvastatin and may increase the risk of myopathy and rhabdomyolysis when used concomitantly and instructions for preventing or managing them [see Warnings and Precautions (5.1) and Clinical Pharmacology (12.3)].",
+      "highlight": "Digoxin: May increase digoxin plasma levels;",
+      "setid": "d57720ab-9f83-4da9-a57f-0d55e00a605c",
+      "section": "Drug Interactions",
+      "label": "atorvastatin",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d57720ab-9f83-4da9-a57f-0d55e00a605c"
+    },
+    "654ca5d2-34073-7-3-66787ca22576": {
+      "text": "Table 2: Examples of CYP450 Interactions with Warfarin Enzyme Inhibitors Inducers CYP2C9 amiodarone, capecitabine, cotrimoxazole, etravirine, fluconazole, fluvastatin, fluvoxamine, metronidazole, miconazole, oxandrolone, sulfinpyrazone, tigecycline, voriconazole, zafirlukast aprepitant, bosentan, carbamazepine, phenobarbital, rifampin CYP1A2 acyclovir, allopurinol, caffeine, cimetidine, ciprofloxacin, disulfiram, enoxacin, famotidine, fluvoxamine, methoxsalen, mexiletine, norfloxacin, oral contraceptives, phenylpropanolamine, propafenone, propranolol, terbinafine, thiabendazole, ticlopidine, verapamil, zileuton montelukast, moricizine, omeprazole, phenobarbital, phenytoin, cigarette smoking CYP3A4 alprazolam, amiodarone, amlodipine, amprenavir, aprepitant, atorvastatin, atazanavir, bicalutamide, cilostazol, cimetidine, ciprofloxacin, clarithromycin, conivaptan, cyclosporine, darunavir/ritonavir, diltiazem, erythromycin, fluconazole, fluoxetine, fluvoxamine, fosamprenavir, imatinib, indinavir, isoniazid, itraconazole, ketoconazole, lopinavir/ritonavir, nefazodone, nelfinavir, nilotinib, oral contraceptives, posaconazole, ranitidine, ranolazine, ritonavir, saquinavir, telithromycin, tipranavir, voriconazole, zileuton armodafinil, amprenavir, aprepitant, bosentan, carbamazepine, efavirenz, etravirine, modafinil, nafcillin, phenytoin, pioglitazone, prednisone, rifampin, rufinamide 7.3 Drugs that Increase Bleeding Risk Examples of drugs known to increase the risk of bleeding are presented in Table 3 .",
+      "highlight": "CYP3A4 alprazolam, amiodarone, amlodipine, amprenavir, aprepitant, atorvastatin",
+      "setid": "654ca5d2-d4c1-48f8-90c4-130a21162bb0",
+      "section": "Drug Interactions",
+      "label": "warfarin",
+      "source_url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=654ca5d2-d4c1-48f8-90c4-130a21162bb0"
+    }
+  }
+}

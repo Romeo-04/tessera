@@ -75,3 +75,13 @@ def test_rate_limit_becomes_a_typed_error_not_a_crash(tmp_path):
     r = Router(client=FakeClient(raise_status=True), db_path=tmp_path / "t.sqlite")
     with pytest.raises(RateLimitedError):
         r.complete(Tier.CHEAP, [{"role": "user", "content": "hi"}])
+
+
+def test_spent_since_sums_only_recent_calls(tmp_path):
+    import time
+    from tessera.telemetry import CallRecord, Telemetry
+    t = Telemetry(tmp_path / "t.sqlite")
+    t.record(CallRecord("DEEP", "m", 1, 1, 1.0, 0.25))
+    t.record(CallRecord("CHEAP", "m", 1, 1, 1.0, 0.05))
+    assert abs(t.spent_since(0) - 0.30) < 1e-9
+    assert t.spent_since(time.time() + 60) == 0.0
