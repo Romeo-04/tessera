@@ -168,7 +168,7 @@ def _result(codes: list[str], table, by_span, names, left_out: list[str]) -> Ses
             subject=a.subject_rxcui, object=a.object_rxcui,
             subject_name=names[a.subject_rxcui], object_name=names[a.object_rxcui],
             severity=a.severity, mechanism=mechanism, span_id=a.span_id,
-            source_url=span.source_url, action=action,
+            source_url=span.source_url, action=action, quote=span.text,
         ))
     return SessionResult(
         risks=risks, excluded_drugs=left_out,

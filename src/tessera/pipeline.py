@@ -118,6 +118,8 @@ def assess(
     unexplained = considered - len(risks)
 
     kept, dropped = verify_risks(risks, index, router)
+    for r in kept:
+        r.quote = index.by_id(r.span_id).text
 
     if dropped:
         notes.append(

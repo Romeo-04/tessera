@@ -359,3 +359,12 @@ def test_perceive_keeps_names_on_its_own_side(tmp_path):
     )
     assert [d.display_name for d in p.drugs if d.rxcui] == ["warfarin"]
     assert p.excluded == ["PHENPROCOUMON"]
+
+
+def test_assess_carries_the_cited_label_text_with_each_risk():
+    """The citation screen shows the quote itself, not just a link to it."""
+    result = assess(
+        CodeSet(codes=["RXCUI:11289", "RXCUI:1191"]),
+        FakeIndex(), FakeTable([ASSERTION]), ScriptedRouter([]),
+    )
+    assert result.risks[0].quote == "Concomitant use increases the risk of bleeding."

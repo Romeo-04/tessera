@@ -87,6 +87,9 @@ class RankedRisk(BaseModel):
     span_id: str
     source_url: str
     action: str
+    # The cited label text itself. Public FDA text, so it may travel; it lets
+    # the reader check the sentence above against its source in place.
+    quote: str | None = None
 
     @property
     def subject_label(self) -> str:
