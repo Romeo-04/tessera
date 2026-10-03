@@ -26,7 +26,7 @@ export function Confirm({ ambiguities, choices, onDecide, ready, busy, notice, o
             <legend className="note note--warn" style={{ width: "100%" }}>
               The label read <strong>{a.raw_name}</strong>.
               {a.margin !== undefined
-                ? ` Two matches scored within ${a.margin.toFixed(3)} of each other — inside our margin.`
+                ? ` The best two matches scored within ${a.margin.toFixed(3)} of each other — inside our margin.`
                 : " No match was clearly ahead."}
             </legend>
             {a.options.map((o, i) => {
