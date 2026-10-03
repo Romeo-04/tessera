@@ -165,7 +165,7 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **193 Python + 74 app, passing** |
+| Test suite | **197 Python + 77 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -218,8 +218,8 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 193 tests, no credentials needed
-cd app && npm install && npm test   # 74 tests
+pytest                      # 197 tests, no credentials needed
+cd app && npm install && npm test   # 77 tests
 npx tsc --noEmit && npx expo lint
 ```
 
