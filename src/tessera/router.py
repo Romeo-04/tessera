@@ -82,3 +82,6 @@ class Router:
 
     def calls(self) -> list[CallRecord]:
         return self._telemetry.all()
+
+    def spent_since(self, ts: float) -> float:
+        return self._telemetry.spent_since(ts)

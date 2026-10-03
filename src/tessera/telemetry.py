@@ -60,3 +60,10 @@ class Telemetry:
             " cost_usd FROM calls ORDER BY id"
         ).fetchall()
         return [CallRecord(*r) for r in rows]
+
+    def spent_since(self, ts: float) -> float:
+        """Total USD recorded at or after `ts`. Feeds the daily spend ceiling."""
+        (total,) = self._conn.execute(
+            "SELECT COALESCE(SUM(cost_usd), 0) FROM calls WHERE ts >= ?", (ts,)
+        ).fetchone()
+        return float(total)
