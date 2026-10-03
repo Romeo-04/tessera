@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
+
 import httpx
 
 from tessera.schemas import Candidate
@@ -91,3 +94,78 @@ def rxcui_name(rxcui: str) -> str | None:
         return None
     props = r.json().get("propConceptGroup", {}).get("propConcept", [])
     return props[0]["propValue"] if props else None
+
+
+@lru_cache(maxsize=4096)
+def ingredients_of(rxcui: str) -> tuple[tuple[str, str], ...]:
+    """The ingredient(s) an RxNorm concept is made of, as (code, name) pairs.
+
+    Labels resolve to strength-level concepts ("metformin 500 MG", an SCDC);
+    the formulary and the interaction table are keyed by ingredient. The
+    history endpoint is used because it answers for obsolete concepts too -
+    approximateTerm still returns some (316256 has been obsolete since 2009).
+    """
+    num = rxcui.removeprefix("RXCUI:")
+    r = httpx.get(f"{BASE}/rxcui/{num}/historystatus.json", timeout=TIMEOUT)
+    r.raise_for_status()
+    hist = r.json().get("rxcuiStatusHistory") or {}
+    attrs = hist.get("attributes") or {}
+    if attrs.get("tty") == "IN":
+        return ((f"RXCUI:{num}", attrs.get("name") or ""),)
+
+    found: dict[str, str] = {}
+    for part in (hist.get("definitionalFeatures") or {}).get("ingredientAndStrength") or []:
+        if part.get("baseRxcui"):
+            found.setdefault(f"RXCUI:{part['baseRxcui']}", part.get("baseName") or "")
+    if found:
+        return tuple(found.items())
+
+    r = httpx.get(f"{BASE}/rxcui/{num}/related.json", params={"tty": "IN"}, timeout=TIMEOUT)
+    r.raise_for_status()
+    for group in (r.json().get("relatedGroup") or {}).get("conceptGroup") or []:
+        for p in group.get("conceptProperties") or []:
+            found.setdefault(f"RXCUI:{p['rxcui']}", p.get("name") or "")
+    return tuple(found.items())
+
+
+# Only the leading candidates decide the answer and the runner-up margin, and
+# each needs a lookup, so the tail is not mapped.
+MAP_TOP = 5
+
+
+def match_ingredients(
+    term: str,
+    max_entries: int = 20,
+    match_fn=approximate_match,
+    ingredient_fn=ingredients_of,
+) -> list[Candidate]:
+    """approximate_match, answered at the level the evidence is keyed by.
+
+    Each candidate is replaced by its ingredient, and candidates sharing an
+    ingredient collapse to the best-scoring one - three strengths of metformin
+    are one identification, not a three-way ambiguity. Two cases keep the
+    candidate's own code instead, so they stay visible rather than vanish:
+    a combination product (answering "lisinopril" for lisinopril/HCTZ would
+    name a drug the patient does not take alone), and a concept whose
+    ingredient lookup failed.
+    """
+    def lookup(c: Candidate) -> tuple[tuple[str, str], ...]:
+        try:
+            return ingredient_fn(c.rxcui)
+        except httpx.HTTPError:
+            return ()
+
+    top = match_fn(term, max_entries=max_entries)[:MAP_TOP]
+    # One lookup per candidate, concurrently: sequential lookups made a
+    # seven-bottle photo take ~40 seconds against the live service.
+    with ThreadPoolExecutor(max_workers=MAP_TOP) as pool:
+        mapped = list(pool.map(lookup, top))
+
+    out: dict[str, Candidate] = {}
+    for c, ings in zip(top, mapped):
+        if len(ings) == 1:
+            code, name = ings[0]
+            c = c.model_copy(update={"rxcui": code, "display_name": name or c.display_name})
+        if c.rxcui not in out:
+            out[c.rxcui] = c
+    return list(out.values())

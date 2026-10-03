@@ -61,20 +61,21 @@ DRUGS = [
     {"raw_name": "ATORVASTATIN 20MG", "strength": "20 mg", "form": "tablet",
      "directions": "Take one tablet at bedtime",
      "rxcui": ATORVASTATIN, "display_name": "Atorvastatin"},
-    # The one the normaliser refuses to guess. Both strengths are the same
-    # ingredient, and interactions are documented per ingredient, so either
-    # answer is checked as warfarin - but the system still asks rather than
-    # silently picking, because the next ambiguity might not be this benign.
-    {"raw_name": "WARFARIN SOD", "strength": None, "form": "tablet",
+    # The one the normaliser refuses to guess - a real abstention, not a staged
+    # one. "WARF SOD" (a smudged label) was run through the live ingredient-level
+    # matcher on 2026-10-03: warfarin 1.0, sulfacetamide 0.961, alendronate 0.938.
+    # Warfarin is ahead by 0.039, inside the 0.05 margin, so it gets no code.
+    # The demo precomputes only the warfarin answer; the other options are shown
+    # as the real matcher returned them and are marked as not precomputed.
+    {"raw_name": "WARF SOD", "strength": None, "form": "tablet",
      "directions": "Take as directed",
-     "rxcui": None, "display_name": "Warfarin",
-     "ingredient_rxcui": WARFARIN,
-     "margin": 0.037,
+     "rxcui": None, "display_name": None,
+     "margin": 0.039,
+     "precomputed": [WARFARIN],
      "options": [
-         {"rxcui": "RXCUI:855331", "display_name": "Warfarin sodium 5 mg oral tablet",
-          "score": 1.0},
-         {"rxcui": "RXCUI:855318", "display_name": "Warfarin sodium 2 mg oral tablet",
-          "score": 0.963},
+         {"rxcui": WARFARIN, "display_name": "warfarin", "score": 1.0},
+         {"rxcui": "RXCUI:10169", "display_name": "sulfacetamide", "score": 0.961},
+         {"rxcui": "RXCUI:46041", "display_name": "alendronate", "score": 0.938},
      ]},
 ]
 
@@ -158,8 +159,8 @@ def _result(codes: list[str], table, by_span, names, left_out: list[str]) -> Ses
         )
     if len(found) > MAX_RISKS:
         notes.append(
-            f"{len(found)} documented interactions were found; showing the "
-            f"{MAX_RISKS} most severe."
+            f"{len(found)} documented interactions were found in this demo's "
+            f"curated set; showing the {MAX_RISKS} most severe."
         )
     risks = []
     for a in top:
@@ -201,7 +202,7 @@ def main() -> None:
     without = sorted(c for c in names if c != WARFARIN)
     variants = {
         ",".join(confirmed): _result(confirmed, table, by_span, names, []),
-        ",".join(without): _result(without, table, by_span, names, ["WARFARIN SOD"]),
+        ",".join(without): _result(without, table, by_span, names, ["WARF SOD"]),
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

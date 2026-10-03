@@ -29,16 +29,21 @@ export function Confirm({ ambiguities, choices, onDecide, ready, busy, notice, o
                 ? ` Two matches scored within ${a.margin.toFixed(3)} of each other — inside our margin.`
                 : " No match was clearly ahead."}
             </legend>
-            {a.options.map((o, i) => (
+            {a.options.map((o, i) => {
+              const unavailable = a.precomputed !== undefined && !a.precomputed.includes(o.rxcui);
+              return (
               <button
                 key={o.rxcui} className="row" aria-pressed={pick?.rxcui === o.rxcui}
+                disabled={unavailable}
                 style={pick?.rxcui === o.rxcui ? { borderColor: "var(--ink)", boxShadow: "inset 0 0 0 1px var(--ink)" } : undefined}
                 onClick={() => onDecide(a.raw_name, o)}
               >
                 <div className="row__ic" aria-hidden="true">{pick?.rxcui === o.rxcui ? "✓" : i + 1}</div>
-                <div><div className="row__n">{o.display_name}</div><div className="row__d">{o.rxcui}</div></div>
+                <div><div className="row__n">{o.display_name}</div>
+                  <div className="row__d">{o.rxcui} · match {o.score.toFixed(3)}{unavailable ? " · demo has no precomputed answer" : ""}</div></div>
               </button>
-            ))}
+              );
+            })}
             <button
               className="row row--out" aria-pressed={decided && pick === null}
               style={decided && pick === null ? { opacity: 1, borderColor: "var(--ink)" } : undefined}
@@ -48,12 +53,6 @@ export function Confirm({ ambiguities, choices, onDecide, ready, busy, notice, o
               <div><div className="row__n">Not sure — leave it out</div>
                 <div className="row__d">It will not be checked, and the result will say so</div></div>
             </button>
-            {a.ingredient_rxcui && pick && (
-              <p className="ph-muted">
-                Either strength is checked as the same ingredient ({a.ingredient_rxcui}) —
-                interactions are documented per ingredient, not per strength.
-              </p>
-            )}
           </fieldset>
         );
       })}

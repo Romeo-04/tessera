@@ -50,8 +50,8 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 
 1. Photograph the bottles — one shot, several bottles, ordinary lighting, angled labels.
 2. Nemotron 3 Nano Omni reads every label in one call: name, strength, form, directions.
-3. Each drug resolves to an RxNorm `RXCUI`. When two candidates are too close to call — a 500 mg
-   extended-release against a 500 mg immediate-release — it **refuses to pick** and hands the
+3. Each drug resolves to an RxNorm ingredient `RXCUI`. When two different drugs are too close to
+   call — a smudged `WARF SOD` scores warfarin and sulfacetamide within 0.039 — it **refuses to pick** and hands the
    options back. An unidentified drug carries no code, so nothing downstream can score it.
 4. **Only the codes reach the reasoning service.** `["RXCUI:11289", "RXCUI:1191"]`. No image, no
    name, no date, no identifier.
@@ -154,9 +154,13 @@ claimed.** What exists today:
 | Citation support rate | not yet measured |
 | Cost per session | estimated ≈ $0.035; **not yet confirmed against live pricing** |
 
-The one number already verified against the live API is normalisation separation: `METF0RMIN 500`
-(OCR digit-zero) resolves to the correct concept with a 0.055 margin over the runner-up, while
-`WARFARIN SODIUM 5MG` separates by only 0.037 and is therefore sent back for human confirmation.
+Verified against the live RxNorm API on 2026-10-03: labels resolve to strength-level concepts
+(`METF0RMIN 500 mg` → `316256`, "metformin 500 MG"), so every candidate is mapped to its
+ingredient before the formulary and ambiguity checks. All seven demo labels then resolve to the
+exact formulary ingredient, and the smudged `WARF SOD` puts warfarin only 0.039 ahead of
+sulfacetamide, so Tessera asks instead of guessing. Known gap: some retired brand-form concepts
+(e.g. "warfarin Oral Tablet [Marfarin]") return no ingredient from RxNorm and are reported as
+outside the checked list. The result is incomplete, never wrong.
 
 ## What we deliberately did not build
 

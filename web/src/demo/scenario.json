@@ -50,24 +50,31 @@
       "display_name": "Atorvastatin"
     },
     {
-      "raw_name": "WARFARIN SOD",
+      "raw_name": "WARF SOD",
       "strength": null,
       "form": "tablet",
       "directions": "Take as directed",
       "rxcui": null,
-      "display_name": "Warfarin",
-      "ingredient_rxcui": "RXCUI:11289",
-      "margin": 0.037,
+      "display_name": null,
+      "margin": 0.039,
+      "precomputed": [
+        "RXCUI:11289"
+      ],
       "options": [
         {
-          "rxcui": "RXCUI:855331",
-          "display_name": "Warfarin sodium 5 mg oral tablet",
+          "rxcui": "RXCUI:11289",
+          "display_name": "warfarin",
           "score": 1.0
         },
         {
-          "rxcui": "RXCUI:855318",
-          "display_name": "Warfarin sodium 2 mg oral tablet",
-          "score": 0.963
+          "rxcui": "RXCUI:10169",
+          "display_name": "sulfacetamide",
+          "score": 0.961
+        },
+        {
+          "rxcui": "RXCUI:46041",
+          "display_name": "alendronate",
+          "score": 0.938
         }
       ]
     }
@@ -141,7 +148,7 @@
       "needs_confirmation": [],
       "status": "ok",
       "notes": [
-        "6 documented interactions were found; showing the 5 most severe."
+        "6 documented interactions were found in this demo's curated set; showing the 5 most severe."
       ]
     },
     "RXCUI:29046,RXCUI:3407,RXCUI:4603,RXCUI:6809,RXCUI:83367,RXCUI:9997": {
@@ -208,13 +215,13 @@
         }
       ],
       "excluded_drugs": [
-        "WARFARIN SOD"
+        "WARF SOD"
       ],
       "unchecked_drugs": [],
       "needs_confirmation": [],
       "status": "partial",
       "notes": [
-        "You left these out rather than choose, so they were not checked: WARFARIN SOD."
+        "You left these out rather than choose, so they were not checked: WARF SOD."
       ]
     }
   },

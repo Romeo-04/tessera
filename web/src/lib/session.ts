@@ -36,7 +36,7 @@ export function rejoinNames(result: SessionResult, drugs: Drug[]): SessionResult
 interface DemoDrug extends Drug {
   options?: Ambiguity["options"];
   margin?: number;
-  ingredient_rxcui?: string;
+  precomputed?: string[];
   directions?: string | null;
 }
 
@@ -55,7 +55,7 @@ export function demoAmbiguities(): Ambiguity[] {
     .filter((d) => d.rxcui === null && d.options)
     .map((d) => ({
       raw_name: d.raw_name, options: d.options ?? [], margin: d.margin,
-      ingredient_rxcui: d.ingredient_rxcui,
+      precomputed: d.precomputed,
     }));
 }
 

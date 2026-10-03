@@ -99,10 +99,9 @@ export default function App() {
     for (const a of ambiguities) {
       const pick = choices[a.raw_name];
       if (!pick) { leftOut.push(a.raw_name); continue; }
-      const code = a.ingredient_rxcui ?? pick.rxcui;
-      codes.push(code);
-      names.push({ raw_name: a.raw_name, strength: null, form: null, rxcui: code,
-        display_name: a.ingredient_rxcui ? (drugs.find((d) => d.raw_name === a.raw_name)?.display_name ?? pick.display_name) : pick.display_name });
+      codes.push(pick.rxcui);
+      names.push({ raw_name: a.raw_name, strength: null, form: null, rxcui: pick.rxcui,
+        display_name: pick.display_name });
     }
     return { codes, names, leftOut };
   }, [drugs, ambiguities, choices]);

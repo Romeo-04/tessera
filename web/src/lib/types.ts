@@ -57,8 +57,8 @@ export interface Ambiguity {
   raw_name: string;
   options: Candidate[];
   margin?: number;
-  /** Demo only: the ingredient code either option is checked as. */
-  ingredient_rxcui?: string;
+  /** Demo only: the options it holds a precomputed answer for. */
+  precomputed?: string[];
 }
 
 /** One request that crossed (or, in the demo, would cross) a network boundary. */

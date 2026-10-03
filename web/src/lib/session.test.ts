@@ -50,7 +50,7 @@ describe("codeSetFor", () => {
 
 describe("the seeded demo", () => {
   const known = demoDrugs().filter((d) => d.rxcui).map((d) => d.rxcui as string);
-  const warfarin = demoAmbiguities()[0].ingredient_rxcui as string;
+  const warfarin = demoAmbiguities()[0].options[0].rxcui;
 
   it("has seven bottles and one it refuses to guess", () => {
     expect(demoDrugs()).toHaveLength(7);
@@ -67,7 +67,7 @@ describe("the seeded demo", () => {
   it("with the ambiguous drug left out, is partial and names what was left out", () => {
     const r = assessDemo(known);
     expect(r.status).toBe("partial");
-    expect(r.excluded_drugs).toEqual(["WARFARIN SOD"]);
+    expect(r.excluded_drugs).toEqual(["WARF SOD"]);
   });
 
   it("refuses a code set it has no precomputed answer for, instead of guessing", () => {

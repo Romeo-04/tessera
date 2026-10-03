@@ -10,7 +10,7 @@ from tessera.privacy import to_code_set
 from tessera.schemas import (
     CodeSet, ConfirmationRequest, NormalizedDrug, SessionResult,
 )
-from tessera.sources.rxnorm import approximate_match
+from tessera.sources.rxnorm import match_ingredients
 from tessera.verify import verify_risks
 
 
@@ -52,7 +52,7 @@ def perceive(
     image_paths: list[Path],
     router,
     formulary_rxcuis: set[str],
-    match_fn=approximate_match,
+    match_fn=match_ingredients,
 ) -> Perception:
     """Photographs in, named and coded drugs out. The client side of the gate."""
     records = extract_drugs(image_paths, router)
@@ -176,7 +176,7 @@ def run_session(
     table,
     router,
     formulary_rxcuis: set[str],
-    match_fn=approximate_match,
+    match_fn=match_ingredients,
     covered_rxcuis: set[str] | None = None,
 ) -> SessionResult:
     """Photographs in, cited risks out. The whole product in one function.
