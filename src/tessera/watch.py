@@ -21,6 +21,9 @@ import re
 from dataclasses import asdict, dataclass
 from urllib.parse import urlparse
 
+import httpx
+
+from tessera.errors import TesseraError
 from tessera.router import Tier
 
 TAVILY_URL = "https://api.tavily.com/search"
@@ -92,8 +95,13 @@ def prefilter(hits: list[Hit], ingredient: str) -> list[Hit]:
     return [h for h in hits if _is_fda(h.url) and named.search(f"{h.title} {h.content}")]
 
 
-def triage(hits: list[Hit], ingredient: str, rxcui: str, router) -> list[Alert]:
-    """Keep the hits the cheap tier marks material. Fails closed."""
+def triage(hits: list[Hit], ingredient: str, rxcui: str, router) -> list[Alert] | None:
+    """Keep the hits the cheap tier marks material.
+
+    Returns None when the verdict is unreadable. That is "not checked", which
+    the caller must report - an empty list would read as "checked, nothing
+    found", and the Watch tab would show an all-clear nobody established.
+    """
     if not hits:
         return []
     block = "\n".join(f"[{i}] {h.title} - {h.content[:400]}" for i, h in enumerate(hits))
@@ -105,13 +113,13 @@ def triage(hits: list[Hit], ingredient: str, rxcui: str, router) -> list[Alert]:
     try:
         picked = json.loads(raw).get("material", [])
     except (json.JSONDecodeError, AttributeError, TypeError):
-        return []
+        return None
     if not isinstance(picked, list):
-        return []
+        return None
 
     out: list[Alert] = []
     for i in picked:
-        if not isinstance(i, int) or not 0 <= i < len(hits):
+        if isinstance(i, bool) or not isinstance(i, int) or not 0 <= i < len(hits):
             continue
         h = hits[i]
         summary = h.content[:SUMMARY_CHARS].rstrip()
@@ -124,9 +132,22 @@ def triage(hits: list[Hit], ingredient: str, rxcui: str, router) -> list[Alert]:
 
 def run_watch(formulary: list[tuple[str, str]], client, router, api_key: str,
               now: str) -> dict:
-    """One pass over (ingredient, rxcui) pairs. Returns the file the API serves."""
+    """One pass over (ingredient, rxcui) pairs. Returns the file the API serves.
+
+    A drug whose search or triage failed is listed in `unchecked`, and one
+    failure never aborts the pass for the other ~280 drugs.
+    """
     alerts: list[Alert] = []
+    unchecked: list[str] = []
     for ingredient, rxcui in formulary:
-        hits = prefilter(search_safety(ingredient, client, api_key), ingredient)
-        alerts.extend(triage(hits, ingredient, rxcui, router))
-    return {"generated_at": now, "alerts": [asdict(a) for a in alerts]}
+        try:
+            hits = prefilter(search_safety(ingredient, client, api_key), ingredient)
+            found = triage(hits, ingredient, rxcui, router)
+        except (httpx.HTTPError, TesseraError):
+            found = None
+        if found is None:
+            unchecked.append(rxcui)
+        else:
+            alerts.extend(found)
+    return {"generated_at": now, "alerts": [asdict(a) for a in alerts],
+            "unchecked": unchecked}

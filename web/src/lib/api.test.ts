@@ -43,8 +43,8 @@ describe("a static host with no API behind it", () => {
   it("is not mistaken for a live server when it answers 200 with HTML", async () => {
     vi.stubGlobal("fetch", vi.fn(async () =>
       new Response("<!DOCTYPE html><html></html>", { status: 200, headers: { "Content-Type": "text/html" } })));
-    const { liveAvailable, alertsFor } = await import("./api");
+    const { liveAvailable, fetchAlerts } = await import("./api");
     expect(await liveAvailable()).toBe(false);
-    expect(await alertsFor(["RXCUI:1"])).toBeNull();
+    expect(await fetchAlerts()).toBeNull();
   });
 });

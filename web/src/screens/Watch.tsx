@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import type { Mode } from "../App";
 import { Bell, Out } from "../components/Icons";
-import { alertsFor, type Alert } from "../lib/api";
+import { fetchAlerts } from "../lib/api";
 import type { Drug } from "../lib/types";
+import { type AlertsFile, watchView } from "../lib/watch";
 
 export function Watch({ mode, drugs }: { mode: Mode; drugs: Drug[] }) {
-  const [state, setState] = useState<{ generatedAt: string | null; alerts: Alert[] } | null | "loading">("loading");
-  const codes = drugs.filter((d) => d.rxcui).map((d) => d.rxcui as string);
-  const names = new Map(drugs.map((d) => [d.rxcui, d.display_name ?? d.raw_name]));
+  const [file, setFile] = useState<AlertsFile | null | "loading">("loading");
+  const coded = drugs.filter((d) => d.rxcui);
+  const codes = coded.map((d) => d.rxcui as string);
+  const names = new Map(coded.map((d) => [d.rxcui, d.display_name ?? d.raw_name]));
 
   useEffect(() => {
-    let live = true;
-    alertsFor(codes).then((r) => { if (live) setState(r); });
-    return () => { live = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [codes.join(",")]);
+    let alive = true;
+    fetchAlerts().then((f) => { if (alive) setFile(f); });
+    return () => { alive = false; };
+  }, []);
+
+  const view = file === "loading" ? null : watchView(file, codes);
 
   return (
     <>
@@ -24,23 +27,37 @@ export function Watch({ mode, drugs }: { mode: Mode; drugs: Drug[] }) {
         your list — so the server never learns whose list it is.
       </p>
 
-      {state === "loading" && <div className="note">Checking for new safety communications…</div>}
+      {file === "loading" && <div className="note">Checking for FDA safety communications…</div>}
 
-      {state === null && (
+      {view?.kind === "unreachable" && (
         <div className="note">
           The watcher runs on Tessera's server, and this {mode === "demo" ? "demo deployment" : "connection"} cannot
-          reach it, so there is nothing to show. Nothing on this page is invented to fill the gap.
+          reach it, so nothing has been checked. Nothing on this page is invented to fill the gap.
         </div>
       )}
 
-      {state !== null && state !== "loading" && state.alerts.length === 0 && (
+      {view?.kind === "never_run" && (
+        <div className="note note--warn">
+          The watcher has not run on this server yet, so these medications have not been checked
+          for safety communications.
+        </div>
+      )}
+
+      {view?.kind === "ran" && view.unchecked.length > 0 && (
+        <div className="note note--warn">
+          The last watch run ({view.generatedAt.slice(0, 10)}) could not check:{" "}
+          {view.unchecked.map((c) => names.get(c) ?? c).join(", ")}. No news is not good news for these.
+        </div>
+      )}
+
+      {view?.kind === "ran" && view.clear && (
         <div className="note note--lime">
-          No new FDA safety communications for these medications
-          {state.generatedAt ? ` as of ${state.generatedAt.slice(0, 10)}` : ""}.
+          No FDA safety communications turned up for these medications in the last watch run
+          ({view.generatedAt.slice(0, 10)}). It is a search of fda.gov, not a guarantee.
         </div>
       )}
 
-      {state !== null && state !== "loading" && state.alerts.map((a) => (
+      {view?.kind === "ran" && view.alerts.map((a) => (
         <article className="notif" key={a.url + a.rxcui}>
           <div className="eyebrow" style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <Bell /> {names.get(a.rxcui) ?? a.rxcui}{a.published ? ` · ${a.published}` : ""}
@@ -54,7 +71,7 @@ export function Watch({ mode, drugs }: { mode: Mode; drugs: Drug[] }) {
       ))}
 
       <ul style={{ padding: 0, listStyle: "none", margin: "16px 0 0" }}>
-        {drugs.filter((d) => d.rxcui).map((d) => (
+        {coded.map((d) => (
           <li className="row" key={d.rxcui}>
             <div className="row__ic" aria-hidden="true"><Bell /></div>
             <div><div className="row__n">{d.display_name ?? d.raw_name}</div><div className="row__d">{d.rxcui}</div></div>

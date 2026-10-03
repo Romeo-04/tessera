@@ -198,7 +198,7 @@ def test_alerts_are_served_whole_so_the_server_never_learns_whose_list_it_is(tmp
 
 def test_missing_alerts_file_is_an_empty_list_not_an_error(tmp_path):
     r = make(alerts_path=tmp_path / "nope.json").get("/api/alerts")
-    assert r.json() == {"generated_at": None, "alerts": []}
+    assert r.json() == {"generated_at": None, "alerts": [], "unchecked": []}
 
 
 def test_alerts_ignore_any_attempt_to_filter_server_side(tmp_path):

@@ -1,5 +1,6 @@
 import { codeSetFor } from "./session";
 import type { ConfirmationRequest, Drug, SessionResult } from "./types";
+import type { AlertsFile } from "./watch";
 
 /** Empty means same origin (the dev proxy, or the API serving the app). */
 const BASE = (import.meta.env?.VITE_API_URL as string | undefined) ?? "";
@@ -75,10 +76,9 @@ export interface Alert {
   summary: string;
 }
 
-/** The whole formulary's alerts. Filtered here, so the server never learns whose list it is. */
-export async function alertsFor(codes: string[]): Promise<{ generatedAt: string | null; alerts: Alert[] } | null> {
-  const r = await call<{ generated_at: string | null; alerts: Alert[] }>("/api/alerts", { method: "GET" });
-  if (!r.ok) return null;
-  const mine = new Set(codes);
-  return { generatedAt: r.value.generated_at, alerts: r.value.alerts.filter((a) => mine.has(a.rxcui)) };
+/** The whole formulary's alerts. Filtered in the browser (lib/watch.ts), so the
+ *  server never learns whose list it is. Null when no server answered. */
+export async function fetchAlerts(): Promise<AlertsFile | null> {
+  const r = await call<AlertsFile>("/api/alerts", { method: "GET" });
+  return r.ok ? r.value : null;
 }

@@ -242,7 +242,7 @@ def create_app(deps: Deps | None = None) -> FastAPI:
         """The whole formulary's alerts. The client filters to its own codes."""
         path = deps.alerts_path
         if path is None or not path.exists():
-            return {"generated_at": None, "alerts": []}
+            return {"generated_at": None, "alerts": [], "unchecked": []}
         return json.loads(path.read_text(encoding="utf-8"))
 
     return app
