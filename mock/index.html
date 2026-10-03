@@ -20,7 +20,10 @@
   --warn:#9A6700; --warn-wash:#FFF8E3;
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
   --r-ctrl:8px; --r-card:16px; --r-panel:28px; --r-pill:999px;
-  --t-xs:12px; --t-sm:13px; --t-base:15px; --t-md:17px; --t-lg:20px; --t-xl:24px; --t-2xl:32px;
+  /* Widened: 12 and 13 were a step no reader perceives, and the display end
+     was too compressed to carry hierarchy. Body sizes stay close on purpose —
+     the phone screen needs a smaller body than the panel beside it. */
+  --t-xs:11px; --t-sm:13px; --t-base:15px; --t-md:18px; --t-lg:22px; --t-xl:27px; --t-2xl:34px;
   --font-display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -145,10 +148,12 @@ p{margin:0}
 .risk__cite{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;
             color:var(--muted);font-weight:500}
 
-.note{font-size:var(--t-xs);padding:9px var(--s3);border-radius:var(--r-ctrl);margin-bottom:7px;
-      background:var(--surface);border-left:3px solid var(--ink-3);color:var(--ink-3)}
-.note--lime{background:var(--lime-wash);border-left-color:var(--lime-deep)}
-.note--warn{background:var(--warn-wash);border-left-color:var(--warn)}
+/* Tint plus a hairline carries these on its own; the heavy left rule it used
+   to have was doing nothing the background was not already saying. */
+.note{font-size:var(--t-xs);padding:10px var(--s3);border-radius:var(--r-ctrl);margin-bottom:7px;
+      background:var(--surface);border:1px solid var(--border);color:var(--ink-3)}
+.note--lime{background:var(--lime-wash);border-color:var(--lime-deep)}
+.note--warn{background:var(--warn-wash);border-color:#E8D6A0}
 
 .quote{font-size:var(--t-xs);line-height:1.6;background:var(--surface);border:1px solid var(--border);
        border-left:3px solid var(--lime-deep);border-radius:0 var(--r-ctrl) var(--r-ctrl) 0;
