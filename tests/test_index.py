@@ -51,3 +51,14 @@ def test_zero_vector_does_not_produce_nan_scores():
     hits = idx.search(np.array([1, 0], dtype="float32"), k=2)
     assert all(not np.isnan(score) for _, score in hits)
     assert hits[0][0].span_id == "s1"
+
+
+def test_an_unknown_span_id_raises_a_typed_error_not_a_keyerror():
+    """Span IDs hash the span text, so a corpus rebuild after a label revision
+    invalidates a frozen interaction table. That must surface as a Tessera
+    error mid-session, not a bare KeyError."""
+    from tessera.errors import EvidenceMissing
+
+    idx = EvidenceIndex([span(0)], np.array([[1, 0]], dtype="float32"))
+    with pytest.raises(EvidenceMissing):
+        idx.by_id("span-that-no-longer-exists")

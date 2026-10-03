@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tessera — interactive prototype</title>
+<meta name="description" content="Clickable prototype of the Tessera caregiver flow, driven by real FDA label text.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0A0A; --ink-soft:#1C1C1A; --ink-3:#3A3A36;
+  --muted:#6B6B66; --muted-2:#9A9A93;
+  --border:#E4E4E0; --border-2:#EFEFEC;
+  --surface:#FAFAF8; --surface-2:#F4F4F2; --paper:#FFFFFF;
+  --page:#D7D7D3;
+  --lime:#CDFF47; --lime-deep:#B4E824; --lime-wash:#F2FFD0;
+  --danger:#C2410C; --danger-wash:#FFF1E9; --danger-line:#F3C9B1;
+  --warn:#9A6700; --warn-wash:#FFF8E3;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-ctrl:8px; --r-card:16px; --r-panel:28px; --r-pill:999px;
+  /* Four sizes, every step at least a 1.25 ratio. There were seven before,
+     two of them never referenced at all, and a 12-to-13 step no reader can
+     see. Fewer sizes, further apart, is what makes hierarchy legible. */
+  --t-xs:11px; --t-sm:14px; --t-md:18px; --t-lg:24px;
+  --font-display:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow-md:0 8px 24px -12px rgba(10,10,10,.18);
+  --shadow-lg:0 24px 64px -32px rgba(10,10,10,.35);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font-body);
+     font-size:var(--t-sm);line-height:1.6;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:var(--r-ctrl)}
+.phone :focus-visible,.step.is-active:focus-visible{outline-color:var(--lime)}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:0}
+p{margin:0}
+
+.sheet{max-width:1340px;margin:var(--s5) auto;background:var(--paper);
+       border-radius:var(--r-panel);box-shadow:var(--shadow-lg);overflow:clip}
+@media (max-width:860px){.sheet{margin:var(--s2);border-radius:20px}}
+
+/* header */
+.top{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;
+     padding:var(--s5) clamp(var(--s4),4vw,var(--s7));border-bottom:1px solid var(--border-2)}
+.brand{display:flex;align-items:center;gap:var(--s2);font-family:var(--font-display);
+       font-weight:800;font-size:var(--t-md);letter-spacing:-.04em}
+.tag{font-size:var(--t-xs);color:var(--muted);margin-left:auto;max-width:46ch;text-align:right}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--r-pill);
+      font-size:var(--t-xs);font-weight:600;border:1px solid var(--border);background:var(--paper)}
+.chip--lime{background:var(--lime);border-color:var(--ink)}
+
+/* steps */
+.steps{display:flex;gap:var(--s2);overflow-x:auto;padding:var(--s4) clamp(var(--s4),4vw,var(--s7));
+       border-bottom:1px solid var(--border-2);scrollbar-width:thin}
+.step{flex:none;display:flex;align-items:center;gap:var(--s2);padding:8px 14px;border-radius:var(--r-pill);
+      border:1px solid var(--border);background:var(--paper);cursor:pointer;font-family:var(--font-body);
+      font-size:var(--t-sm);font-weight:500;color:var(--muted);white-space:nowrap;
+      transition:all .15s var(--ease)}
+.step:hover{border-color:var(--ink);color:var(--ink)}
+.step.is-active{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.step__n{font-family:var(--font-mono);font-size:11px;opacity:.6}
+
+/* layout */
+.stage{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:clamp(var(--s5),4vw,var(--s7));
+       padding:clamp(var(--s5),4vw,var(--s7));align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:1fr}}
+
+/* phone */
+.phone{position:relative;width:100%;max-width:400px;margin:0 auto;background:var(--ink);
+       border-radius:44px;padding:12px;box-shadow:var(--shadow-lg)}
+.phone__screen{background:var(--paper);border-radius:34px;overflow:hidden;height:720px;
+               display:flex;flex-direction:column;position:relative}
+.phone__notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:104px;height:24px;
+              background:var(--ink);border-radius:var(--r-pill);z-index:5}
+.sbar{display:flex;justify-content:space-between;padding:12px 22px 6px;font-size:11px;
+      font-weight:600;color:var(--ink);font-family:var(--font-mono)}
+.appbar{display:flex;align-items:center;gap:var(--s2);padding:var(--s3) var(--s4);
+        border-bottom:1px solid var(--border-2)}
+.appbar__t{font-family:var(--font-display);font-weight:700;font-size:var(--t-sm);letter-spacing:-.02em}
+.screen{flex:1;overflow-y:auto;padding:var(--s4);display:none}
+.screen.is-on{display:block}
+.screen::-webkit-scrollbar{width:4px}
+.screen::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* viewfinder */
+.vf{position:relative;border-radius:var(--r-card);overflow:hidden;background:#2A2A26;height:330px;
+    display:grid;place-items:center}
+.vf__grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:33.33% 33.33%}
+.bottles{display:flex;gap:10px;align-items:flex-end;z-index:2}
+/* Each bottle owns its detection box, so the overlay cannot drift out of
+   alignment the way absolutely-positioned percentages against the frame did. */
+.bcell{position:relative;display:flex;align-items:flex-end}
+.bottle{width:30px;border-radius:5px 5px 3px 3px;background:linear-gradient(180deg,#E8E4DA,#C9C4B6);
+        position:relative;box-shadow:0 6px 14px rgba(0,0,0,.45)}
+.bottle::before{content:"";position:absolute;top:-7px;left:4px;right:4px;height:8px;
+                background:#9A958A;border-radius:3px 3px 0 0}
+.bottle::after{content:"";position:absolute;left:3px;right:3px;top:30%;height:36%;
+               background:#FBFAF6;border-radius:2px}
+.vf__box{position:absolute;left:-3px;right:-3px;bottom:-4px;height:52%;
+         border:2px solid var(--lime);border-radius:5px;
+         box-shadow:0 0 0 2px rgba(0,0,0,.35);pointer-events:none}
+.vf__box span{position:absolute;top:-8px;left:-2px;background:var(--lime);color:var(--ink);
+              font-size:9px;font-weight:700;line-height:1.4;padding:0 4px;border-radius:3px;
+              font-family:var(--font-mono)}
+.vf__hint{position:absolute;bottom:var(--s3);left:var(--s3);right:var(--s3);text-align:center;
+          color:#fff;font-size:var(--t-xs);background:rgba(10,10,10,.6);padding:7px;border-radius:var(--r-ctrl)}
+.shutter{width:64px;height:64px;border-radius:50%;border:4px solid var(--ink);background:var(--lime);
+         margin:var(--s5) auto 0;cursor:pointer;display:block;transition:transform .15s var(--ease)}
+.shutter:hover{transform:scale(1.05)}
+
+/* generic phone bits */
+.ph-h{font-family:var(--font-display);font-weight:700;font-size:var(--t-md);letter-spacing:-.02em;margin-bottom:var(--s2)}
+.ph-p{font-size:var(--t-sm);color:var(--ink-3);margin-bottom:var(--s4)}
+.ph-muted{font-size:var(--t-xs);color:var(--muted)}
+
+.row{display:flex;align-items:center;gap:var(--s3);padding:11px var(--s3);border:1px solid var(--border);
+     border-radius:var(--r-ctrl);margin-bottom:7px;background:var(--paper)}
+.row__ic{width:26px;height:26px;border-radius:6px;background:var(--surface-2);display:grid;place-items:center;flex:none}
+.row__n{font-size:var(--t-sm);font-weight:600;line-height:1.3}
+.row__d{font-size:var(--t-xs);color:var(--muted)}
+.row--ask{border-color:var(--warn);background:var(--warn-wash)}
+.row--out{border-style:dashed;opacity:.75}
+
+.prog{height:6px;border-radius:var(--r-pill);background:var(--surface-2);overflow:hidden;margin:var(--s3) 0}
+.prog span{display:block;height:100%;background:var(--ink);border-radius:var(--r-pill);width:0;
+           animation:fill 1.6s var(--ease) forwards}
+@keyframes fill{to{width:100%}}
+.mods{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--s4)}
+.mod{font-size:11px;font-weight:600;padding:4px 9px;border-radius:var(--r-pill);
+     background:var(--lime);border:1px solid var(--ink)}
+
+.risk{border:1px solid var(--border);border-radius:var(--r-card);padding:var(--s3);margin-bottom:var(--s3);
+      cursor:pointer;transition:all .15s var(--ease);background:var(--paper)}
+.risk:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.risk__top{display:flex;align-items:center;gap:var(--s2);margin-bottom:6px}
+.sev{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em;
+     font-family:var(--font-mono);text-transform:uppercase}
+.sev--c{background:var(--danger-wash);color:var(--danger);border:1px solid var(--danger-line)}
+.sev--w{background:var(--warn-wash);color:var(--warn);border:1px solid #E8D6A0}
+.sev--m{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--border)}
+.risk__pair{font-family:var(--font-display);font-weight:700;font-size:var(--t-sm);letter-spacing:-.01em}
+.risk__mech{font-size:var(--t-xs);color:var(--ink-3);line-height:1.5}
+.risk__cite{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;
+            color:var(--muted);font-weight:500}
+
+/* Tint plus a hairline carries these on its own; the heavy left rule it used
+   to have was doing nothing the background was not already saying. */
+.note{font-size:var(--t-xs);padding:10px var(--s3);border-radius:var(--r-ctrl);margin-bottom:7px;
+      background:var(--surface);border:1px solid var(--border);color:var(--ink-3)}
+.note--lime{background:var(--lime-wash);border-color:var(--lime-deep)}
+.note--warn{background:var(--warn-wash);border-color:#E8D6A0}
+
+.quote{font-size:var(--t-xs);line-height:1.6;background:var(--surface);border:1px solid var(--border);
+       border-left:2px solid var(--muted-2);border-radius:0 var(--r-ctrl) var(--r-ctrl) 0;
+       padding:var(--s3);margin:var(--s3) 0;color:var(--ink-3)}
+.quote mark{background:var(--lime);padding:0 2px}
+.srcbtn{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-xs);font-weight:600;
+        padding:8px var(--s3);border:1px solid var(--ink);border-radius:var(--r-pill);
+        background:var(--paper);color:var(--ink);text-decoration:none;cursor:pointer}
+.srcbtn:hover{background:var(--surface-2)}
+
+.bubble{padding:10px var(--s3);border-radius:14px;font-size:var(--t-sm);margin-bottom:var(--s2);max-width:85%}
+.bubble--me{background:var(--ink);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.bubble--app{background:var(--surface-2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.mic{width:52px;height:52px;border-radius:50%;background:var(--lime);border:2px solid var(--ink);
+     display:grid;place-items:center;margin:var(--s4) auto 0}
+
+.refuse{border:2px solid var(--danger);background:var(--danger-wash);border-radius:var(--r-card);
+        padding:var(--s4);margin-top:var(--s3)}
+.refuse__t{font-family:var(--font-display);font-weight:700;font-size:var(--t-sm);color:var(--danger);margin-bottom:6px}
+
+.notif{border:1px solid var(--border);border-radius:var(--r-card);padding:var(--s3);
+       background:var(--paper);box-shadow:var(--shadow-md);margin-bottom:var(--s3)}
+.notif__h{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);
+          font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+
+/* right panel */
+.panel{display:flex;flex-direction:column;gap:var(--s4);min-width:0}
+.pcard{border:1px solid var(--border);border-radius:var(--r-card);padding:var(--s5);background:var(--paper)}
+.pcard--dark{background:var(--ink);color:#DCDCD8;border-color:var(--ink)}
+.pcard--dark h3{color:#fff}
+.eyebrow{font-size:var(--t-xs);text-transform:uppercase;letter-spacing:.14em;color:var(--muted-2);font-weight:600}
+.pcard--dark .eyebrow{color:var(--lime)}
+.pcard h3{font-size:var(--t-lg);margin:var(--s2) 0 var(--s3)}
+.pcard p{font-size:var(--t-sm);color:var(--ink-3)}
+.pcard--dark p{color:#C9C9C4}
+
+.wire{font-family:var(--font-mono);font-size:var(--t-xs);background:#121210;color:#E6E6E2;
+      border-radius:var(--r-ctrl);padding:var(--s4);overflow-x:auto;line-height:1.7;margin-top:var(--s3)}
+.wire .k{color:var(--lime)}
+.wire .c{color:#7F7F78}
+.wire .x{color:#FF9B6A;text-decoration:line-through;opacity:.65}
+
+.tiers{display:flex;gap:6px;flex-wrap:wrap;margin-top:var(--s3)}
+.tier{font-size:11px;font-weight:600;font-family:var(--font-mono);padding:4px 9px;
+      border-radius:var(--r-pill);border:1px solid var(--border);background:var(--surface)}
+.tier--on{background:var(--lime);border-color:var(--ink)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:var(--s2) var(--s4);font-size:var(--t-sm);margin-top:var(--s3)}
+.kv dt{color:var(--muted);white-space:nowrap}
+.kv dd{margin:0;font-weight:500}
+.pcard--dark .kv dt{color:var(--muted-2)}
+.pcard--dark .kv dd{color:#fff}
+
+.foot{background:var(--ink);color:#BFBFBA;padding:var(--s6) clamp(var(--s4),4vw,var(--s7));
+      font-size:var(--t-xs);display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap}
+.nav{display:flex;gap:var(--s2);margin-top:var(--s4)}
+.btn{display:inline-flex;align-items:center;gap:var(--s2);padding:10px var(--s5);border-radius:var(--r-pill);
+     font-size:var(--t-sm);font-weight:600;border:1px solid var(--ink);cursor:pointer;
+     font-family:var(--font-body);background:var(--ink);color:#fff;transition:all .15s var(--ease)}
+.btn:hover{background:var(--ink-soft);transform:translateY(-1px)}
+.btn--ghost{background:transparent;color:var(--ink)}
+.btn--ghost:hover{background:var(--surface-2)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="top">
+    <span class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2 4 7v10l8 5 8-5V7l-8-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="m8 10 4 2.5L16 10" stroke="#CDFF47" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Tessera
+    </span>
+    <span class="chip chip--lime">Interactive prototype</span>
+    <span class="chip">Real FDA label text</span>
+    <p class="tag">Every drug, interaction and citation below is taken from the project's own
+      corpus of FDA Structured Product Labels. Nothing here is invented.</p>
+  </header>
+
+  <nav class="steps" id="steps" aria-label="Prototype steps"></nav>
+
+  <div class="stage">
+
+    <!-- ================= PHONE ================= -->
+    <div>
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__screen">
+          <div class="sbar"><span>9:41</span><span>▮▮▮ ⌁</span></div>
+          <div class="appbar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2 4 7v10l8 5 8-5V7l-8-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+            <span class="appbar__t" id="appTitle">Tessera</span>
+          </div>
+
+          <!-- 1 capture -->
+          <section class="screen is-on" data-screen="0">
+            <div class="vf">
+              <div class="vf__grid"></div>
+              <div class="bottles">
+                <div class="bcell"><div class="bottle" style="height:74px"></div><div class="vf__box"><span>1</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:92px"></div><div class="vf__box"><span>2</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:66px"></div><div class="vf__box"><span>3</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:84px"></div><div class="vf__box"><span>4</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:70px"></div><div class="vf__box"><span>5</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:88px"></div><div class="vf__box"><span>6</span></div></div>
+                <div class="bcell"><div class="bottle" style="height:62px"></div><div class="vf__box"><span>7</span></div></div>
+              </div>
+              <div class="vf__hint">7 labels in frame — hold steady</div>
+            </div>
+            <button class="shutter" id="shutter" aria-label="Take photo"></button>
+            <p class="ph-muted" style="text-align:center;margin-top:var(--s3)">
+              One photo. All seven bottles.
+            </p>
+          </section>
+
+          <!-- 2 reading -->
+          <section class="screen" data-screen="1">
+            <div class="ph-h">Reading the labels</div>
+            <div class="mods">
+              <span class="mod">OCR</span><span class="mod">multi-image</span><span class="mod">speech</span>
+            </div>
+            <div class="prog"><span></span></div>
+            <p class="ph-muted" style="margin-bottom:var(--s4)">
+              Nemotron 3 Nano Omni · one call, seven labels
+            </p>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Lisinopril</div><div class="row__d">10 mg tablet</div></div></div>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Spironolactone</div><div class="row__d">25 mg tablet</div></div></div>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Furosemide</div><div class="row__d">40 mg tablet</div></div></div>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Digoxin</div><div class="row__d">0.125 mg tablet</div></div></div>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Metformin ER</div><div class="row__d">500 mg tablet</div></div></div>
+            <div class="row"><div class="row__ic">✓</div><div><div class="row__n">Atorvastatin</div><div class="row__d">20 mg tablet</div></div></div>
+            <div class="row row--ask"><div class="row__ic">?</div><div><div class="row__n">Warfarin</div><div class="row__d">strength unclear</div></div></div>
+          </section>
+
+          <!-- 3 confirm -->
+          <section class="screen" data-screen="2">
+            <div class="ph-h">One thing to check</div>
+            <p class="ph-p">We could not tell these two apart. Rather than guess, we are asking.</p>
+            <div class="note note--warn">
+              The label read <strong>WARFARIN SOD</strong>. Two strengths matched almost equally
+              — a 0.037 separation, inside our margin.
+            </div>
+            <button class="row" style="width:100%;text-align:left;cursor:pointer">
+              <div class="row__ic">1</div>
+              <div><div class="row__n">Warfarin sodium 5 mg</div><div class="row__d">RXCUI:855331</div></div>
+            </button>
+            <button class="row" style="width:100%;text-align:left;cursor:pointer">
+              <div class="row__ic">2</div>
+              <div><div class="row__n">Warfarin sodium 2 mg</div><div class="row__d">RXCUI:855318</div></div>
+            </button>
+            <div class="note note--lime" style="margin-top:var(--s4)">
+              Until you choose, this medication carries no code — so nothing downstream can
+              score it. An unanswered question is safer than a confident wrong answer.
+            </div>
+          </section>
+
+          <!-- 4 risks -->
+          <section class="screen" data-screen="3">
+            <div class="ph-h">4 things to raise</div>
+            <div class="note">
+              7 documented interactions found; showing the 4 most severe.
+            </div>
+
+            <article class="risk" data-risk="0">
+              <div class="risk__top"><span class="sev sev--c">contraindicated</span></div>
+              <div class="risk__pair">Lisinopril + Spironolactone</div>
+              <p class="risk__mech">Taking these together can raise potassium to dangerous levels.</p>
+              <div class="risk__cite">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                FDA label · Drug Interactions 7.1
+              </div>
+            </article>
+
+            <article class="risk" data-risk="1">
+              <div class="risk__top"><span class="sev sev--w">warning</span></div>
+              <div class="risk__pair">Lisinopril + Furosemide</div>
+              <p class="risk__mech">Together these can drop blood pressure further than either alone.</p>
+              <div class="risk__cite">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                FDA label · Drug Interactions 7.1
+              </div>
+            </article>
+
+            <article class="risk" data-risk="2">
+              <div class="risk__top"><span class="sev sev--w">warning</span></div>
+              <div class="risk__pair">Warfarin + Spironolactone</div>
+              <p class="risk__mech">Warfarin's label flags drugs that add to bleeding risk.</p>
+              <div class="risk__cite">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                FDA label · Drug Interactions 7
+              </div>
+            </article>
+
+            <article class="risk" data-risk="3">
+              <div class="risk__top"><span class="sev sev--m">monitor</span></div>
+              <div class="risk__pair">Spironolactone + Digoxin</div>
+              <p class="risk__mech">Spironolactone can interfere with the lab test used to measure digoxin.</p>
+              <div class="risk__cite">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                FDA label · Drug Interactions 7.4
+              </div>
+            </article>
+
+            <div class="note note--lime">Tap any item to read the label text it came from.</div>
+            <div class="note">
+              1 medication is recognised but we hold no label evidence for it, so it was not
+              checked.
+            </div>
+          </section>
+
+          <!-- 5 citation -->
+          <section class="screen" data-screen="4">
+            <button class="srcbtn" id="backToRisks" style="margin-bottom:var(--s4)">← Back</button>
+            <div class="risk__top"><span class="sev sev--c">contraindicated</span></div>
+            <div class="ph-h" style="margin-top:6px">Lisinopril + Spironolactone</div>
+            <p class="ph-p">Taking these together can raise potassium to dangerous levels.</p>
+
+            <div class="eyebrow">From the spironolactone label</div>
+            <div class="quote">
+              “7 DRUG INTERACTIONS <mark>Agents increasing serum potassium: Concomitant
+              administration can lead to hyperkalemia</mark> ( 5.1 , 7.1 ). Lithium: Increased
+              risk of lithium toxicity ( 7.2 ).”
+            </div>
+
+            <div class="eyebrow">From the lisinopril label</div>
+            <div class="quote">
+              “<mark>Dual inhibition of the renin-angiotensin system: Increased risk of renal
+              impairment, hypotension and hyperkalemia</mark> ( 7.4 )”
+            </div>
+
+            <a class="srcbtn" href="https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8b76a904-6c99-485a-a05f-13a36c5f720c" target="_blank" rel="noopener">
+              Open the label on DailyMed
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </a>
+
+            <div class="note note--lime" style="margin-top:var(--s4)">
+              <strong>What to do:</strong> ask a pharmacist before giving these together.
+              Tessera never tells you to change a dose.
+            </div>
+          </section>
+
+          <!-- 6 ask -->
+          <section class="screen" data-screen="5">
+            <div class="ph-h">Ask out loud</div>
+            <p class="ph-p">Same model that read the labels, so no second vendor.</p>
+            <div class="bubble bubble--me">“Can he take the water pill with the blood pressure one at breakfast?”</div>
+            <div class="bubble bubble--app">
+              Those two are furosemide and lisinopril. Their labels document that together they
+              can drop blood pressure further than either alone.
+              <div class="risk__cite" style="margin-top:7px">FDA label · Drug Interactions 7.1</div>
+            </div>
+            <div class="bubble bubble--app">
+              That is a question for his pharmacist — they can check his blood pressure readings.
+            </div>
+            <div class="mic">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+          </section>
+
+          <!-- 7 refusal -->
+          <section class="screen" data-screen="6">
+            <div class="ph-h">What it will not do</div>
+            <div class="bubble bubble--me">“Should I lower his warfarin dose until we see the doctor?”</div>
+            <div class="refuse">
+              <div class="refuse__t">Tessera will not answer that</div>
+              <p style="font-size:var(--t-sm);color:var(--ink-3)">
+                Changing a dose is a clinical decision and this is not a clinical tool. Call his
+                pharmacist or prescriber — and if he has symptoms now, seek urgent care.
+              </p>
+            </div>
+            <div class="note note--lime" style="margin-top:var(--s4)">
+              This refusal is enforced in code, not just asked for in a prompt. Any answer that
+              reads as dose or treatment advice is replaced before it reaches the screen.
+            </div>
+          </section>
+
+          <!-- 8 watch -->
+          <section class="screen" data-screen="7">
+            <div class="ph-h">Three weeks later</div>
+            <p class="ph-p">You checked once. The list keeps being checked.</p>
+            <div class="notif">
+              <div class="notif__h">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                Tessera · now
+              </div>
+              <div class="row__n" style="margin-bottom:4px">New FDA safety communication</div>
+              <p class="ph-muted">A medication on your father's list has an updated warning.
+                Tap to read what changed.</p>
+            </div>
+            <div class="note note--lime">
+              A one-time check goes stale. Safety communications are published continuously, so
+              the list is watched rather than merely checked.
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="nav" style="justify-content:center">
+        <button class="btn btn--ghost" id="prev">← Back</button>
+        <button class="btn" id="next">Next step →</button>
+      </div>
+    </div>
+
+    <!-- ================= PANEL ================= -->
+    <div class="panel">
+      <div class="pcard">
+        <span class="eyebrow" id="pEyebrow">Step 1 of 8</span>
+        <h3 id="pTitle">One photo, seven bottles</h3>
+        <p id="pBody">…</p>
+        <div class="tiers" id="pTiers"></div>
+      </div>
+
+      <div class="pcard pcard--dark">
+        <span class="eyebrow">What crossed the network</span>
+        <h3 id="wTitle">Nothing yet</h3>
+        <p id="wBody">…</p>
+        <pre class="wire" id="wire">—</pre>
+      </div>
+
+      <div class="pcard">
+        <span class="eyebrow">Grounding</span>
+        <h3>This scenario is real</h3>
+        <p>
+          Seven medications typical of heart failure with type 2 diabetes. Every interaction
+          shown is documented in the actual FDA label text in this repository's corpus, and
+          every citation links to the real DailyMed record.
+        </p>
+        <dl class="kv">
+          <dt>Corpus</dt><dd>723 label sections</dd>
+          <dt>Drugs with evidence</dt><dd>285 of 358</dd>
+          <dt>Interaction sections</dt><dd>248</dd>
+          <dt>Invented content</dt><dd>none</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Tessera — interactive prototype · Personal AI track · Nebius × NVIDIA</span>
+    <span>Prototype only. Not medical advice, and not a clinical device.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STEPS = [
+    {
+      name: "Capture", title: "One photo, seven bottles",
+      body: "Rosa has eleven minutes before work and a shoebox of her father's medications. "
+          + "She is never going to type seven drug names, spelled correctly, into a form. "
+          + "So the whole input is one photograph.",
+      tiers: [], wTitle: "Nothing yet",
+      wBody: "No request has been made. Everything so far is a camera preview on the device.",
+      wire: "—"
+    },
+    {
+      name: "Read", title: "One model, three modalities",
+      body: "Nemotron 3 Nano Omni reads all seven labels in a single call and keeps one "
+          + "multimodal context across them, so two photographs of the same bottle are "
+          + "recognised as one drug. The same model handles the spoken question later, which "
+          + "is why the device side needs no second vendor.",
+      tiers: ["OMNI"],
+      wTitle: "The photographs",
+      wBody: "This is the first boundary, and the prototype is honest about it: Omni runs in "
+           + "the cloud today, so the images go to Nebius. An on-device build is the intended "
+           + "end state and is not yet implemented.",
+      wire: '<span class="c">POST /v1/chat/completions</span>\n'
+          + '<span class="k">model</span>: "nvidia/Nemotron-3-Nano-Omni"\n'
+          + '<span class="k">content</span>: [ 7 × image_url (base64) ]'
+    },
+    {
+      name: "Confirm", title: "Abstaining, for real",
+      body: "Two warfarin strengths scored within 0.037 of each other — inside the ambiguity "
+          + "margin. Rather than take the first, the drug is left with no code at all. A code "
+          + "that does not exist cannot cross the gate, so no risk list can be built from a "
+          + "medication the system has just admitted it cannot name.",
+      tiers: ["OMNI", "CHEAP"],
+      wTitle: "A drug name, to RxNorm",
+      wBody: "The second boundary. The OCR'd text goes to the NLM's free public normalisation "
+           + "service. Shipping a local RxNorm subset would close this; the formulary is "
+           + "already in the repository.",
+      wire: '<span class="c">GET rxnav.nlm.nih.gov/REST/approximateTerm.json</span>\n'
+          + '<span class="k">term</span>: "WARFARIN SOD 5MG"'
+    },
+    {
+      name: "Risks", title: "Four, not fourteen",
+      body: "Seven documented interactions were found and four are shown, most severe first, "
+          + "with the count stated. Alert fatigue is the documented failure mode of every "
+          + "interaction checker — fourteen warnings and zero warnings produce identical "
+          + "behaviour in a real caregiver.",
+      tiers: ["TOOL", "DEEP"],
+      wTitle: "Codes. Only codes.",
+      wBody: "This is the boundary the privacy gate governs, and it is enforced in code and "
+           + "tested on the serialised payload. The reasoning service never learns what anyone "
+           + "is taking — it receives numbers and returns numbers.",
+      wire: '<span class="c">POST /v1/chat/completions  — reasoning</span>\n'
+          + '{ <span class="k">"codes"</span>: [\n'
+          + '    "RXCUI:29046",  <span class="c">// lisinopril</span>\n'
+          + '    "RXCUI:9997",   <span class="c">// spironolactone</span>\n'
+          + '    "RXCUI:4603", "RXCUI:3407",\n'
+          + '    "RXCUI:6809", "RXCUI:83367"\n'
+          + '] }\n\n'
+          + '<span class="c">withheld at the gate:</span>\n'
+          + '<span class="x">"raw_name": "LISINOPRIL 10MG"</span>\n'
+          + '<span class="x">"directions": "one at breakfast"</span>\n'
+          + '<span class="x">"photo": "data:image/jpeg;base64,…"</span>'
+    },
+    {
+      name: "Cite", title: "Every claim, traceable",
+      body: "The plain-language sentence is written only from the label span shown beneath it, "
+          + "and a separate check confirms the span actually supports it. A sentence that fails "
+          + "that check is dropped before rendering, not flagged — a warning you cannot verify "
+          + "spends the trust that makes the verifiable ones worth reading.",
+      tiers: ["TOOL"],
+      wTitle: "Verification, per sentence",
+      wBody: "One entailment call per surfaced risk, on the cheap tool tier. An unreadable "
+           + "verdict counts as unsupported: the check fails closed.",
+      wire: '<span class="c">POST /v1/chat/completions  — entailment</span>\n'
+          + '<span class="k">model</span>: "nvidia/nemotron-3-super-120b-a12b"\n'
+          + '<span class="k">source</span>: "…can lead to hyperkalemia…"\n'
+          + '<span class="k">claim</span>:  "…can raise potassium to dangerous levels."\n'
+          + '<span class="c">→</span> { "supported": true }'
+    },
+    {
+      name: "Ask", title: "Hands full, so just ask",
+      body: "Rosa is holding a bottle in one hand. Omni's audio pathway handles the question "
+          + "natively — the same model, the same call shape, no speech vendor and no second "
+          + "upload.",
+      tiers: ["OMNI", "TOOL"],
+      wTitle: "Still only codes",
+      wBody: "The spoken question is resolved to the same drug codes before anything is asked "
+           + "of the reasoning service. The audio itself does not reach it.",
+      wire: '<span class="c">resolved locally, then:</span>\n'
+          + '{ <span class="k">"codes"</span>: ["RXCUI:4603", "RXCUI:29046"] }'
+    },
+    {
+      name: "Refuse", title: "The most important feature",
+      body: "A system that will say anything is a system you cannot trust about anything. "
+          + "Tessera surfaces and cites documented information; it never recommends a dose "
+          + "change and never diagnoses. The boundary is a deterministic filter in code, "
+          + "because a prompt is a request and not a guarantee.",
+      tiers: [],
+      wTitle: "No request made",
+      wBody: "The refusal happens before any reasoning call. There is nothing to send, because "
+           + "there is nothing Tessera is willing to answer here.",
+      wire: "—"
+    },
+    {
+      name: "Watch", title: "Checked, then kept checked",
+      body: "A point-in-time check is a liability, because drug safety information changes "
+          + "after you check it. The corpus is a snapshot; FDA safety communications are "
+          + "continuous. Watching the list is what keeps the answer from going quietly stale.",
+      tiers: ["CHEAP"],
+      wTitle: "A scheduled re-check",
+      wBody: "Runs on the cheapest tier because it runs often. Still only codes leave the "
+           + "device, and the user is notified only on a material change.",
+      wire: '<span class="c">scheduled — Tavily search</span>\n'
+          + '<span class="k">query</span>: "FDA safety communication spironolactone"\n'
+          + '<span class="c">→ triage on</span> "nvidia/Nemotron-3_5-Lightning"'
+    }
+  ];
+
+  var ALL_TIERS = ["OMNI", "CHEAP", "TOOL", "DEEP"];
+  var i = 0;
+
+  var elSteps = document.getElementById("steps");
+  var elPrev = document.getElementById("prev");
+  var elNext = document.getElementById("next");
+
+  STEPS.forEach(function (s, n) {
+    var b = document.createElement("button");
+    b.className = "step";
+    b.type = "button";
+    b.innerHTML = '<span class="step__n">' + (n + 1) + '</span>' + s.name;
+    b.addEventListener("click", function () { go(n); });
+    elSteps.appendChild(b);
+  });
+
+  function go(n) {
+    i = Math.max(0, Math.min(STEPS.length - 1, n));
+    var s = STEPS[i];
+
+    [].forEach.call(document.querySelectorAll(".screen"), function (el, idx) {
+      el.classList.toggle("is-on", idx === i);
+    });
+    [].forEach.call(elSteps.children, function (el, idx) {
+      el.classList.toggle("is-active", idx === i);
+    });
+    if (i === 1) {
+      var bar = document.querySelector('[data-screen="1"] .prog span');
+      if (bar) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
+    }
+
+    document.getElementById("appTitle").textContent =
+      i === 0 ? "Tessera" : s.name;
+    document.getElementById("pEyebrow").textContent =
+      "Step " + (i + 1) + " of " + STEPS.length;
+    document.getElementById("pTitle").textContent = s.title;
+    document.getElementById("pBody").textContent = s.body;
+    document.getElementById("wTitle").textContent = s.wTitle;
+    document.getElementById("wBody").textContent = s.wBody;
+    document.getElementById("wire").innerHTML = s.wire;
+
+    var t = document.getElementById("pTiers");
+    t.innerHTML = "";
+    ALL_TIERS.forEach(function (name) {
+      var el = document.createElement("span");
+      el.className = "tier" + (s.tiers.indexOf(name) > -1 ? " tier--on" : "");
+      el.textContent = name;
+      t.appendChild(el);
+    });
+
+    elPrev.disabled = i === 0;
+    elNext.disabled = i === STEPS.length - 1;
+  }
+
+  elPrev.addEventListener("click", function () { go(i - 1); });
+  elNext.addEventListener("click", function () { go(i + 1); });
+  document.getElementById("shutter").addEventListener("click", function () { go(1); });
+  document.getElementById("backToRisks").addEventListener("click", function () { go(3); });
+  [].forEach.call(document.querySelectorAll("[data-risk]"), function (el) {
+    el.addEventListener("click", function () { go(4); });
+  });
+
+  addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") go(i + 1);
+    if (e.key === "ArrowLeft") go(i - 1);
+  });
+
+  go(0);
+})();
+</script>
+</body>
+</html>

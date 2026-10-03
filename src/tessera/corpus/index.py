@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 
 from tessera.config import get_settings
+from tessera.errors import EvidenceMissing
 from tessera.schemas import EvidenceSpan
 
 EMBED_MODEL = "Qwen/Qwen3-Embedding-8B"
@@ -44,7 +45,20 @@ class EvidenceIndex:
         return [(self.spans[i], float(scores[i])) for i in top]
 
     def by_id(self, span_id: str) -> EvidenceSpan:
-        return self._by_id[span_id]
+        """Look up a span, or fail in a way the caller can act on.
+
+        Span IDs hash the span's text, so a corpus rebuild after DailyMed
+        revises a label changes every ID for that label and leaves a frozen
+        interaction table pointing at nothing. That must not surface as a bare
+        KeyError three frames deep in adjudication.
+        """
+        try:
+            return self._by_id[span_id]
+        except KeyError as exc:
+            raise EvidenceMissing(
+                f"span {span_id!r} is not in the index — the interaction table "
+                "is probably stale; rebuild it against the current corpus"
+            ) from exc
 
     def save(self, directory: Path) -> None:
         directory = Path(directory)

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -25,7 +26,7 @@ OUT = ROOT / "data" / "interactions.csv"
 
 PROMPT = """You are reading one section of an FDA-approved drug label.
 
-Subject drug: {subject}
+Subject drug: {subject_name}
 
 List ONLY drugs or drug ingredients that this text explicitly says interact
 with the subject drug. Do not infer. Do not add drugs that are not named here.
@@ -47,6 +48,30 @@ TEXT:
 VALID_SEVERITY = {"contraindicated", "warning", "monitor"}
 
 
+def _resolve_object(name: str, by_name: dict[str, str]) -> str | None:
+    """Map a drug name from label text to a formulary RXCUI.
+
+    Labels do not write bare ingredient names. They write "warfarin sodium",
+    "aspirin 81 mg", "metformin-containing products". Exact matching drops
+    nearly all of those, so an ingredient is also accepted when it appears as a
+    whole word inside the returned name.
+
+    Whole-word only, and longest ingredient first, so "aspirin" does not claim
+    a string that a longer formulary name matches better. A drug *class* such
+    as "CYP3A4 inhibitors" matches nothing and is correctly dropped - we can
+    only assert about drugs we can resolve to a code.
+    """
+    name = name.strip().lower()
+    if not name:
+        return None
+    if name in by_name:
+        return by_name[name]
+    for ingredient in sorted(by_name, key=len, reverse=True):
+        if re.search(rf"\b{re.escape(ingredient)}\b", name):
+            return by_name[ingredient]
+    return None
+
+
 def extract_assertions(
     section_text: str,
     subject_rxcui: str,
@@ -63,10 +88,14 @@ def extract_assertions(
     safety claim, and no downstream consumer could tell the difference.
     """
     by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
+    # The model is told "do not infer", so it must at least be told what the
+    # subject drug IS. A bare RXCUI gives it nothing to reason from.
+    subject_name = formulary.get(subject_rxcui, subject_rxcui)
     raw = router.complete(
         Tier.TOOL,
         [{"role": "user",
-          "content": PROMPT.format(subject=subject_rxcui, text=section_text[:6000])}],
+          "content": PROMPT.format(
+              subject_name=subject_name, text=section_text[:6000])}],
         response_format={"type": "json_object"},
     )
     try:
@@ -81,9 +110,9 @@ def extract_assertions(
     for item in items:
         if not isinstance(item, dict):
             continue
-        name = str(item.get("drug", "")).strip().lower()
+        name = str(item.get("drug", ""))
         severity = str(item.get("severity", "")).strip().lower()
-        obj = by_name.get(name)
+        obj = _resolve_object(name, by_name)
         if not obj or severity not in VALID_SEVERITY or obj == subject_rxcui:
             continue
         key = (subject_rxcui, obj)

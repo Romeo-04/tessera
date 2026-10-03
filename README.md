@@ -1,11 +1,20 @@
 # Tessera
 
-**Seven bottles. One sourced list. Their data never leaves your phone.**
+**Seven bottles. One sourced list. Every claim traceable to an FDA label.**
 
 Tessera reads a photograph of someone's medications and returns a short, ranked list of
-documented interaction risks — each one deep-linked to the FDA-approved label section it came
-from. The photographs, the drug names, and the directions never leave the device. Only numeric
-drug codes do.
+documented interaction risks — each one linked to the FDA-approved label section it came from.
+
+**What the privacy gate actually guarantees today:** the reasoning service — retrieval,
+interaction resolution, severity adjudication — receives *only* numeric RxNorm codes. No drug
+names, strengths, directions, dates, or images reach it. That boundary is enforced in code
+(`src/tessera/privacy.py`) and tested on the serialised payload, not just the object.
+
+**What it does not yet guarantee, stated plainly:** perception currently runs in the cloud, not
+on the device. Two things cross a network *above* that gate — the photographs go to Nebius for
+Omni to read, and the OCR'd drug name goes to the NLM's public RxNorm service to be normalised.
+An on-device Omni build is the intended end state and is not implemented. See
+[Deployment honesty](#deployment-honesty).
 
 > A Roman *tessera* was a small token you handed over **instead of** your name. That is exactly
 > what the RxNorm code is here.
@@ -27,11 +36,12 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 ## What it does
 
 1. Photograph the bottles — one shot, several bottles, ordinary lighting, angled labels.
-2. **On-device** Nemotron 3 Nano Omni reads every label: name, strength, form, directions.
+2. Nemotron 3 Nano Omni reads every label in one call: name, strength, form, directions.
 3. Each drug resolves to an RxNorm `RXCUI`. When two candidates are too close to call — a 500 mg
-   extended-release against a 500 mg immediate-release — it asks instead of guessing.
-4. **Only the codes leave the device.** `["RXCUI:11289", "RXCUI:1191"]`. No image, no name, no
-   date, no identifier.
+   extended-release against a 500 mg immediate-release — it **refuses to pick** and hands the
+   options back. An unidentified drug carries no code, so nothing downstream can score it.
+4. **Only the codes reach the reasoning service.** `["RXCUI:11289", "RXCUI:1191"]`. No image, no
+   name, no date, no identifier.
 5. A deterministic table resolves documented interactions; Nemotron Ultra ranks them by severity
    and explains each one *from the cited label text*.
 6. Every sentence is checked against its own citation. Anything the source does not support is
@@ -40,36 +50,52 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 ## Architecture
 
 ```
-┌─ USER DEVICE ──────────────────────┐
+┌─ CLIENT ───────────────────────────┐
 │  photos + voice                     │
 │      ↓                              │
-│  Nemotron 3 Nano Omni  (OCR + ASR)  │
+│  Nemotron 3 Nano Omni  (OCR + ASR)  │ ──► cloud today, on-device intended
 │      ↓                              │
-│  RxNorm normalisation, with         │
-│  abstention when ambiguous          │
+│  RxNorm normalisation               │ ──► public NLM service (name leaves)
+│  abstains when ambiguous or weak    │
 │      ↓                              │
 │  ╔═══════════════════════════════╗  │
 │  ║  PRIVACY GATE                 ║  │
 │  ║  allowlist: ^RXCUI:\d+$       ║  │
 │  ╚═══════════════════════════════╝  │
 └────────────┊───────────────────────┘
-             ┊  codes only
-┌────────────┊─ NEBIUS ──────────────┐
+             ┊  codes only, nothing else
+┌────────────┊─ REASONING (Nebius) ──┐
 │  evidence retrieval over FDA labels │
 │  deterministic interaction lookup   │
 │  Nemotron Ultra: rank + explain     │
 │  entailment check: drop unsupported │
+│  names re-attached client-side after │
 └─────────────────────────────────────┘
 ```
 
-The one-sentence version: **perception happens on the phone, reasoning happens on Nebius, and
-the only thing that ever crosses between them is a list of numeric drug codes.**
+The one-sentence version: **the reasoning service never learns what anyone is taking — it sees
+numeric codes and returns numeric codes, and the names are re-joined on the side that already
+had them.**
+
+### Deployment honesty
+
+The gate is real and tested, but it is not the only network boundary. Being precise about which
+is which:
+
+| Boundary | What crosses | Status |
+|---|---|---|
+| Client → Nebius (Omni) | the photographs | Cloud today. On-device Omni is the intended end state; Omni needs ~25 GB and a quantised build is not done. |
+| Client → NLM RxNorm | the OCR'd drug name as text | Public, free, no account. Could be removed by shipping a local RxNorm subset — the formulary is already committed. |
+| **Client → Nebius (reasoning)** | **RxNorm codes only** | **Enforced and tested.** |
+
+Closing the first two is Plan 2 work. Claiming they are closed today would be the "superficial"
+kind of claim this project is built to avoid making.
 
 ## Why this breaks without Nemotron
 
 | Model | What it does | What fails without it |
 |---|---|---|
-| **Nemotron 3 Nano Omni** | OCR of curved bottle labels, multi-image reasoning in one unified context, native speech for the spoken question | On-device perception becomes impossible. We would need separate vision and speech vendors, the images would have to leave the device to reach them, and the privacy split — the entire product — collapses. |
+| **Nemotron 3 Nano Omni** | OCR of curved bottle labels, multi-image reasoning in one unified context, native speech for the spoken question | We would need separate vision and speech vendors, each seeing the raw images, and the on-device end state would become unreachable — no other open model does all three modalities in one 30B/3B-active package. |
 | **Nemotron 3.5 Lightning** | High-volume cheap passes: candidate shortlisting, watch-list triage | The always-on watch becomes ~15× more expensive per check and gets cut. |
 | **Nemotron 3 Super 120B** | Native function calling to RxNorm and DailyMed; the citation entailment check | Tool orchestration degrades to brittle hand-parsed calls, and per-claim verification becomes too expensive to run on every sentence. |
 | **Nemotron 3 Ultra 550B** | Severity adjudication and plain-language explanation from retrieved evidence | Ranking collapses to the raw severity grade, and alert fatigue — the documented failure mode of every interaction checker — returns. |
@@ -89,8 +115,9 @@ and none are claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **84 passing** |
+| Test suite | **108 passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
+| Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
 | Severity precision@5 | not yet measured |
 | Citation support rate | not yet measured |

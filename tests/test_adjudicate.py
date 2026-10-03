@@ -93,3 +93,32 @@ def test_upstream_failure_propagates_rather_than_returning_an_empty_list():
 
     with pytest.raises(RateLimitedError):
         adjudicate([assertion("warning", 1)], FakeIndex(), Failing())
+
+
+def test_an_action_that_recommends_a_dose_change_is_replaced():
+    """The safety boundary cannot live only in the prompt. Ultra returning
+    dosing advice must not reach a caregiver verbatim."""
+    router = router_returning([{
+        "span_id": "s1", "mechanism": "Additive bleeding risk.",
+        "action": "Reduce the warfarin to 2.5 mg until you see your doctor.",
+    }])
+    (risk,) = adjudicate([assertion("warning", 1)], FakeIndex(), router)
+    assert "2.5 mg" not in risk.action
+    assert "reduce" not in risk.action.lower()
+    assert "pharmacist" in risk.action.lower()
+
+
+def test_a_safe_routing_action_is_preserved():
+    router = router_returning([{
+        "span_id": "s1", "mechanism": "Additive bleeding risk.",
+        "action": "Ask a pharmacist before taking these together.",
+    }])
+    (risk,) = adjudicate([assertion("warning", 1)], FakeIndex(), router)
+    assert risk.action == "Ask a pharmacist before taking these together."
+
+
+def test_a_risk_with_no_mechanism_text_is_dropped():
+    """A severity grade under a blank sentence is not actionable, and would
+    then be sent to the verifier to check whether a source supports ''."""
+    router = router_returning([{"span_id": "s1", "mechanism": "  ", "action": "Ask."}])
+    assert adjudicate([assertion("warning", 1)], FakeIndex(), router) == []

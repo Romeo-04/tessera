@@ -5,8 +5,20 @@ FORMULARY = {"RXCUI:860975", "RXCUI:29046"}
 
 
 def fake_match(scores):
+    """Each tuple is (rxcui, name, relative_score[, raw_score]).
+
+    raw_score defaults to a comfortably-above-floor value so tests that are
+    not about the floor do not have to care about it.
+    """
     def _match(term, max_entries=20):
-        return [Candidate(rxcui=r, display_name=n, score=s) for r, n, s in scores]
+        out = []
+        for row in scores:
+            rxcui, name, score = row[0], row[1], row[2]
+            raw = row[3] if len(row) > 3 else 12.0
+            out.append(
+                Candidate(rxcui=rxcui, display_name=name, score=score, raw_score=raw)
+            )
+        return out
 
     return _match
 
@@ -34,6 +46,51 @@ def test_two_near_equal_candidates_force_confirmation():
     )
     assert out[0].needs_confirmation is True
     assert len(out[0].candidates) == 2, "the user needs the options to choose from"
+
+
+def test_an_ambiguous_match_does_not_carry_a_code_forward():
+    """The abstention must be real: an ambiguous drug has NO rxcui, so the
+    privacy gate cannot forward a guess and the resolver cannot score it.
+
+    Setting confidence to 0 while still handing on best-guess rxcui would let
+    a full risk list be computed for a drug we just admitted we cannot name.
+    """
+    out = normalize_drugs(
+        [DrugRecord(raw_name="METFORMIN 500")], FORMULARY,
+        fake_match([("RXCUI:860975", "metformin ER 500 MG", 1.0),
+                    ("RXCUI:29046", "metformin IR 500 MG", 0.98)]),
+    )
+    assert out[0].rxcui is None
+
+
+def test_a_formulary_drug_is_not_substituted_for_a_better_non_formulary_match():
+    """The top candidate IS the identification.
+
+    If RxNorm's best match is a drug we carry no evidence for, the answer is
+    "outside our scope" - not "here is a different drug that happens to be in
+    the list". Substituting produces a risk list for a medication the patient
+    does not take.
+    """
+    out = normalize_drugs(
+        [DrugRecord(raw_name="PHENPROCOUMON")], FORMULARY,
+        fake_match([("RXCUI:999999", "phenprocoumon", 1.0),
+                    ("RXCUI:860975", "metformin", 0.30)]),
+    )
+    assert out[0].in_formulary is False
+    assert out[0].rxcui is None
+    assert out[0].record.raw_name == "PHENPROCOUMON"
+
+
+def test_a_weak_best_match_is_refused_even_if_it_is_in_the_formulary():
+    """Relative scoring makes the top candidate 1.0 by construction, so a
+    garbled label still produces a confident-looking winner. The raw score is
+    the only absolute signal available, so it carries a floor."""
+    out = normalize_drugs(
+        [DrugRecord(raw_name="MTFRMN XQ")], FORMULARY,
+        fake_match([("RXCUI:860975", "metformin", 1.0, 2.0)]),
+    )
+    assert out[0].rxcui is None
+    assert out[0].needs_confirmation is True
 
 
 def test_clear_separation_between_candidates_is_accepted():
