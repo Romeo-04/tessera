@@ -26,7 +26,9 @@ PROMPT = (
 def audio_kind(head: bytes) -> str | None:
     """MIME type from magic bytes. Phones record m4a; browsers record webm."""
     if len(head) >= 12 and head[4:8] == b"ftyp":
-        return "audio/mp4"
+        # 3GP shares the ISO container but usually carries narrowband AMR;
+        # labelling it mp4 would hand the model the wrong codec.
+        return "audio/3gpp" if head[8:11] == b"3gp" else "audio/mp4"
     if head.startswith(b"\x1a\x45\xdf\xa3"):
         return "audio/webm"
     if head.startswith(b"RIFF") and head[8:12] == b"WAVE":

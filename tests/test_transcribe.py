@@ -52,3 +52,8 @@ def test_nothing_intelligible_is_an_empty_string(tmp_path):
     clip = tmp_path / "q.m4a"
     clip.write_bytes(M4A)
     assert transcribe(clip, "audio/mp4", FakeRouter(None)) == ""
+
+
+def test_a_3gp_recording_is_not_mislabelled_as_mp4():
+    three_gp = b"\x00\x00\x00\x18ftyp3gp4" + b"\x00" * 32
+    assert audio_kind(three_gp) == "audio/3gpp"

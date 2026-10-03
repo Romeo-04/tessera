@@ -288,3 +288,10 @@ def test_without_the_setting_a_client_supplied_header_is_ignored():
     body = {"codes": ["RXCUI:1", "RXCUI:2"]}
     assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "1.1.1.1"}).status_code == 200
     assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "9.9.9.9"}).status_code == 429
+
+
+def test_an_oversized_audio_upload_is_refused_from_its_declared_length():
+    r = make_t(lambda p, k: "x").post("/api/transcribe", content=b"x", headers={
+        "content-type": "multipart/form-data; boundary=x",
+        "content-length": str(10 * 1024 * 1024)})
+    assert r.status_code == 413

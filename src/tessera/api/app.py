@@ -43,7 +43,7 @@ MAX_PHOTO_BYTES = 8 * 1024 * 1024
 MAX_CODES = 40
 # ~60 s of compressed speech. A question, not a recording session.
 MAX_AUDIO_BYTES = 2 * 1024 * 1024
-SUFFIX = {"audio/mp4": ".m4a", "audio/webm": ".webm", "audio/wav": ".wav", "audio/ogg": ".ogg"}
+SUFFIX = {"audio/mp4": ".m4a", "audio/3gpp": ".3gp", "audio/webm": ".webm", "audio/wav": ".wav", "audio/ogg": ".ogg"}
 MAX_BODY_BYTES = MAX_PHOTOS * MAX_PHOTO_BYTES + 1024 * 1024
 
 # Magic numbers, not the client's Content-Type, decide what an upload is.
@@ -206,9 +206,10 @@ def create_app(deps: Deps | None = None) -> FastAPI:
         """Refuse an oversized upload from its declared length, before any of it
         is spooled to disk. The per-file check below still runs as well."""
         declared = request.headers.get("content-length")
-        if declared and declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+        cap = MAX_AUDIO_BYTES + 64 * 1024 if request.url.path == "/api/transcribe" else MAX_BODY_BYTES
+        if declared and declared.isdigit() and int(declared) > cap:
             return JSONResponse(status_code=413, content={
-                "detail": f"Too large: at most {MAX_PHOTOS} photos of 8 MB."})
+                "detail": "That upload is too large."})
         return await call_next(request)
 
     @app.get("/health")
