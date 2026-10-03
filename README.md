@@ -23,6 +23,19 @@ An on-device Omni build is the intended end state and is not implemented. See
 
 ---
 
+## Try it
+
+The web app opens on a **seeded demo**: seven real medications, real FDA label text, the real
+resolver and five-risk cap. It needs no camera, no upload, no account and no credentials, and
+it makes no model calls. Live checking of your own photographs is available when the API is
+deployed with a Nebius key.
+
+```bash
+cd web && npm install && npm run dev      # http://localhost:5173
+```
+
+The right-hand panel shows the exact JSON the browser sends across the privacy gate.
+
 ## The problem
 
 An elderly patient is discharged on seven prescriptions written by three specialists who never
@@ -73,6 +86,19 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 └─────────────────────────────────────┘
 ```
 
+### The gate, three times
+
+The codes-only boundary is enforced independently in three places, so a bug in one is not a leak:
+
+1. **Browser** — `web/src/lib/session.ts` `codeSetFor()` refuses to serialise anything that is
+   not `RXCUI:<digits>`.
+2. **HTTP** — `POST /api/assess` takes a request model with `extra="forbid"`. A body carrying a
+   `names` field, or a drug name in `codes`, is a `422` at the boundary.
+3. **Pipeline** — `src/tessera/privacy.py` `to_code_set()`, as before.
+
+Perception (`POST /api/read`) and reasoning (`POST /api/assess`) are separate endpoints, so
+the split the diagram shows is the split the code has. Names are re-joined in the browser.
+
 The one-sentence version: **the reasoning service never learns what anyone is taking — it sees
 numeric codes and returns numeric codes, and the names are re-joined on the side that already
 had them.**
@@ -88,7 +114,7 @@ is which:
 | Client → NLM RxNorm | the OCR'd drug name as text | Public, free, no account. Could be removed by shipping a local RxNorm subset — the formulary is already committed. |
 | **Client → Nebius (reasoning)** | **RxNorm codes only** | **Enforced and tested.** |
 
-Closing the first two is Plan 2 work. Claiming they are closed today would be the "superficial"
+Closing the first two is future work. Claiming they are closed today would be the "superficial"
 kind of claim this project is built to avoid making.
 
 ## Why this breaks without Nemotron
@@ -105,17 +131,22 @@ kind of claim this project is built to avoid making.
 - **Token Factory** — all inference, OpenAI-compatible, routed across four Nemotron tiers by a
   single module so a tier swap is one line and its cost is measurable.
 - **Qwen3-Embedding-8B** — retrieval over FDA label spans.
-- **Token Factory Sandboxes** *(Plan 2)* — the deterministic resolver runs isolated and auditable.
-- **Nebius AI Cloud** *(Plan 2)* — one-time corpus embedding and the evaluation harness.
+- **Nemotron Lightning** — triages the formulary-wide FDA safety watcher (`src/tessera/watch.py`).
+  It returns indices only; what a user reads is the FDA page's own text.
+- **Spend control** — the router's per-call cost telemetry also feeds a daily USD ceiling and a
+  per-caller rate limit on the public API. Hitting either degrades to the demo, with the reason
+  shown.
 
 ## Measured results
 
-The evaluation harness and gold sets are Plan 2. **No accuracy figures are published here yet,
-and none are claimed.** What exists today:
+`python -m evals.run_all` computes every metric below and writes
+[`evals/results.md`](evals/results.md). The gold sets need hand labelling
+([format](data/gold/README.md)), so **no accuracy figures are published yet, and none are
+claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **108 passing** |
+| Test suite | **169 Python + 41 web, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -146,6 +177,13 @@ makes the verifiable ones worth reading.
 Absence of evidence is never rendered as evidence of safety. A drug outside the formulary, or one
 whose label documents no interactions, is reported as such rather than silently omitted.
 
+Typed questions go through a deterministic filter (`web/src/lib/guardrail.ts`) before
+anything else runs. Questions about changing, skipping or stopping a dose are refused, and
+questions that describe an emergency are sent to emergency care. Every other question is
+answered only from the already-cited risks, so no new text about drugs is generated. Spoken
+questions through Omni's audio pathway and a NeMo Guardrails layer are not built, and the
+product does not claim them.
+
 ## Setup
 
 ```bash
@@ -155,7 +193,8 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 84 tests, no credentials needed
+pytest                      # 169 tests, no credentials needed
+cd web && npm install && npm test   # 41 tests
 ```
 
 Building the evidence corpus (the first two need no API key):
@@ -168,6 +207,19 @@ python scripts/build_index.py          # embeddings -> data/index/       (gitign
 tessera check photos/*.jpg
 ```
 
+Running the product:
+
+```bash
+uvicorn tessera.api.app:create_app --factory --port 8000   # API; demo-only without a key
+cd web && npm run dev                                        # proxies /api to :8000
+python scripts/build_demo.py      # regenerate the seeded demo from the corpus
+python scripts/run_watch.py       # weekly: FDA safety watcher (needs TAVILY_API_KEY)
+python -m evals.run_all           # every metric -> evals/results.md
+```
+
+Deploy: `web/` is static (`web/vercel.json`), so the demo never cold-starts. The API ships as
+the root `Dockerfile`. Set `VITE_API_URL` on the web build to point it at the API.
+
 `build_interactions.py` prints a reminder to hand-check its output. That is not ceremony:
 everything this product asserts flows from that table.
 
@@ -177,7 +229,7 @@ everything this product asserts flows from that table.
 |---|---|
 | [RxNorm](https://www.nlm.nih.gov/research/umls/rxnorm/) (US NLM) | Drug name normalisation to `RXCUI` |
 | [DailyMed](https://dailymed.nlm.nih.gov/) (US NLM) | FDA Structured Product Labels — the cited evidence |
-| [openFDA](https://open.fda.gov/) (US FDA) | Recalls and adverse event reports *(Plan 2)* |
+| [openFDA](https://open.fda.gov/) (US FDA) | Not used yet |
 
 **Note on interactions.** The NLM/RxNav Drug Interaction API was **discontinued on 2 January
 2024**. Tessera derives interaction assertions from the SPL *Drug Interactions* section itself,
