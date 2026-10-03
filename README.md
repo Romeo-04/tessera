@@ -249,6 +249,21 @@ API instance with `/app/data` on a persistent volume, because the daily spend ce
 from telemetry stored there. Set `FORWARDED_ALLOW_IPS` to your platform proxy's address so the
 per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
 
+### Deploying the API (Fly.io)
+
+`fly.toml` is ready; nothing is deployed yet. In order:
+
+1. Put `NEBIUS_API_KEY` in `.env`, then build the corpus locally with the commands above and
+   **hand-review `data/interactions.csv`**.
+2. `fly launch --no-deploy --copy-config` (keep `fly.toml`), then
+   `fly volumes create tessera_data --size 1 --region sin`.
+3. `fly secrets set NEBIUS_API_KEY=... TAVILY_API_KEY=...` — secrets go to Fly, never into the
+   repo or the image.
+4. `fly deploy`, then copy the built corpus (`data/formulary.csv`, `data/interactions.csv`,
+   `data/index/`, `data/spl/sections.jsonl`) onto the volume with `fly ssh sftp shell`, and
+   `fly machine restart` so the API loads it. `/health` reports `"live": true` once it has.
+5. Rebuild the app with `EXPO_PUBLIC_API_URL=https://<app>.fly.dev` and redeploy the web demo.
+
 `build_interactions.py` prints a reminder to hand-check its output. That is not ceremony:
 everything this product asserts flows from that table.
 

@@ -164,6 +164,7 @@ def create_app(deps: Deps | None = None) -> FastAPI:
     app = FastAPI(title="Tessera", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
     origins = os.environ.get("TESSERA_CORS_ORIGINS", "*").split(",")
+    client_ip_header = os.environ.get("TESSERA_CLIENT_IP_HEADER") or None
     app.add_middleware(
         CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"],
         allow_headers=["Content-Type"],
@@ -173,7 +174,10 @@ def create_app(deps: Deps | None = None) -> FastAPI:
         """Checks every live call passes before any model is touched."""
         if needs_live and not deps.live:
             return _fallback(503, "Live checking is not configured on this server.")
-        caller = request.client.host if request.client else "unknown"
+        # A platform edge that sets its own client-IP header (Fly-Client-IP on
+        # Fly.io) is the one source a client cannot forge. Opt-in only: read
+        # without the platform in front, the same header is attacker-supplied.
+        caller = (request.headers.get(client_ip_header) if client_ip_header else None)             or (request.client.host if request.client else "unknown")
         if not deps.limiter.allow(caller):
             return _fallback(429, "Too many checks from this connection. "
                                   "Try again in a few minutes.")

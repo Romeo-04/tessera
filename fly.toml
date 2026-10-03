@@ -1,0 +1,43 @@
+# Tessera API on Fly.io. Prepared, not yet deployed: it needs NEBIUS_API_KEY and
+# the built corpus first. Steps are in the README under "Deploying the API".
+#
+# The shape is set by two requirements that run until judging closes on
+# 2026-12-15: ONE always-on machine (the daily spend ceiling is per instance),
+# and a persistent volume (the ceiling reads telemetry from it, and the corpus
+# lives there too).
+
+app = "tessera-api"          # change if the name is taken
+primary_region = "sin"       # Singapore: closest Fly region to the team
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  TESSERA_DATA_DIR = "/app/data"
+  # The web demo's origin. Native apps send no Origin header and are unaffected.
+  TESSERA_CORS_ORIGINS = "https://tessera-jade-gamma.vercel.app"
+  # Fly's edge sets this itself; key the per-caller limit on it.
+  TESSERA_CLIENT_IP_HEADER = "Fly-Client-IP"
+  TESSERA_DAILY_USD = "0.50"
+
+[[mounts]]
+  source = "tessera_data"
+  destination = "/app/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "off"     # a cold start would reset nothing, but judges should not wait
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "20s"
+    interval = "60s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

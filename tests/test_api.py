@@ -269,3 +269,22 @@ def test_transcribe_is_rate_limited_like_every_live_route():
     client = make_t(lambda p, k: "x", limiter=RateLimiter(max_calls=1, per_seconds=600))
     assert client.post("/api/transcribe", files=_audio()).status_code == 200
     assert client.post("/api/transcribe", files=_audio()).status_code == 429
+
+
+def test_a_platform_client_ip_header_keys_the_limit_when_configured(monkeypatch):
+    """On Fly.io the edge sets Fly-Client-IP itself; clients cannot forge it."""
+    monkeypatch.setenv("TESSERA_CLIENT_IP_HEADER", "Fly-Client-IP")
+    client = make(read=Recorder(), assess=Recorder(SessionResult(risks=[])),
+                  limiter=RateLimiter(max_calls=1, per_seconds=600))
+    body = {"codes": ["RXCUI:1", "RXCUI:2"]}
+    assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "1.1.1.1"}).status_code == 200
+    assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "2.2.2.2"}).status_code == 200
+    assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "1.1.1.1"}).status_code == 429
+
+
+def test_without_the_setting_a_client_supplied_header_is_ignored():
+    client = make(read=Recorder(), assess=Recorder(SessionResult(risks=[])),
+                  limiter=RateLimiter(max_calls=1, per_seconds=600))
+    body = {"codes": ["RXCUI:1", "RXCUI:2"]}
+    assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "1.1.1.1"}).status_code == 200
+    assert client.post("/api/assess", json=body, headers={"Fly-Client-IP": "9.9.9.9"}).status_code == 429
