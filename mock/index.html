@@ -7,7 +7,7 @@
 <meta name="description" content="Clickable prototype of the Tessera caregiver flow, driven by real FDA label text.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0A0A0A; --ink-soft:#1C1C1A; --ink-3:#3A3A36;
@@ -20,20 +20,20 @@
   --warn:#9A6700; --warn-wash:#FFF8E3;
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
   --r-ctrl:8px; --r-card:16px; --r-panel:28px; --r-pill:999px;
-  /* Widened: 12 and 13 were a step no reader perceives, and the display end
-     was too compressed to carry hierarchy. Body sizes stay close on purpose —
-     the phone screen needs a smaller body than the panel beside it. */
-  --t-xs:11px; --t-sm:13px; --t-base:15px; --t-md:18px; --t-lg:22px; --t-xl:27px; --t-2xl:34px;
-  --font-display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* Four sizes, every step at least a 1.25 ratio. There were seven before,
+     two of them never referenced at all, and a 12-to-13 step no reader can
+     see. Fewer sizes, further apart, is what makes hierarchy legible. */
+  --t-xs:11px; --t-sm:14px; --t-md:18px; --t-lg:24px;
+  --font-display:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --shadow-md:0 8px 24px -12px rgba(10,10,10,.18);
   --shadow-lg:0 24px 64px -32px rgba(10,10,10,.35);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font-body);
-     font-size:var(--t-base);line-height:1.6;-webkit-font-smoothing:antialiased}
+     font-size:var(--t-sm);line-height:1.6;-webkit-font-smoothing:antialiased}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:var(--r-ctrl)}
 .phone :focus-visible,.step.is-active:focus-visible{outline-color:var(--lime)}
@@ -156,7 +156,7 @@ p{margin:0}
 .note--warn{background:var(--warn-wash);border-color:#E8D6A0}
 
 .quote{font-size:var(--t-xs);line-height:1.6;background:var(--surface);border:1px solid var(--border);
-       border-left:3px solid var(--lime-deep);border-radius:0 var(--r-ctrl) var(--r-ctrl) 0;
+       border-left:2px solid var(--muted-2);border-radius:0 var(--r-ctrl) var(--r-ctrl) 0;
        padding:var(--s3);margin:var(--s3) 0;color:var(--ink-3)}
 .quote mark{background:var(--lime);padding:0 2px}
 .srcbtn{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-xs);font-weight:600;
