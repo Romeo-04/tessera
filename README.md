@@ -25,16 +25,26 @@ An on-device Omni build is the intended end state and is not implemented. See
 
 ## Try it
 
-The web app opens on a **seeded demo**: seven real medications, real FDA label text, the real
-resolver and five-risk cap. It needs no camera, no upload, no account and no credentials, and
-it makes no model calls. Live checking of your own photographs is available when the API is
-deployed with a Nebius key.
+**Web demo:** https://tessera-jade-gamma.vercel.app — opens on a **seeded demo**: seven real
+medications, real FDA label text, the real resolver and five-risk cap. It needs no camera, no
+upload, no account and no credentials, and it makes no model calls. The right-hand panel shows
+the exact JSON the app sends across the privacy gate.
+
+**iOS and Android:** the same Expo (React Native) codebase is a native app with a real camera,
+spoken questions and a list saved on the device.
 
 ```bash
-cd web && npm install && npm run dev      # http://localhost:5173
+cd app && npm install
+npx expo start            # scan the QR code with Expo Go, or press w for the web build
 ```
 
-The right-hand panel shows the exact JSON the browser sends across the privacy gate.
+| On the phone | What it does |
+|---|---|
+| Camera | Multi-shot capture of up to 8 photos, shrunk to 1600 px and re-encoded on the device (which also drops GPS EXIF) before upload. Falls back to the photo library when there is no camera or no permission. |
+| Ask out loud | Omni transcribes the spoken question; the words land in the text box for the caregiver to check, and the on-device guardrail — not a model — decides whether it is answered. |
+| Saved list | Kept on this device only (no account, no server copy). Re-checking it sends codes only — no photographs, no perception call. "Forget this list" removes it. |
+
+Live checking of your own photographs needs the API deployed with a Nebius key.
 
 ## The problem
 
@@ -90,7 +100,7 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 
 The codes-only boundary is enforced independently in three places, so a bug in one is not a leak:
 
-1. **Browser** — `web/src/lib/session.ts` `codeSetFor()` refuses to serialise anything that is
+1. **Device** — `app/src/lib/session.ts` `codeSetFor()` refuses to serialise anything that is
    not `RXCUI:<digits>`.
 2. **HTTP** — `POST /api/assess` takes a request model with `extra="forbid"`. A body carrying a
    `names` field, or a drug name in `codes`, is a `422` at the boundary.
@@ -155,7 +165,7 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **183 Python + 59 web, passing** |
+| Test suite | **193 Python + 74 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -190,12 +200,13 @@ makes the verifiable ones worth reading.
 Absence of evidence is never rendered as evidence of safety. A drug outside the formulary, or one
 whose label documents no interactions, is reported as such rather than silently omitted.
 
-Typed questions go through a deterministic filter (`web/src/lib/guardrail.ts`) before
-anything else runs. Questions about changing, skipping or stopping a dose are refused, and
-questions that describe an emergency are sent to emergency care. Every other question is
-answered only from the already-cited risks, so no new text about drugs is generated. Spoken
-questions through Omni's audio pathway and a NeMo Guardrails layer are not built, and the
-product does not claim them.
+Questions, typed or spoken, go through a deterministic filter (`app/src/lib/guardrail.ts`) on
+the device before anything else runs. Questions about changing, skipping or stopping a dose are
+refused, and questions that describe an emergency are sent to emergency care. Every other
+question is answered only from the already-cited risks, so no new text about drugs is generated.
+A spoken question is transcribed by Omni and shown to the caregiver to correct before it is
+screened; Omni is never asked to answer it. A NeMo Guardrails layer is not built, and the product
+does not claim one.
 
 ## Setup
 
@@ -206,8 +217,9 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 183 tests, no credentials needed
-cd web && npm install && npm test   # 59 tests
+pytest                      # 193 tests, no credentials needed
+cd app && npm install && npm test   # 74 tests
+npx tsc --noEmit && npx expo lint
 ```
 
 Building the evidence corpus (the first two need no API key):
@@ -224,14 +236,15 @@ Running the product:
 
 ```bash
 uvicorn tessera.api.app:create_app --factory --port 8000   # API; demo-only without a key
-cd web && npm run dev                                        # proxies /api to :8000
+cd app && EXPO_PUBLIC_API_URL=http://localhost:8000 npx expo start
 python scripts/build_demo.py      # regenerate the seeded demo from the corpus
 python scripts/run_watch.py       # weekly: FDA safety watcher (needs TAVILY_API_KEY)
 python -m evals.run_all           # every metric -> evals/results.md
 ```
 
-Deploy: `web/` is static (`web/vercel.json`), so the demo never cold-starts. The API ships as
-the root `Dockerfile`. Set `VITE_API_URL` on the web build to point it at the API. Run **one**
+Deploy: the web build is a static Expo export (`app/vercel.json`), so the demo never
+cold-starts. Native builds go through EAS (`npx eas-cli@latest build`). The API ships as the
+root `Dockerfile`. Set `EXPO_PUBLIC_API_URL` on the app build to point it at the API. Run **one**
 API instance with `/app/data` on a persistent volume, because the daily spend ceiling is read
 from telemetry stored there. Set `FORWARDED_ALLOW_IPS` to your platform proxy's address so the
 per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
