@@ -23,6 +23,19 @@ describe("screenQuestion refuses dose and treatment decisions", () => {
     "Should he come off atorvastatin",
     "could I swap the lisinopril for something else",
     "what is the maximum dosage",
+    // Indirect phrasings a reviewer found answered rather than refused.
+    "Should I adjust his warfarin because of the atorvastatin?",
+    "Can I split his warfarin tablet",
+    "Should he take less warfarin",
+    "Should I hold the warfarin",
+    "Should he keep taking warfarin with the statin",
+    "Can he have more of the water pill",
+    "should she take fewer metformin",
+    "can I give warfarin every other day",
+    "should we hold off on the digoxin",
+    "can I crush the metformin",
+    "should he still take lisinopril",
+    "give him another furosemide tonight?",
   ])("refuses %j", (q) => {
     expect(screenQuestion(q, LIST).kind).toBe("refuse");
   });

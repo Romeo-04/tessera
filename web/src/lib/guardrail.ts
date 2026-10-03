@@ -38,6 +38,12 @@ const DOSE_OR_TREATMENT = new RegExp(
     "lower", "reduce", "decrease", "increase", "raise",
     "swap", "switch", "substitute", "replace", "instead of", "alternative",
     "(start|begin) (taking|giving|him|her|them|on)",
+    // Indirect forms: adjusting, splitting, holding, continuing, frequency.
+    "adjust(ing)?", "titrat(e|ing)", "split(ting)?", "crush(ing)?", "chew(ing)?",
+    "cut (it|them|the|his|her|a|in)", "less", "fewer",
+    "(take|have|give|giving|taking)( \\w+){0,3} (more|another)",
+    "hold(ing)?( off)?", "keep (taking|giving|on)", "still (take|taking|give|giving|on)",
+    "continu(e|ing)", "every other", "twice", "times a day", "per day",
   ].map((p) => `\\b${p}\\b`).join("|"),
   "i",
 );
