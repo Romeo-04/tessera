@@ -60,3 +60,13 @@ def test_ceiling_counts_only_since_utc_midnight():
                            usd_per_day=0.50, clock=Clock(DAY * 10 + 3600))
     ceiling.exceeded()
     assert seen == [DAY * 10]
+
+
+def test_idle_callers_are_forgotten_so_rotating_keys_cannot_grow_memory_forever():
+    clock = Clock()
+    lim = RateLimiter(max_calls=1, per_seconds=60, clock=clock, sweep_every=10)
+    for i in range(10):
+        lim.allow(f"spoofed-{i}")
+    clock.t = 120
+    lim.allow("fresh")
+    assert lim.tracked() <= 1

@@ -24,16 +24,30 @@ class RateLimiter:
     """
 
     def __init__(self, max_calls: int, per_seconds: float,
-                 clock: Callable[[], float] = time.monotonic):
+                 clock: Callable[[], float] = time.monotonic, sweep_every: int = 1000):
         self.max_calls = max_calls
         self.per_seconds = per_seconds
         self._clock = clock
         self._hits: dict[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
+        self._sweep_every = sweep_every
+
+    def tracked(self) -> int:
+        return len(self._hits)
+
+    def _sweep(self, now: float) -> None:
+        """Forget callers with no hit inside the window, so a client rotating
+        its apparent address cannot grow this dict without bound."""
+        stale = [k for k, h in self._hits.items()
+                 if not h or now - h[-1] >= self.per_seconds]
+        for k in stale:
+            del self._hits[k]
 
     def allow(self, key: str) -> bool:
         now = self._clock()
         with self._lock:
+            if len(self._hits) >= self._sweep_every:
+                self._sweep(now)
             hits = self._hits[key]
             while hits and now - hits[0] >= self.per_seconds:
                 hits.popleft()

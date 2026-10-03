@@ -27,6 +27,7 @@ from typing import Callable
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from tessera.api.limits import RateLimiter, SpendCeiling
@@ -181,8 +182,10 @@ def create_app(deps: Deps | None = None) -> FastAPI:
             # No partial body: a half-finished list would look like a whole one.
             return None, JSONResponse(status_code=502, content={
                 "detail": "The model service failed, so nothing was checked."})
-        except TesseraError as exc:
-            return None, JSONResponse(status_code=500, content={"detail": str(exc)})
+        except TesseraError:
+            log.exception("pipeline error")
+            return None, JSONResponse(status_code=500, content={
+                "detail": "Tessera stopped before finishing, so nothing was checked."})
 
     @app.get("/health")
     def health():
@@ -221,7 +224,11 @@ def create_app(deps: Deps | None = None) -> FastAPI:
                 p = Path(tmp) / f"label-{i}{suffix}"
                 p.write_bytes(data)
                 paths.append(p)
-            perception, err = upstream(lambda: deps.read_fn(paths))
+            # The Omni call and RxNorm lookups are blocking I/O. Run them off
+            # the event loop, or every other request - /health included -
+            # stalls for the length of a vision call.
+            perception, err = await run_in_threadpool(
+                upstream, lambda: deps.read_fn(paths))
         if err:
             return err
 
