@@ -1,0 +1,120 @@
+import { codeSetFor } from "./session";
+import type { ConfirmationRequest, Drug, SessionResult } from "./types";
+import type { AlertsFile } from "./watch";
+
+
+// Expo inlines EXPO_PUBLIC_* at build time. Empty means same origin, which only
+// works on web; a native build without it simply runs the demo.
+const BASE = process.env.EXPO_PUBLIC_API_URL ?? "";
+
+export type Outcome<T> =
+  | { ok: true; value: T }
+  | { ok: false; reason: string; fallback: boolean };
+
+export interface ReadResult {
+  drugs: (Drug & { confidence: number; in_formulary: boolean })[];
+  excluded: string[];
+  confirmations: ConfirmationRequest[];
+  unreadable: boolean;
+}
+
+async function call<T>(path: string, init: RequestInit): Promise<Outcome<T>> {
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, init);
+  } catch {
+    return { ok: false, reason: "The live service could not be reached.", fallback: true };
+  }
+  let body: unknown = null;
+  try {
+    body = await res.json();
+  } catch {
+    /* an empty or non-JSON body is reported by status below */
+  }
+  if (res.ok) {
+    // A static host rewrites unknown paths to index.html with a 200. That is
+    // "no API here", not a successful empty answer.
+    if (body === null || typeof body !== "object") {
+      return { ok: false, reason: "No live service is deployed here.", fallback: true };
+    }
+    return { ok: true, value: body as T };
+  }
+
+  const b = (body ?? {}) as { detail?: unknown; fallback?: string };
+  const reason = typeof b.detail === "string" ? b.detail : `The live service answered ${res.status}.`;
+  // Only refusals the server marks as demo-safe offer the demo. An upstream
+  // failure mid-check does not: showing canned results there would look like
+  // an answer about this person's medications.
+  return { ok: false, reason, fallback: b.fallback === "demo" };
+}
+
+export async function liveAvailable(): Promise<boolean> {
+  const r = await call<{ live: boolean }>("/health", { method: "GET" });
+  return r.ok && r.value.live === true;
+}
+
+/** A photo as the camera or picker hands it over. */
+export interface PhotoInput {
+  uri: string;
+  name: string;
+  type: string;
+  bytes?: number;
+}
+
+type NativePart = { uri: string; name: string; type: string };
+
+const IS_WEB = typeof document !== "undefined";
+
+/**
+ * React Native's FormData takes { uri, name, type } and streams the file;
+ * a browser needs a real Blob. The picker and camera return URIs on both.
+ */
+export async function photoParts(photos: PhotoInput[], web = IS_WEB): Promise<(Blob | NativePart)[]> {
+  if (!web) return photos.map(({ uri, name, type }) => ({ uri, name, type }));
+  return Promise.all(photos.map(async (p) => (await fetch(p.uri)).blob()));
+}
+
+export async function readLive(photos: PhotoInput[]): Promise<Outcome<ReadResult>> {
+  const form = new FormData();
+  const parts = await photoParts(photos);
+  parts.forEach((part, i) => {
+    if (part instanceof Blob) form.append("photos", part, photos[i].name);
+    else form.append("photos", part as unknown as Blob);
+  });
+  return call<ReadResult>("/api/read", { method: "POST", body: form });
+}
+
+export async function assessLive(codes: string[]): Promise<
+  { ok: true; result: SessionResult } | { ok: false; reason: string; fallback: boolean }
+> {
+  const r = await call<SessionResult>("/api/assess", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(codeSetFor(codes)),
+  });
+  return r.ok ? { ok: true, result: r.value } : r;
+}
+
+export interface Alert {
+  rxcui: string;
+  title: string;
+  url: string;
+  published: string | null;
+  summary: string;
+}
+
+/** The whole formulary's alerts. Filtered in the browser (lib/watch.ts), so the
+ *  server never learns whose list it is. Null when no server answered. */
+export async function fetchAlerts(): Promise<AlertsFile | null> {
+  const r = await call<AlertsFile>("/api/alerts", { method: "GET" });
+  return r.ok ? r.value : null;
+}
+
+/** A spoken question to text. The clip is deleted server-side; only the words return. */
+export async function transcribe(clip: PhotoInput, web = IS_WEB): Promise<Outcome<{ text: string }>> {
+  const form = new FormData();
+  const [part] = await photoParts([clip], web);
+  if (part instanceof Blob) form.append("audio", part, clip.name);
+  else form.append("audio", part as unknown as Blob);
+  return call<{ text: string }>("/api/transcribe", { method: "POST", body: form });
+}

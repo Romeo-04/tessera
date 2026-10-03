@@ -1,6 +1,6 @@
 """One-off: build the seeded demo scenario from the real label corpus.
 
-Writes web/src/demo/scenario.json (committed). The web app bundles it, so the
+Writes app/src/demo/scenario.json (committed). The app bundles it, so the
 demo a judge sees needs no camera, no upload, no credentials and no API.
 
 Nothing here is invented except the plain-language sentences, and those are
@@ -31,7 +31,7 @@ from tessera.sources.dailymed import RawSection
 
 ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
-OUT = ROOT / "web" / "src" / "demo" / "scenario.json"
+OUT = ROOT / "app" / "src" / "demo" / "scenario.json"
 
 LISINOPRIL = "RXCUI:29046"
 SPIRONOLACTONE = "RXCUI:9997"
