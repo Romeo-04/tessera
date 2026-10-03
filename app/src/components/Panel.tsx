@@ -46,9 +46,11 @@ const NARRATION: Record<Key, { title: string; body: string; tiers: string[] }> =
   },
   ask: {
     title: "The refusal is code, not a prompt",
-    body: "Spoken or typed, a question is screened by a deterministic filter on the device "
-      + "before anything else runs. Dose and treatment questions are refused; emergencies are "
-      + "sent to emergency care. Everything else is answered only from the cited results.",
+    body: "A typed question is screened by a deterministic filter on the device before anything "
+      + "else runs. A spoken one is first sent to Omni to be transcribed - the one step here that "
+      + "leaves the device - and the words come back for you to check before the same filter "
+      + "screens them. Dose and treatment questions are refused; emergencies are sent to "
+      + "emergency care. Everything else is answered only from the cited results.",
     tiers: ["OMNI"],
   },
   watch: {

@@ -200,12 +200,13 @@ makes the verifiable ones worth reading.
 Absence of evidence is never rendered as evidence of safety. A drug outside the formulary, or one
 whose label documents no interactions, is reported as such rather than silently omitted.
 
-Questions, typed or spoken, go through a deterministic filter (`app/src/lib/guardrail.ts`) on
-the device before anything else runs. Questions about changing, skipping or stopping a dose are
+Questions go through a deterministic filter (`app/src/lib/guardrail.ts`) on the device. A typed
+question is screened before anything else runs. A spoken question is first sent to Tessera's
+server so Omni can transcribe it (the recording is then deleted, and the app says so beside the
+mic); the words come back for the caregiver to correct, and only then are they screened. Questions about changing, skipping or stopping a dose are
 refused, and questions that describe an emergency are sent to emergency care. Every other
 question is answered only from the already-cited risks, so no new text about drugs is generated.
-A spoken question is transcribed by Omni and shown to the caregiver to correct before it is
-screened; Omni is never asked to answer it. A NeMo Guardrails layer is not built, and the product
+Omni is only ever asked to transcribe, never to answer. A NeMo Guardrails layer is not built, and the product
 does not claim one.
 
 ## Setup

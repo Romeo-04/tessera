@@ -41,7 +41,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Tessera uses the microphone only while you hold to ask a question out loud."
+          "microphonePermission": "Tessera uses the microphone only while you are recording a question to ask out loud. The recording is sent to be transcribed, then deleted."
         }
       ],
       [

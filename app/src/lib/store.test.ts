@@ -62,3 +62,25 @@ describe("saved list", () => {
     expect(await loadList(kv)).toBeNull();
   });
 });
+
+describe("an incomplete list stays incomplete", () => {
+  it("remembers what was left out or outside scope", async () => {
+    const kv = memory();
+    await saveList([d("warfarin", "RXCUI:11289"), d("aspirin", "RXCUI:1191")], kv, new Date(), ["WARF SOD"]);
+    expect((await loadList(kv))?.incomplete).toEqual(["WARF SOD"]);
+  });
+
+  it("a list saved before this field existed loads as complete-unknown, not broken", async () => {
+    const kv = memory();
+    kv.raw.set("tessera.list", JSON.stringify({ version: 1, savedAt: "x",
+      drugs: [{ raw_name: "A", rxcui: "RXCUI:1", display_name: "a" }] }));
+    expect((await loadList(kv))?.incomplete).toEqual([]);
+  });
+
+  it("rejects an incomplete field that is not a list of names", async () => {
+    const kv = memory();
+    kv.raw.set("tessera.list", JSON.stringify({ version: 1, savedAt: "x", incomplete: [1],
+      drugs: [{ raw_name: "A", rxcui: "RXCUI:1", display_name: "a" }] }));
+    expect(await loadList(kv)).toBeNull();
+  });
+});

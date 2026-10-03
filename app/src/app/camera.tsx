@@ -1,7 +1,8 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Note, Screen, T } from "../components/ui";
 import type { PhotoInput } from "../lib/api";
 import { MAX_PHOTOS, pickPhotos, prepare } from "../media/photos";
@@ -12,7 +13,8 @@ import { color, font, radius, size, space } from "../theme";
  * Multi-shot capture. Several bottles per photo is fine; several photos is
  * fine too - Omni reads them in one call and merges repeats. Every way this
  * can fail (permission denied, no camera, camera error) ends at the photo
- * picker, never at a dead end.
+ * picker, never at a dead end - and every state has its own Close, because
+ * on iOS this full-screen modal covers the app bar.
  */
 export default function Camera() {
   const { startLive } = useSession();
@@ -23,12 +25,21 @@ export default function Camera() {
   const [failed, setFailed] = useState<string | null>(null);
   const cam = useRef<CameraView>(null);
 
+  const close = () => router.back();
+
+  /** From the permission screen: the picker is the whole capture. */
   const pickInstead = async () => {
     const photos = await pickPhotos();
     if (photos) {
       router.back();
       await startLive(photos);
     }
+  };
+
+  /** From the live camera: library photos join the tray, not replace it. */
+  const addFromLibrary = async () => {
+    const photos = await pickPhotos();
+    if (photos) setShots((s) => [...s, ...photos].slice(0, MAX_PHOTOS));
   };
 
   const shoot = async () => {
@@ -53,10 +64,17 @@ export default function Camera() {
     await startLive(photos);
   };
 
-  if (!permission) return <Screen><T>Checking camera access…</T></Screen>;
+  if (!permission) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: color.paper }}>
+        <Screen><T>Checking camera access…</T><Button tone="ghost" label="Close" onPress={close} /></Screen>
+      </SafeAreaView>
+    );
+  }
 
   if (!permission.granted || failed) {
     return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: color.paper }}>
       <Screen>
         <T v="h">{failed ? "The camera is not available" : "Camera access"}</T>
         <T>
@@ -67,21 +85,31 @@ export default function Camera() {
         <View style={{ gap: space.s2 }}>
           {!failed && permission.canAskAgain && <Button label="Allow camera" onPress={requestPermission} />}
           {!failed && !permission.canAskAgain && (
-            <Note tone="warn">Camera access was turned off for Tessera. You can turn it back on in Settings, or choose photos instead.</Note>
+            <>
+              <Note tone="warn">Camera access was turned off for Tessera. You can turn it back on in Settings, or choose photos instead.</Note>
+              <Button label="Open Settings" onPress={() => void Linking.openSettings()} />
+            </>
           )}
           <Button tone="ghost" label="Choose photos instead" onPress={pickInstead} />
+          <Button tone="ghost" label="Close" onPress={close} />
         </View>
       </Screen>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: color.ink }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: color.ink }} edges={["top", "bottom"]}>
       <CameraView ref={cam} style={{ flex: 1 }} facing="back" onCameraReady={() => setReady(true)}
                   onMountError={() => setFailed("This device's camera could not be started.")}
                   accessibilityLabel="Camera preview" />
-      <View style={s.hint} pointerEvents="none">
-        <Text style={s.hintText}>Labels facing the camera, good light. Several bottles per photo is fine.</Text>
+      <View style={s.top}>
+        <Pressable accessibilityRole="button" onPress={close} hitSlop={10} style={s.close}>
+          <Text style={s.closeText}>Close</Text>
+        </Pressable>
+        <View style={s.hint} pointerEvents="none">
+          <Text style={s.hintText}>Labels facing the camera, good light. Several bottles per photo is fine.</Text>
+        </View>
       </View>
 
       <View style={s.tray}>
@@ -96,7 +124,8 @@ export default function Camera() {
           ))}
         </ScrollView>
         <View style={s.controls}>
-          <Pressable accessibilityRole="button" onPress={pickInstead} style={s.side}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add photos from the library"
+                     disabled={shots.length >= MAX_PHOTOS} onPress={addFromLibrary} style={s.side}>
             <Text style={s.sideText}>Library</Text>
           </Pressable>
           <Pressable accessibilityRole="button" accessibilityLabel="Take photo"
@@ -110,13 +139,15 @@ export default function Camera() {
         </View>
         <Text style={s.count}>{shots.length}/{MAX_PHOTOS} photos</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const s = StyleSheet.create({
-  hint: { position: "absolute", top: space.s4, left: space.s4, right: space.s4, backgroundColor: "rgba(10,10,10,0.6)",
-          borderRadius: radius.ctrl, padding: space.s2 },
+  top: { position: "absolute", top: space.s4, left: space.s4, right: space.s4, flexDirection: "row", gap: space.s2, alignItems: "center" },
+  close: { backgroundColor: "rgba(10,10,10,0.7)", borderRadius: radius.pill, paddingVertical: 8, paddingHorizontal: space.s3 },
+  closeText: { color: "#fff", fontFamily: font.bodySemi, fontSize: size.sm },
+  hint: { flex: 1, backgroundColor: "rgba(10,10,10,0.6)", borderRadius: radius.ctrl, padding: space.s2 },
   hintText: { color: "#fff", fontFamily: font.body, fontSize: size.xs, textAlign: "center" },
   tray: { backgroundColor: color.ink, paddingVertical: space.s3, gap: space.s3 },
   thumb: { width: 56, height: 56, borderRadius: 8, borderWidth: 2, borderColor: color.lime },

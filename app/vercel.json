@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm install --no-audit --no-fund",
-  "buildCommand": "npx expo export -p web",
+  "buildCommand": "npx expo export -p web --clear",
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/((?!_expo/|assets/|favicon).*)", "destination": "/index.html" }]
 }

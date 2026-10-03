@@ -6,7 +6,7 @@ import type { Drug } from "../lib/types";
 interface Saved {
   saved: SavedList | null;
   loaded: boolean;
-  save: (drugs: Drug[]) => Promise<void>;
+  save: (drugs: Drug[], incomplete: string[]) => Promise<void>;
   forget: () => Promise<void>;
 }
 
@@ -26,8 +26,8 @@ export function SavedProvider({ children }: { children: ReactNode }) {
     loadList(AsyncStorage).then((l) => { setSaved(l); setLoaded(true); });
   }, []);
 
-  const save = useCallback(async (drugs: Drug[]) => {
-    await saveList(drugs, AsyncStorage);
+  const save = useCallback(async (drugs: Drug[], incomplete: string[]) => {
+    await saveList(drugs, AsyncStorage, new Date(), incomplete);
     setSaved(await loadList(AsyncStorage));
   }, []);
 

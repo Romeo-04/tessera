@@ -16,7 +16,14 @@ export async function prepare(uri: string, width: number, height: number, i: num
   if (fit) ctx.resize(fit);
   const ref = await ctx.renderAsync();
   const out = await ref.saveAsync({ compress: 0.7, format: SaveFormat.JPEG });
-  return { uri: out.uri, name: `label-${i + 1}.jpg`, type: "image/jpeg" };
+  // The size is shown on the "what crossed the network" panel; best effort only.
+  let bytes: number | undefined;
+  try {
+    bytes = (await (await fetch(out.uri)).blob()).size;
+  } catch {
+    bytes = undefined;
+  }
+  return { uri: out.uri, name: `label-${i + 1}.jpg`, type: "image/jpeg", bytes };
 }
 
 /** The library picker: the fallback when there is no camera or it is not allowed. */

@@ -1,6 +1,6 @@
 import { useRef, type ReactNode } from "react";
 import {
-  Pressable, ScrollView, StyleSheet, Text, View,
+  KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View,
   type PressableProps, type StyleProp, type TextStyle, type ViewStyle,
 } from "react-native";
 import { color, font, radius, severityStyle, size, space } from "../theme";
@@ -16,15 +16,18 @@ export function T({ v = "p", style, children, ...rest }:
 export function Screen({ children, footer, followEnd }:
   { children: ReactNode; footer?: ReactNode; followEnd?: boolean }) {
   const ref = useRef<ScrollView>(null);
+  // A footer holding a text input must ride above the keyboard. iOS needs the
+  // padding; Android under edge-to-edge does not resize the window by itself.
   return (
-    <View style={{ flex: 1, backgroundColor: color.paper }}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: color.paper }}
+                          behavior={Platform.OS === "ios" ? "padding" : Platform.OS === "android" ? "height" : undefined}>
       <ScrollView ref={ref} contentContainerStyle={{ padding: space.s4, paddingBottom: space.s6 }}
                   keyboardShouldPersistTaps="handled"
                   onContentSizeChange={followEnd ? () => ref.current?.scrollToEnd({ animated: true }) : undefined}>
         {children}
       </ScrollView>
       {footer}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

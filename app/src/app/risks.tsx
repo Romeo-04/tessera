@@ -1,4 +1,5 @@
 import { Redirect, router } from "expo-router";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
 import { Button, Note, Screen, Sev, T } from "../components/ui";
@@ -12,7 +13,19 @@ export default function Risks() {
   const { saved, save } = useSaved();
   const isSaved = !!saved && sameList(saved.drugs, checked);
   const canSave = checked.some((d) => d.rxcui);
+  const [saveError, setSaveError] = useState<string | null>(null);
   if (!result) return <Redirect href="/" />;
+
+  const onSave = async () => {
+    setSaveError(null);
+    try {
+      // What was left out or outside scope travels with the list, so a later
+      // re-check is still reported as incomplete.
+      await save(checked, result.excluded_drugs);
+    } catch {
+      setSaveError("This device would not store the list (storage may be full or private browsing may be on). Nothing was saved.");
+    }
+  };
 
   const { title, body } = statusCopy(result.status, result.risks.length);
   const unchecked = result.unchecked_drugs.length;
@@ -46,7 +59,8 @@ export default function Risks() {
           {isSaved
             ? <Note>Saved on this device. Re-check it from the start screen any time.</Note>
             : <Button tone="ghost" label={saved ? "Replace the saved list with this one" : "Save this list on this device"}
-                      onPress={() => void save(checked)} />}
+                      onPress={() => void onSave()} />}
+          {saveError && <Note tone="warn" role="alert">{saveError}</Note>}
         </View>
       )}
       <Note tone="lime">

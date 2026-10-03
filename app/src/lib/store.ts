@@ -15,13 +15,16 @@ export interface KV {
 export interface SavedList {
   savedAt: string;
   drugs: Drug[];
+  /** Labels that were left out or outside scope when it was saved. A re-check
+   *  must stay "incomplete" for them rather than come back as a clean result. */
+  incomplete: string[];
 }
 
 const KEY = "tessera.list";
 const VERSION = 1;
 const RXCUI = /^RXCUI:[0-9]+$/;
 
-export async function saveList(drugs: Drug[], kv: KV, now = new Date()): Promise<void> {
+export async function saveList(drugs: Drug[], kv: KV, now = new Date(), incomplete: string[] = []): Promise<void> {
   const coded = drugs
     .filter((d) => d.rxcui && RXCUI.test(d.rxcui))
     .map(({ raw_name, strength, form, rxcui, display_name }) => ({ raw_name, strength, form, rxcui, display_name }));
@@ -29,7 +32,7 @@ export async function saveList(drugs: Drug[], kv: KV, now = new Date()): Promise
     await kv.removeItem(KEY);
     return;
   }
-  await kv.setItem(KEY, JSON.stringify({ version: VERSION, savedAt: now.toISOString(), drugs: coded }));
+  await kv.setItem(KEY, JSON.stringify({ version: VERSION, savedAt: now.toISOString(), drugs: coded, incomplete }));
 }
 
 function valid(d: unknown): d is Drug {
@@ -49,13 +52,16 @@ export async function loadList(kv: KV): Promise<SavedList | null> {
   } catch {
     return null;
   }
-  const p = parsed as { version?: unknown; savedAt?: unknown; drugs?: unknown };
+  const p = parsed as { version?: unknown; savedAt?: unknown; drugs?: unknown; incomplete?: unknown };
   if (p?.version !== VERSION || typeof p.savedAt !== "string" || !Array.isArray(p.drugs)) return null;
+  const incomplete = p.incomplete ?? [];
+  if (!Array.isArray(incomplete) || !incomplete.every((x) => typeof x === "string")) return null;
   if (p.drugs.length === 0 || !p.drugs.every(valid)) return null;
   return {
     savedAt: p.savedAt,
     drugs: p.drugs.map((d) => ({ raw_name: d.raw_name, strength: d.strength ?? null, form: d.form ?? null,
       rxcui: d.rxcui, display_name: d.display_name })),
+    incomplete: incomplete as string[],
   };
 }
 

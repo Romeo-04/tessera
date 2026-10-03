@@ -29,8 +29,12 @@ export default function SavedListScreen() {
         <Row key={d.rxcui} icon="✓" title={d.display_name ?? d.raw_name} detail={`${d.rxcui} · label read "${d.raw_name}"`} />
       ))}
 
+      {saved.incomplete.length > 0 && (
+        <Note tone="warn">{`Not part of this list, so never checked: ${saved.incomplete.join(", ")}. A re-check will say so.`}</Note>
+      )}
+
       <View style={{ gap: space.s2, marginTop: space.s3 }}>
-        <Button label="Re-check this list" onPress={() => { router.back(); void recheck(saved.drugs); }} />
+        <Button label="Re-check this list" onPress={() => { router.back(); void recheck(saved.drugs, saved.incomplete); }} />
         <Note>Re-checking sends the codes only — no photographs and no perception call.</Note>
         {confirming ? (
           <>

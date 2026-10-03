@@ -40,7 +40,7 @@
     "web": "expo start --web",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "export:web": "expo export -p web",
+    "export:web": "expo export -p web --clear",
     "lint": "expo lint"
   },
   "private": true

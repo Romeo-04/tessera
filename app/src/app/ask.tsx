@@ -43,17 +43,25 @@ function respond(q: string, drugs: Drug[], result: SessionResult): Turn[] {
 }
 
 export default function Ask() {
-  const { checked, result, live } = useSession();
+  const { checked, result, live, logWire } = useSession();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
   const [heard, setHeard] = useState(false);
   const onText = useCallback((text: string) => { setQ(text); setHeard(true); }, []);
-  const mic = useQuestionRecorder(onText);
+  const onSent = useCallback(() => logWire({
+    boundary: "photos", method: "POST", url: "/api/transcribe → Nemotron 3 Nano Omni",
+    body: ["audio: 1 × recording of your question",
+      "// transcribed, then deleted; only the words come back"].join("\n"),
+    sent: true,
+  }), [logWire]);
+  const mic = useQuestionRecorder(onText, onSent);
+  const recording = mic.state.kind === "recording" || mic.state.kind === "transcribing";
   if (!result) return <Redirect href="/" />;
 
   const ask = (question: string) => {
     const text = question.trim();
-    if (!text) return;
+    // Asking mid-recording would race the transcript into an emptied box.
+    if (!text || recording) return;
     setTurns((t) => [...t, { who: "me", text }, ...respond(text, checked, result)]);
     setQ("");
     setHeard(false);
@@ -62,6 +70,9 @@ export default function Ask() {
   const bar = (
     <View>
       {heard && <Text style={s.heard}>This is what was heard. Fix anything that is wrong, then ask.</Text>}
+      {live && !heard && mic.state.kind !== "error" && (
+        <Text style={s.heard}>{"Asking out loud sends your recording to Tessera's server to be transcribed, then deletes it."}</Text>
+      )}
       {mic.state.kind === "error" && <Text style={[s.heard, { color: color.warn }]}>{mic.state.message}</Text>}
       <View style={s.bar}>
         {live && (
@@ -84,7 +95,8 @@ export default function Ask() {
                    placeholder={mic.state.kind === "recording" ? "Listening… tap ■ when done" : "Type a question"}
                    placeholderTextColor={color.muted2} accessibilityLabel="Your question" returnKeyType="send"
                    style={s.input} />
-        <Pressable accessibilityRole="button" onPress={() => ask(q)} style={s.send}>
+        <Pressable accessibilityRole="button" accessibilityState={{ disabled: recording }} disabled={recording}
+                   onPress={() => ask(q)} style={[s.send, recording && { opacity: 0.4 }]}>
           <Text style={s.sendText}>Ask</Text>
         </Pressable>
       </View>

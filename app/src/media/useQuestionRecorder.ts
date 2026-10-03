@@ -14,14 +14,26 @@ export type MicState =
 // A spoken question, not a dictation session: stop on its own after this long.
 const MAX_MS = 45_000;
 
+// Speech, not music. The stock LOW_QUALITY preset records 3GP/AMR-NB on
+// Android (8 kHz narrowband), which is poor input for transcription; this keeps
+// AAC in an m4a container on every native platform, mono at 16 kHz.
+const SPEECH = {
+  ...RecordingPresets.HIGH_QUALITY,
+  sampleRate: 16000,
+  numberOfChannels: 1,
+  bitRate: 32000,
+};
+
 /**
  * Tap to start, tap to stop, and the words come back for the caller to show in
  * the text box. Nothing is asked automatically: the caregiver reads what was
  * heard, fixes it if needed, and then asks - so a mis-heard drug name is caught
  * by a person, not acted on.
  */
-export function useQuestionRecorder(onText: (text: string) => void) {
-  const recorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
+export function useQuestionRecorder(onText: (text: string) => void, onSent?: () => void) {
+  const recorder = useAudioRecorder(SPEECH);
+  // Guards the permission prompt: a second tap while it is open must not start twice.
+  const starting = useRef(false);
   const [state, setState] = useState<MicState>({ kind: "idle" });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -31,8 +43,11 @@ export function useQuestionRecorder(onText: (text: string) => void) {
     setState({ kind: "transcribing" });
     try {
       await recorder.stop();
+      // Release the recording session so playback and other apps behave normally.
+      await setAudioModeAsync({ allowsRecording: false }).catch(() => undefined);
       const uri = recorder.uri;
       if (!uri) throw new Error("no recording");
+      onSent?.();
       const web = Platform.OS === "web";
       const r = await transcribe({ uri, name: web ? "question.webm" : "question.m4a", type: web ? "audio/webm" : "audio/mp4" });
       if (!r.ok) return setState({ kind: "error", message: `${r.reason} You can type the question instead.` });
@@ -42,10 +57,12 @@ export function useQuestionRecorder(onText: (text: string) => void) {
     } catch {
       setState({ kind: "error", message: "The recording did not work. You can type the question instead." });
     }
-  }, [recorder, onText]);
+  }, [recorder, onText, onSent]);
 
   const start = useCallback(async () => {
-    const perm = await requestRecordingPermissionsAsync();
+    if (starting.current) return;
+    starting.current = true;
+    const perm = await requestRecordingPermissionsAsync().finally(() => { starting.current = false; });
     if (!perm.granted) {
       setState({ kind: "error", message: "Microphone access is off for Tessera. You can type the question instead." });
       return;

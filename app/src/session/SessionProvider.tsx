@@ -28,9 +28,10 @@ interface Session {
   wire: WireEntry[];
   /** Every drug that was actually checked, named - the list the Watch tab and saving use. */
   checked: Drug[];
-  startDemo: (reason?: string | null) => void;
+  startDemo: (reason?: string | null, replace?: boolean) => void;
   startLive: (photos: PhotoInput[]) => Promise<void>;
-  recheck: (drugs: Drug[]) => Promise<void>;
+  recheck: (drugs: Drug[], incomplete: string[]) => Promise<void>;
+  logWire: (entry: WireEntry) => void;
   decide: (rawName: string, pick: Candidate | null) => void;
   runAssess: () => Promise<void>;
   afterReading: () => void;
@@ -48,6 +49,8 @@ export function useSession(): Session {
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("demo");
   const [live, setLive] = useState(false);
+  // Resolves once /health has answered, so an early tap does not guess "demo".
+  const liveCheck = useRef<Promise<boolean> | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [drugs, setDrugs] = useState<Drug[]>([]);
@@ -59,7 +62,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Bumped by every new check: a response that arrives for an abandoned one is dropped.
   const session = useRef(0);
 
-  useEffect(() => { liveAvailable().then(setLive); }, []);
+  useEffect(() => {
+    liveCheck.current = liveAvailable();
+    liveCheck.current.then(setLive);
+  }, []);
 
   const clear = useCallback(() => {
     session.current += 1;
@@ -72,7 +78,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     router.dismissTo("/");
   }, [clear]);
 
-  const startDemo = useCallback((reason: string | null = null) => {
+  const startDemo = useCallback((reason: string | null = null, replace = false) => {
     clear();
     setMode("demo");
     setNotice(reason);
@@ -82,11 +88,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       boundary: "photos", method: "POST", url: "Token Factory · Nemotron 3 Nano Omni",
       body: "content: [ 7 × image_url ]\n// demo: nothing was sent", sent: false,
     }]);
-    router.push("/reading");
+    // Falling back from a live check that is already on /reading must not
+    // stack a second /reading for the back button to land on.
+    if (replace) router.replace("/reading");
+    else router.push("/reading");
   }, [clear]);
 
   const fallBack = useCallback((reason: string) => {
-    startDemo(`${reason} Showing the demo instead — nothing about your own medications.`);
+    startDemo(`${reason} Showing the demo instead — nothing about your own medications.`, true);
   }, [startDemo]);
 
   const startLive = useCallback(async (photos: PhotoInput[]) => {
@@ -106,7 +115,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setBusy(false);
     if (!r.ok) {
       if (r.fallback) return fallBack(r.reason);
-      setNotice(r.reason);
+      // Nothing was read, so the reading screen has nothing to act on.
+      setNotice(`${r.reason} Nothing was checked.`);
+      router.dismissTo("/");
       return;
     }
     if (r.value.unreadable) {
@@ -179,26 +190,30 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [resolved, assessCodes, mode, excluded]);
 
   /** Re-check a saved list: codes only, no photographs, no perception call. */
-  const recheck = useCallback(async (saved: Drug[]) => {
+  const recheck = useCallback(async (saved: Drug[], incomplete: string[]) => {
     clear();
-    const m: Mode = live ? "live" : "demo";
-    setMode(m);
-    setDrugs(saved);
+    const isLive = await (liveCheck.current ?? liveAvailable());
+    const m: Mode = isLive ? "live" : "demo";
     const codes = saved.filter((d) => d.rxcui).map((d) => d.rxcui as string);
     if (m === "demo") {
       try {
         assessDemo(codes);
       } catch {
-        setNotice("Live checking is off here, and the demo only knows its own seven "
-          + "medications, so this saved list cannot be checked on this deployment.");
-        setResult({ ...EMPTY, status: "insufficient_drugs", notes: [] });
-        router.push("/risks");
+        // Stay on the start screen and say why: a result screen here would
+        // describe a check that never happened.
+        setNotice("Live checking is off on this deployment, and the demo only knows its own "
+          + "seven medications, so this saved list cannot be checked here.");
         return;
       }
     }
+    setMode(m);
+    setDrugs(saved);
     router.push("/reading");
-    await assessCodes(m, codes, saved, { excluded: [], leftOut: [] });
-  }, [clear, live, assessCodes]);
+    // Whatever was missing when the list was saved is still missing now.
+    await assessCodes(m, codes, saved, { excluded: incomplete, leftOut: [] });
+  }, [clear, assessCodes]);
+
+  const logWire = useCallback((entry: WireEntry) => setWire((w) => [...w, entry]), []);
 
   const afterReading = useCallback(() => {
     if (ambiguities.length > 0) router.push("/confirm");
@@ -212,9 +227,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Session>(() => ({
     mode, live, busy, notice, drugs, ambiguities, choices, excluded, result, wire,
     checked: resolved().names,
-    startDemo, startLive, recheck, decide, runAssess, afterReading, reset,
+    startDemo, startLive, recheck, logWire, decide, runAssess, afterReading, reset,
   }), [mode, live, busy, notice, drugs, ambiguities, choices, excluded, result, wire, resolved,
-    startDemo, startLive, recheck, decide, runAssess, afterReading, reset]);
+    startDemo, startLive, recheck, logWire, decide, runAssess, afterReading, reset]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -4,11 +4,11 @@ import {
   IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold,
 } from "@expo-google-fonts/ibm-plex-sans";
 import { useFonts } from "expo-font";
-import { Stack, usePathname } from "expo-router";
+import { router, Stack, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import type { ReactNode } from "react";
-import { BackHandler, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Alert, BackHandler, Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AppBar, Mark } from "../components/chrome";
 import { Panel } from "../components/Panel";
@@ -16,27 +16,52 @@ import { SavedProvider } from "../session/SavedProvider";
 import { SessionProvider, useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space, WIDE } from "../theme";
 
-// Screens of one check. Backing out of any of them abandons the check, so the
-// hardware back button starts over cleanly instead of popping to a stale step.
-const IN_FLOW = new Set(["/reading", "/confirm", "/risks", "/ask", "/watch"]);
-
-function Flow() {
+/**
+ * Android's hardware back, step by step through a check:
+ *   Ask / Watch -> Risks (the tabs are one result, not a history)
+ *   Confirm     -> Reading (an ordinary step back)
+ *   Reading     -> start over (nothing to keep yet)
+ *   Risks       -> start over, but a live result is a paid check, so ask first
+ * Everything else (citation, camera, saved list) is the stack's normal pop.
+ */
+function useFlowBack() {
   const path = usePathname();
-  const { reset } = useSession();
+  const { reset, mode } = useSession();
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (!IN_FLOW.has(path)) return false;
-      reset();
-      return true;
+      if (path === "/ask" || path === "/watch") {
+        router.replace("/risks");
+        return true;
+      }
+      if (path === "/reading") {
+        reset();
+        return true;
+      }
+      if (path === "/risks") {
+        if (mode === "demo") {
+          reset();
+        } else {
+          Alert.alert("Start over?", "This result will be cleared. Checking again means photographing the bottles again — or save the list first.", [
+            { text: "Keep it", style: "cancel" },
+            { text: "Start over", style: "destructive", onPress: reset },
+          ]);
+        }
+        return true;
+      }
+      return false;
     });
     return () => sub.remove();
-  }, [path, reset]);
+  }, [path, reset, mode]);
+}
+
+function Flow() {
+  useFlowBack();
   return (
     <View style={{ flex: 1, backgroundColor: color.paper }}>
       <AppBar />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.paper } }}>
         <Stack.Screen name="reading" options={{ gestureEnabled: false }} />
-        <Stack.Screen name="confirm" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="confirm" />
         <Stack.Screen name="risks" options={{ animation: "none", gestureEnabled: false }} />
         <Stack.Screen name="ask" options={{ animation: "none", gestureEnabled: false }} />
         <Stack.Screen name="watch" options={{ animation: "none", gestureEnabled: false }} />
@@ -99,12 +124,14 @@ function Shell() {
 }
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [loaded, fontError] = useFonts({
     BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold,
     IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold,
     IBMPlexMono_400Regular, IBMPlexMono_500Medium,
   });
-  if (!loaded) return null;
+  // A font that fails to load falls back to the system font; it must never
+  // leave the app on a blank screen.
+  if (!loaded && !fontError) return null;
   return (
     <SafeAreaProvider>
       <SavedProvider>

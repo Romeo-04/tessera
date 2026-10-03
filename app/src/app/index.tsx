@@ -54,7 +54,7 @@ export default function Capture() {
               {saved.drugs.map((d) => d.display_name ?? d.raw_name).join(", ")}
             </T>
             <View style={{ flexDirection: "row", gap: space.s2 }}>
-              <Button label="Re-check" style={{ flex: 1 }} onPress={() => void recheck(saved.drugs)} />
+              <Button label="Re-check" style={{ flex: 1 }} onPress={() => void recheck(saved.drugs, saved.incomplete)} />
               <Button tone="ghost" label="View" style={{ flex: 1 }} onPress={() => router.push("/list")} />
             </View>
           </View>
