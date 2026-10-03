@@ -28,7 +28,14 @@ async function call<T>(path: string, init: RequestInit): Promise<Outcome<T>> {
   } catch {
     /* an empty or non-JSON body is reported by status below */
   }
-  if (res.ok) return { ok: true, value: body as T };
+  if (res.ok) {
+    // A static host rewrites unknown paths to index.html with a 200. That is
+    // "no API here", not a successful empty answer.
+    if (body === null || typeof body !== "object") {
+      return { ok: false, reason: "No live service is deployed here.", fallback: true };
+    }
+    return { ok: true, value: body as T };
+  }
 
   const b = (body ?? {}) as { detail?: unknown; fallback?: string };
   const reason = typeof b.detail === "string" ? b.detail : `The live service answered ${res.status}.`;
