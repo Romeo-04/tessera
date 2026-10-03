@@ -304,3 +304,58 @@ def test_a_name_is_omitted_rather_than_invented_when_unknown(tmp_path):
     risk = result.risks[0]
     assert risk.subject_name == "warfarin"
     assert risk.object_name is None
+
+
+# ---- the split at the gate ------------------------------------------------
+
+from tessera.pipeline import assess, perceive  # noqa: E402
+from tessera.schemas import CodeSet  # noqa: E402
+
+
+def test_assess_sees_only_codes_and_returns_only_codes():
+    """The reasoning half has no names to give back. Names are the client's."""
+    result = assess(
+        CodeSet(codes=["RXCUI:11289", "RXCUI:1191"]),
+        FakeIndex(), FakeTable([ASSERTION]), ScriptedRouter([]),
+    )
+    assert [(r.subject, r.object) for r in result.risks] == [("RXCUI:11289", "RXCUI:1191")]
+    assert all(r.subject_name is None and r.object_name is None for r in result.risks)
+    assert result.status == "ok"
+
+
+def test_assess_with_fewer_than_two_codes_is_insufficient():
+    result = assess(
+        CodeSet(codes=["RXCUI:11289"]),
+        FakeIndex(), FakeTable([ASSERTION]), ScriptedRouter([]),
+    )
+    assert result.status == "insufficient_drugs"
+    assert result.risks == []
+
+
+def test_assess_reports_codes_it_holds_no_evidence_for():
+    result = assess(
+        CodeSet(codes=["RXCUI:11289", "RXCUI:1191"]),
+        FakeIndex(), FakeTable([ASSERTION]), ScriptedRouter([]),
+        covered_rxcuis={"RXCUI:11289"},
+    )
+    assert result.unchecked_drugs == ["RXCUI:1191"]
+    assert result.status == "partial"
+
+
+def test_perceive_reports_unreadable_photos(tmp_path):
+    photo = tmp_path / "a.jpg"
+    photo.write_bytes(b"\xff\xd8\xff")
+    p = perceive([photo], ScriptedRouter([]), FORMULARY, fake_match)
+    assert p.unreadable is True
+    assert p.drugs == []
+
+
+def test_perceive_keeps_names_on_its_own_side(tmp_path):
+    photo = tmp_path / "a.jpg"
+    photo.write_bytes(b"\xff\xd8\xff")
+    p = perceive(
+        [photo], ScriptedRouter([{"raw_name": "WARFARIN 5MG"}, {"raw_name": "PHENPROCOUMON"}]),
+        FORMULARY, fake_match,
+    )
+    assert [d.display_name for d in p.drugs if d.rxcui] == ["warfarin"]
+    assert p.excluded == ["PHENPROCOUMON"]
