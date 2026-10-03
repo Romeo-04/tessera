@@ -9,10 +9,10 @@ export function Citation({ risk, demo }: { risk: RankedRisk; demo: boolean }) {
   const [full, setFull] = useState(false);
   const quote = risk.quote ?? "";
   const excerpt = citeExcerpt(
-    quote, demoHighlight(risk.span_id),
+    quote, demo ? demoHighlight(risk.span_id) : null,
     [risk.object_name, risk.subject_name].filter((n): n is string => !!n),
   );
-  const label = (risk.subject_name ?? "the").toLowerCase();
+  const source = risk.subject_name ? `From the ${risk.subject_name.toLowerCase()} label` : "From the FDA label";
 
   return (
     <>
@@ -22,7 +22,7 @@ export function Citation({ risk, demo }: { risk: RankedRisk; demo: boolean }) {
 
       {quote ? (
         <>
-          <span className="eyebrow">From the {label} label · Drug Interactions</span>
+          <span className="eyebrow">{source}</span>
           <blockquote className="quote">
             {full ? quote : (<>“{excerpt.pre}{excerpt.mark && <mark>{excerpt.mark}</mark>}{excerpt.post}”</>)}
           </blockquote>

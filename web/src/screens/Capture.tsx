@@ -41,7 +41,7 @@ export function Capture({ live, notice, onDemo, onPhotos }: Props) {
         </button>
 
         <input
-          ref={input} type="file" accept="image/jpeg,image/png,image/webp" capture="environment"
+          ref={input} type="file" accept="image/jpeg,image/png,image/webp"
           multiple hidden
           onChange={(e) => {
             const files = Array.from(e.target.files ?? []).slice(0, 8);

@@ -23,11 +23,16 @@ function respond(q: string, drugs: Drug[], result: SessionResult): Turn[] {
   const names = drugs.filter((d) => d.rxcui && asked.has(d.rxcui)).map((d) => d.display_name ?? d.raw_name);
   const hits = result.risks.filter((r) => asked.has(r.subject) && asked.has(r.object));
   if (hits.length === 0) {
+    const capped = result.notes.some((n) => n.includes("most severe"));
     return [{
       who: "app", kind: "answer",
       text: `${names.join(", ")}: nothing in the results above documents an interaction between `
-        + "these. That is not the same as safe — the results show at most five risks, and labels "
-        + "do not cover everything. A pharmacist can check.",
+        + "these. "
+        + (capped
+          ? "More documented interactions were found than the five shown, so one between these "
+            + "may be among those not shown. "
+          : "")
+        + "That is not the same as safe — labels do not cover everything. A pharmacist can check.",
     }];
   }
   return [

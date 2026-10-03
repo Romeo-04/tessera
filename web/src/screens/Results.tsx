@@ -22,8 +22,8 @@ export function Results({ result, notice, onOpen }: Props) {
       <p className="ph-p" style={{ marginBottom: 12 }}>{body}</p>
       {notice && <div className="note note--warn" role="status">{notice}</div>}
 
-      {result.notes.map((n) => (
-        <div className={`note${result.status === "ok" ? "" : " note--warn"}`} key={n}>{n}</div>
+      {result.notes.map((n, i) => (
+        <div className={`note${result.status === "ok" ? "" : " note--warn"}`} key={i}>{n}</div>
       ))}
 
       <ol style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>

@@ -36,6 +36,8 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const screenRef = useRef<HTMLDivElement>(null);
+  // Bumped by "Start over": a response that arrives for an abandoned check is dropped.
+  const session = useRef(0);
 
   useEffect(() => { liveAvailable().then(setLive); }, []);
 
@@ -43,6 +45,8 @@ export default function App() {
   useEffect(() => { screenRef.current?.focus(); screenRef.current?.scrollTo(0, 0); }, [screen]);
 
   const reset = useCallback(() => {
+    session.current += 1;
+    setBusy(false);
     setScreen("capture"); setDrugs([]); setAmbiguities([]); setChoices({});
     setExcluded([]); setResult(null); setSelected(null); setWire([]); setNotice(null);
   }, []);
@@ -71,7 +75,9 @@ export default function App() {
       body: `photos: ${files.length} × image, ${kb} KB\n// deleted on the server after the call`,
       sent: true,
     }]);
+    const mine = session.current;
     const r = await readLive(files);
+    if (mine !== session.current) return;
     setBusy(false);
     if (!r.ok) {
       if (r.fallback) return startDemo(`${r.reason} Showing the demo instead — nothing about your photos.`);
@@ -87,7 +93,8 @@ export default function App() {
       setScreen("results");
       return;
     }
-    setDrugs(r.value.drugs.filter((d) => d.in_formulary || d.rxcui === null));
+    // Out-of-scope drugs are listed once, under "excluded", not also as a question.
+    setDrugs(r.value.drugs.filter((d) => d.in_formulary));
     setExcluded(r.value.excluded);
     setAmbiguities(r.value.confirmations);
   }, [reset, startDemo]);
@@ -131,7 +138,10 @@ export default function App() {
       return;
     }
     setBusy(true);
+    setNotice(null);
+    const mine = session.current;
     const r = await assessLive(codes);
+    if (mine !== session.current) return;
     setBusy(false);
     if (!r.ok) {
       if (r.fallback) return startDemo(`${r.reason} Showing the demo instead — nothing about your photos.`);
@@ -197,7 +207,7 @@ export default function App() {
                 )}
                 {screen === "reading" && (
                   <Reading mode={mode} busy={busy} drugs={drugs} ambiguities={ambiguities}
-                           excluded={excluded} onContinue={afterReading} />
+                           excluded={excluded} notice={notice} onContinue={afterReading} />
                 )}
                 {screen === "confirm" && (
                   <Confirm ambiguities={ambiguities} choices={choices} onDecide={decide}

@@ -7,10 +7,11 @@ interface Props {
   drugs: Drug[];
   ambiguities: Ambiguity[];
   excluded: string[];
+  notice: string | null;
   onContinue: () => void;
 }
 
-export function Reading({ mode, busy, drugs, ambiguities, excluded, onContinue }: Props) {
+export function Reading({ mode, busy, drugs, ambiguities, excluded, notice, onContinue }: Props) {
   const unsure = new Set(ambiguities.map((a) => a.raw_name));
   const total = drugs.length + excluded.length;
 
@@ -45,6 +46,8 @@ export function Reading({ mode, busy, drugs, ambiguities, excluded, onContinue }
         </div>
       ))}
 
+      {notice && mode === "live" && <div className="note note--warn" role="alert" style={{ marginTop: 12 }}>{notice} Nothing was checked; try again.</div>}
+      {notice && mode === "demo" && <div className="note note--warn" role="status" style={{ marginTop: 12 }}>{notice}</div>}
       {!busy && (
         <button className="btn btn--block" style={{ marginTop: 12 }} onClick={onContinue}>
           {ambiguities.length ? "Continue" : "Check for interactions"}
