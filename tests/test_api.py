@@ -209,3 +209,11 @@ def test_alerts_ignore_any_attempt_to_filter_server_side(tmp_path):
     path.write_text(json.dumps({"generated_at": "x", "alerts": alerts}))
     r = make(alerts_path=path).get("/api/alerts", params={"codes": "RXCUI:1"})
     assert r.json()["alerts"] == alerts
+
+
+def test_an_oversized_upload_is_refused_before_it_is_read():
+    client = make(read=Recorder(Perception()), assess=Recorder())
+    r = client.post("/api/read", content=b"x", headers={
+        "content-type": "multipart/form-data; boundary=x",
+        "content-length": str(80 * 1024 * 1024)})
+    assert r.status_code == 413

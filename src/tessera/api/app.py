@@ -40,6 +40,7 @@ log = logging.getLogger("tessera.api")
 MAX_PHOTOS = 8
 MAX_PHOTO_BYTES = 8 * 1024 * 1024
 MAX_CODES = 40
+MAX_BODY_BYTES = MAX_PHOTOS * MAX_PHOTO_BYTES + 1024 * 1024
 
 # Magic numbers, not the client's Content-Type, decide what an upload is.
 IMAGE_SIGNATURES = {
@@ -186,6 +187,16 @@ def create_app(deps: Deps | None = None) -> FastAPI:
             log.exception("pipeline error")
             return None, JSONResponse(status_code=500, content={
                 "detail": "Tessera stopped before finishing, so nothing was checked."})
+
+    @app.middleware("http")
+    async def cap_body(request: Request, call_next):
+        """Refuse an oversized upload from its declared length, before any of it
+        is spooled to disk. The per-file check below still runs as well."""
+        declared = request.headers.get("content-length")
+        if declared and declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+            return JSONResponse(status_code=413, content={
+                "detail": f"Too large: at most {MAX_PHOTOS} photos of 8 MB."})
+        return await call_next(request)
 
     @app.get("/health")
     def health():

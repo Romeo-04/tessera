@@ -11,8 +11,8 @@ names, strengths, directions, dates, or images reach it. That boundary is enforc
 (`src/tessera/privacy.py`) and tested on the serialised payload, not just the object.
 
 **What it does not yet guarantee, stated plainly:** perception currently runs in the cloud, not
-on the device. Two things cross a network *above* that gate — the photographs go to Nebius for
-Omni to read, and the OCR'd drug name goes to the NLM's public RxNorm service to be normalised.
+on the device. In the web app the photographs go to Tessera's own API (`/api/read`), which sends
+them to Nebius for Omni to read and sends the OCR'd drug name to the NLM's public RxNorm service.
 An on-device Omni build is the intended end state and is not implemented. See
 [Deployment honesty](#deployment-honesty).
 
@@ -63,7 +63,7 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 ## Architecture
 
 ```
-┌─ CLIENT ───────────────────────────┐
+┌─ PERCEPTION · /api/read ───────────┐
 │  photos + voice                     │
 │      ↓                              │
 │  Nemotron 3 Nano Omni  (OCR + ASR)  │ ──► cloud today, on-device intended
@@ -97,7 +97,9 @@ The codes-only boundary is enforced independently in three places, so a bug in o
 3. **Pipeline** — `src/tessera/privacy.py` `to_code_set()`, as before.
 
 Perception (`POST /api/read`) and reasoning (`POST /api/assess`) are separate endpoints, so
-the split the diagram shows is the split the code has. Names are re-joined in the browser.
+the reasoning code path never receives a name. They are served by the same host today — see
+[Deployment honesty](#deployment-honesty) for what that does and does not guarantee. Names are
+re-joined in the browser.
 
 The one-sentence version: **the reasoning service never learns what anyone is taking — it sees
 numeric codes and returns numeric codes, and the names are re-joined on the side that already
@@ -110,11 +112,18 @@ is which:
 
 | Boundary | What crosses | Status |
 |---|---|---|
-| Client → Nebius (Omni) | the photographs | Cloud today. On-device Omni is the intended end state; Omni needs ~25 GB and a quantised build is not done. |
-| Client → NLM RxNorm | the OCR'd drug name as text | Public, free, no account. Could be removed by shipping a local RxNorm subset — the formulary is already committed. |
-| **Client → Nebius (reasoning)** | **RxNorm codes only** | **Enforced and tested.** |
+| Browser → Tessera API `/api/read` | the photographs; the response carries the drug names back | Held in a temp directory for the one call, then deleted. Not logged. |
+| Tessera API → Nebius (Omni) | the photographs | Cloud today. On-device Omni is the intended end state; Omni needs ~25 GB and a quantised build is not done. |
+| Tessera API → NLM RxNorm | the OCR'd drug name as text | Public, free, no account. Could be removed by shipping a local RxNorm subset — the formulary is already committed. |
+| **Browser → Tessera API `/api/assess` → Nebius (reasoning)** | **RxNorm codes only** | **Enforced and tested, three times over.** |
 
-Closing the first two is future work. Claiming they are closed today would be the "superficial"
+One more thing stated plainly: `/api/read` and `/api/assess` are two endpoints of **one**
+service, called from the same browser seconds apart. The split guarantees that the reasoning
+code path — and the Nebius reasoning calls — only ever receive codes. It does not stop the
+operator of that one host from correlating the two requests. Running perception on the device
+is what would close that, and it is the same future work as on-device Omni.
+
+Closing the first three rows is future work. Claiming they are closed today would be the "superficial"
 kind of claim this project is built to avoid making.
 
 ## Why this breaks without Nemotron
@@ -222,7 +231,10 @@ python -m evals.run_all           # every metric -> evals/results.md
 ```
 
 Deploy: `web/` is static (`web/vercel.json`), so the demo never cold-starts. The API ships as
-the root `Dockerfile`. Set `VITE_API_URL` on the web build to point it at the API.
+the root `Dockerfile`. Set `VITE_API_URL` on the web build to point it at the API. Run **one**
+API instance with `/app/data` on a persistent volume, because the daily spend ceiling is read
+from telemetry stored there. Set `FORWARDED_ALLOW_IPS` to your platform proxy's address so the
+per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
 
 `build_interactions.py` prints a reminder to hand-check its output. That is not ceremony:
 everything this product asserts flows from that table.

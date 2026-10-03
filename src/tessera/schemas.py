@@ -5,7 +5,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-RXCUI_RE = re.compile(r"^RXCUI:\d+$")
+# \A..\Z and [0-9], not ^..$ and \d: "$" accepts a trailing newline and "\d"
+# accepts any Unicode digit. Neither belongs in the only payload that may leave.
+RXCUI_RE = re.compile(r"\ARXCUI:[0-9]+\Z")
 
 # Below this top-1 confidence we ask the user instead of guessing.
 CONFIRM_THRESHOLD = 0.75

@@ -81,3 +81,9 @@ def test_every_span_is_verbatim_label_text(scenario):
     for span_id, span in scenario["spans"].items():
         assert any(span["text"] in s["text"] and s["setid"] == span["setid"]
                    for s in corpus), span_id
+
+
+def test_every_risk_carries_exactly_its_span_text(scenario):
+    for v in _variants(scenario):
+        for r in v.risks:
+            assert r.quote == scenario["spans"][r.span_id]["text"]
