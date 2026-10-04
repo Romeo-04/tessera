@@ -152,7 +152,6 @@ kind of claim this project is built to avoid making.
 
 - **Token Factory** — all inference, OpenAI-compatible, routed across four Nemotron tiers by a
   single module so a tier swap is one line and its cost is measurable.
-- **Qwen3-Embedding-8B** — retrieval over FDA label spans.
 - **Nemotron Lightning** — triages the formulary-wide FDA safety watcher (`src/tessera/watch.py`).
   It returns indices only; what a user reads is the FDA page's own text.
 - **Spend control** — the router's per-call cost telemetry also feeds a daily USD ceiling and a
@@ -232,7 +231,6 @@ Building the evidence corpus (the first two need no API key):
 python scripts/build_formulary.py      # RxNorm  -> data/formulary.csv   (committed)
 python scripts/fetch_spl.py            # DailyMed -> data/spl/           (gitignored)
 python scripts/build_interactions.py   # label text -> data/interactions.csv  (model-extracted: REVIEW IT)
-python scripts/build_index.py          # embeddings -> data/index/       (gitignored)
 tessera check photos/*.jpg
 ```
 
@@ -264,7 +262,7 @@ per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
 3. `fly secrets set NEBIUS_API_KEY=... TAVILY_API_KEY=...` — secrets go to Fly, never into the
    repo or the image.
 4. `fly deploy`, then copy the built corpus (`data/formulary.csv`, `data/interactions.csv`,
-   `data/index/`, `data/spl/sections.jsonl`) onto the volume with `fly ssh sftp shell`, and
+   `data/spl/sections.jsonl`) onto the volume with `fly ssh sftp shell`, and
    `fly machine restart` so the API loads it. `/health` reports `"live": true` once it has.
 5. Rebuild the app with `EXPO_PUBLIC_API_URL=https://<app>.fly.dev` and redeploy the web demo.
 

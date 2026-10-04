@@ -7,7 +7,7 @@ from pathlib import Path
 import typer
 
 from tessera.config import get_settings
-from tessera.corpus.index import EvidenceIndex
+from tessera.corpus.spans import SpanStore
 from tessera.errors import RateLimitedError, TesseraError, UpstreamError
 from tessera.pipeline import run_session
 from tessera.resolve import InteractionTable
@@ -34,7 +34,7 @@ DISCLAIMER = (
 
 def _load_corpus(settings):
     """Load the four built artifacts. Raises FileNotFoundError if absent."""
-    index = EvidenceIndex.load(settings.data_dir / "index")
+    index = SpanStore.from_sections(settings.data_dir / "spl" / "sections.jsonl")
     table = InteractionTable.load(settings.data_dir / "interactions.csv")
 
     with (settings.data_dir / "formulary.csv").open(encoding="utf-8") as fh:
@@ -65,8 +65,7 @@ def check(photos: list[Path] = typer.Argument(..., help="Label photographs")) ->
             "Build the corpus first:\n"
             "  python scripts/build_formulary.py\n"
             "  python scripts/fetch_spl.py\n"
-            "  python scripts/build_interactions.py\n"
-            "  python scripts/build_index.py"
+            "  python scripts/build_interactions.py"
         )
         raise typer.Exit(code=2)
 
