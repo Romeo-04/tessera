@@ -12,8 +12,8 @@ names, strengths, directions, dates, or images reach it. That boundary is enforc
 
 **What it does not yet guarantee, stated plainly:** perception currently runs in the cloud, not
 on the device. In the web app the photographs go to Tessera's own API (`/api/read`), which sends
-them to Nebius for Omni to read and sends the OCR'd drug name to the NLM's public RxNorm service.
-An on-device Omni build is the intended end state and is not implemented. See
+them to Nebius for a vision model (MiniCPM-V 4.5) to read, and sends the OCR'd drug name to the
+NLM's public RxNorm service. On-device perception is the intended end state and is not built. See
 [Deployment honesty](#deployment-honesty).
 
 > A Roman *tessera* was a small token you handed over **instead of** your name. That is exactly
@@ -32,8 +32,8 @@ explanations were written by hand from each quoted passage, and the build fails 
 not verbatim in the label. The right-hand panel shows
 the exact JSON the app sends across the privacy gate.
 
-**iOS and Android:** the same Expo (React Native) codebase is a native app with a real camera,
-spoken questions and a list saved on the device.
+**iOS and Android:** the same Expo (React Native) codebase is a native app with a real camera
+and a list saved on the device.
 
 ```bash
 cd app && npm install
@@ -43,7 +43,7 @@ npx expo start            # scan the QR code with Expo Go, or press w for the we
 | On the phone | What it does |
 |---|---|
 | Camera | Multi-shot capture of up to 8 photos, shrunk to 1600 px and re-encoded on the device (which also drops GPS EXIF) before upload. Falls back to the photo library when there is no camera or no permission. |
-| Ask out loud | Omni transcribes the spoken question; the words land in the text box for the caregiver to check, and the on-device guardrail — not a model — decides whether it is answered. |
+| Ask | Type a question about two drugs on the list; the on-device guardrail — not a model — decides whether it is answered. Spoken questions are built but switched off: no model on Token Factory accepts audio, so the server reports `voice: false` and the app hides the mic. |
 | Saved list | Kept on this device only (no account, no server copy). Re-checking it sends codes only — no photographs, no perception call. "Forget this list" removes it. |
 
 Live checking of your own photographs needs the API deployed with a Nebius key.
@@ -62,7 +62,7 @@ Everything else is lookup.
 ## What it does
 
 1. Photograph the bottles — one shot, several bottles, ordinary lighting, angled labels.
-2. Nemotron 3 Nano Omni reads every label in one call: name, strength, form, directions.
+2. A vision model (MiniCPM-V 4.5) reads every label in one call: name, strength, form, directions.
 3. Each drug resolves to an RxNorm ingredient `RXCUI`. When two different drugs are too close to
    call — a smudged `WARF SOD` scores warfarin and sulfacetamide within 0.039 — it **refuses to pick** and hands the
    options back. An unidentified drug carries no code, so nothing downstream can score it.
@@ -77,9 +77,9 @@ Everything else is lookup.
 
 ```
 ┌─ PERCEPTION · /api/read ───────────┐
-│  photos + voice                     │
+│  photos                             │
 │      ↓                              │
-│  Nemotron 3 Nano Omni  (OCR + ASR)  │ ──► cloud today, on-device intended
+│  MiniCPM-V 4.5  (reads labels)      │ ──► cloud today
 │      ↓                              │
 │  RxNorm normalisation               │ ──► public NLM service (name leaves)
 │  abstains when ambiguous or weak    │
@@ -126,7 +126,7 @@ is which:
 | Boundary | What crosses | Status |
 |---|---|---|
 | Browser → Tessera API `/api/read` | the photographs; the response carries the drug names back | Held in a temp directory for the one call, then deleted. Not logged. |
-| Tessera API → Nebius (Omni) | the photographs | Cloud today. On-device Omni is the intended end state; Omni needs ~25 GB and a quantised build is not done. |
+| Tessera API → Nebius (vision model) | the photographs | Cloud. Nemotron 3 Nano Omni, which could have run on a phone, is not served on Token Factory; on-device perception is future work. |
 | Tessera API → NLM RxNorm | the OCR'd drug name as text | Public, free, no account. Could be removed by shipping a local RxNorm subset — the formulary is already committed. |
 | **Browser → Tessera API `/api/assess` → Nebius (reasoning)** | **RxNorm codes only** | **Enforced and tested, three times over.** |
 
@@ -134,17 +134,22 @@ One more thing stated plainly: `/api/read` and `/api/assess` are two endpoints o
 service, called from the same browser seconds apart. The split guarantees that the reasoning
 code path — and the Nebius reasoning calls — only ever receive codes. It does not stop the
 operator of that one host from correlating the two requests. Running perception on the device
-is what would close that, and it is the same future work as on-device Omni.
+is what would close that, and it is the same future work as on-device perception.
 
 Closing the first three rows is future work. Claiming they are closed today would be the "superficial"
 kind of claim this project is built to avoid making.
 
 ## Why this breaks without Nemotron
 
+A vision model reads the photographs; Nemotron does everything after them. The labels are read by
+**MiniCPM-V 4.5**, an open model that is not NVIDIA's: Nemotron 3 Nano Omni was the plan, but Token
+Factory does not serve it (404, and absent from the
+[model catalog](https://tokenfactory.nebius.com/model-catalog.md), checked 2026-10-04). Switching
+back is one line in `router.py`.
+
 | Model | What it does | What fails without it |
 |---|---|---|
-| **Nemotron 3 Nano Omni** | OCR of curved bottle labels, multi-image reasoning in one unified context, transcription of the spoken question | Reading the labels and the spoken question would need two models (or two vendors), each seeing raw personal data. One open, ~25 GB model covering both is also what makes an on-device build plausible later. |
-| **Nemotron 3.5 Lightning** | Watch-list triage of FDA safety communications | Triage on Super instead would cost roughly 4–5× more per check at list prices (unverified for Lightning until a live call). |
+| **Nemotron 3.5 Lightning** | Watch-list triage of FDA safety communications | Triage on Super instead would cost about 4–5× more per check at catalog prices ($0.06/$0.24 vs $0.30/$0.90 per million tokens). |
 | **Nemotron 3 Super 120B** | The citation entailment check, and the one-off extraction of interactions from label text | Checking every explanation on the deep tier would multiply the per-session cost; without the check, unsupported sentences would reach the screen. |
 | **Nemotron 3 Ultra 550B** | Plain-language explanation of each documented interaction, written only from its cited passage | Ordering does not depend on it — code ranks by the label's severity wording. Whether a smaller tier writes explanations that pass the citation check as often is exactly what the router ablation will measure; it is not measured yet. |
 
@@ -167,13 +172,14 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **197 Python + 88 app, passing** |
+| Test suite | **197 Python + 91 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
 | Severity precision@5 | not yet measured |
 | Citation support rate | not yet measured |
-| Cost per session | estimated ≈ $0.035; **not yet confirmed against live pricing** |
+| Label reading, first live call | 2 of 2 **synthetic** test labels read and normalised exactly, in one MiniCPM-V call: 2.4 s, $0.00048. Real bottle photos are next. |
+| Cost per session | estimated ≈ $0.035 from catalog prices; **not yet measured end to end** |
 
 Verified against the live RxNorm API on 2026-10-03: labels resolve to strength-level concepts
 (`METF0RMIN 500 mg` → `316256`, "metformin 500 MG"), so every candidate is mapped to its
@@ -202,14 +208,13 @@ makes the verifiable ones worth reading.
 Absence of evidence is never rendered as evidence of safety. A drug outside the formulary, or one
 whose label documents no interactions, is reported as such rather than silently omitted.
 
-Questions go through a deterministic filter (`app/src/lib/guardrail.ts`) on the device. A typed
-question is screened before anything else runs. A spoken question is first sent to Tessera's
-server so Omni can transcribe it (the recording is then deleted, and the app says so beside the
-mic); the words come back for the caregiver to correct, and only then are they screened. Questions about changing, skipping or stopping a dose are
+Questions go through a deterministic filter (`app/src/lib/guardrail.ts`) on the device before
+anything else runs. Questions about changing, skipping or stopping a dose are
 refused, and questions that describe an emergency are sent to emergency care. Every other
 question is answered only from the already-cited risks, so no new text about drugs is generated.
-Omni is only ever asked to transcribe, never to answer. A NeMo Guardrails layer is not built, and the product
-does not claim one.
+A NeMo Guardrails layer is not built, and the product does not claim one. Spoken questions are
+built in the app but switched off until a speech model is wired: whatever transcribes them must
+return only the words, which the caregiver checks before the same filter screens them.
 
 ## Setup
 
@@ -221,7 +226,7 @@ python -m venv .venv
 
 cp .env.example .env        # add your NEBIUS_API_KEY
 pytest                      # 197 tests, no credentials needed
-cd app && npm install && npm test   # 88 tests
+cd app && npm install && npm test   # 91 tests
 npx tsc --noEmit && npx expo lint
 ```
 
