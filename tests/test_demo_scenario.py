@@ -11,7 +11,7 @@ from tessera.adjudicate import MAX_RISKS, UNSAFE_ACTION
 from tessera.schemas import RXCUI_RE, SessionResult
 
 ROOT = Path(__file__).resolve().parents[1]
-SCENARIO = ROOT / "web" / "src" / "demo" / "scenario.json"
+SCENARIO = ROOT / "app" / "src" / "demo" / "scenario.json"
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
 
 

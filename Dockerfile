@@ -1,4 +1,4 @@
-# The API only. The web app is static and deploys separately (web/vercel.json),
+# The API only. The web app is static and deploys separately (app/vercel.json),
 # so the judge-facing demo never depends on this container being awake.
 FROM python:3.12-slim
 

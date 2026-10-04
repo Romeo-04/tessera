@@ -1,6 +1,6 @@
 .venv
 .git
-web
+app
 mock
 tests
 .superpowers

@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Tessera",
+    "slug": "tessera",
+    "scheme": "tessera",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.tessera.caregiver"
+    },
+    "android": {
+      "package": "app.tessera.caregiver",
+      "adaptiveIcon": {
+        "backgroundColor": "#CDFF47",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Tessera uses the camera to read the labels on medication bottles. Photos are read once and deleted.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Tessera uses the microphone only while you are recording a question to ask out loud. The recording is sent to be transcribed, then deleted."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Tessera can read medication labels from photos you choose."
+        }
+      ],
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
