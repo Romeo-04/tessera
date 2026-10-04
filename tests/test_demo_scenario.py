@@ -64,9 +64,24 @@ def test_every_risk_is_named_for_the_caregiver(scenario):
             assert r.subject_name and r.object_name
 
 
-def test_the_cap_is_stated_when_it_bites(scenario):
-    full = max(_variants(scenario), key=lambda v: len(v.risks))
-    assert any("most severe" in n for n in full.notes)
+def test_the_cap_is_stated_only_when_it_applies(scenario):
+    for v in _variants(scenario):
+        if any("most severe" in n for n in v.notes):
+            assert len(v.risks) == MAX_RISKS
+
+
+TABLE = ROOT / "data" / "interactions.csv"
+
+
+@pytest.mark.skipif(not TABLE.exists(), reason="the interaction table is built locally")
+def test_every_demo_risk_is_one_the_live_table_documents(scenario):
+    """The demo must never show judges a pair the live product cannot find."""
+    import csv
+    with TABLE.open(encoding="utf-8") as fh:
+        rows = {(r["subject_rxcui"], r["object_rxcui"], r["span_id"]) for r in csv.DictReader(fh)}
+    for v in _variants(scenario):
+        for r in v.risks:
+            assert (r.subject, r.object, r.span_id) in rows, (r.subject_name, r.object_name)
 
 
 def test_leaving_the_ambiguous_drug_out_is_reported_as_partial(scenario):

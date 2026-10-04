@@ -26,7 +26,7 @@ NLM's public RxNorm service. On-device perception is the intended end state and 
 ## Try it
 
 **Web demo:** https://tessera-jade-gamma.vercel.app — opens on a **seeded demo**: seven real
-medications, real FDA label text, the real resolver and five-risk cap. It needs no camera, no
+medications, and exactly the interactions the live table documents between them, through the real resolver. It needs no camera, no
 upload, no account and no credentials, and it makes no model calls — so its plain-language
 explanations were written by hand from each quoted passage, and the build fails if a passage is
 not verbatim in the label. The right-hand panel shows

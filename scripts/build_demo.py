@@ -3,34 +3,34 @@
 Writes app/src/demo/scenario.json (committed). The app bundles it, so the
 demo a judge sees needs no camera, no upload, no credentials and no API.
 
-Nothing here is invented except the plain-language sentences, and those are
-held to the product's own rules: each one is written only from the quoted
-label text beneath it, and tests/test_demo_scenario.py fails if a quote is not
-in its span or an action reads as dose advice. Ranking, de-duplication and the
-five-risk cap come from the real resolver and adjudicator code, not from a
-hand-ordered list.
+The pairs are not hand-picked: they are what data/interactions.csv documents
+between the seven demo drugs, chosen and ranked by the production resolver, so
+the demo shows exactly what the live product would. Only the plain-language
+sentences are written by hand, each from its highlighted passage, and
+tests/test_demo_scenario.py fails if a highlight is not in its span, an
+action reads as dose advice, or a demo pair is missing from the table.
 
-Every pair below was checked verbatim against data/spl/sections.jsonl on
-2026-10-03. Two pairs in the original clickable prototype ("lisinopril +
-spironolactone: contraindicated" and "warfarin + spironolactone") are NOT
-supported by the label text and are deliberately absent.
+History: the first demo (2026-10-03) hand-picked six pairs, three of them
+class-level ("ACE inhibitors", "antidiabetic medicines") that the extracted
+table does not contain. Those were removed on 2026-10-04 so the demo never
+shows what the live product cannot find.
 """
 from __future__ import annotations
 
+import csv
 import json
 import sys
 from pathlib import Path
 
 from tessera.adjudicate import MAX_RISKS, rank_assertions
-from tessera.corpus.chunks import chunk_section
 from tessera.resolve import InteractionTable
 from tessera.schemas import (
     CodeSet, InteractionAssertion, RankedRisk, SessionResult,
 )
-from tessera.sources.dailymed import RawSection
 
 ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
+TABLE = ROOT / "data" / "interactions.csv"
 OUT = ROOT / "app" / "src" / "demo" / "scenario.json"
 
 LISINOPRIL = "RXCUI:29046"
@@ -79,73 +79,38 @@ DRUGS = [
      ]},
 ]
 
-# (subject, object, severity, label ingredient, highlight, mechanism, action)
-PAIRS = [
-    (LISINOPRIL, SPIRONOLACTONE, "warning", "lisinopril",
-     "Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) "
-     "can increase the risk of hyperkalemia.",
-     "Lisinopril's label says spironolactone can increase the risk of high blood "
-     "potassium (hyperkalemia).",
-     "Ask a pharmacist whether his potassium should be checked while he takes both."),
-    (FUROSEMIDE, LISINOPRIL, "warning", "furosemide",
-     "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin "
-     "II receptor blockers may lead to severe hypotension and deterioration in renal "
-     "function, including renal failure.",
-     "Furosemide's label warns that combining it with ACE inhibitors, the group "
-     "lisinopril belongs to, may cause severe low blood pressure and worsening kidney "
-     "function.",
-     "Bring this combination up with his pharmacist or prescriber."),
-    (LISINOPRIL, METFORMIN, "warning", "lisinopril",
-     "Concomitant administration of lisinopril and antidiabetic medicines (insulins, "
-     "oral hypoglycemic agents) may cause an increased blood-glucose-lowering effect "
-     "with risk of hypoglycemia.",
-     "Lisinopril's label says that with diabetes medicines it may lower blood sugar "
-     "further, with a risk of hypoglycemia.",
-     "Ask a pharmacist which signs of low blood sugar to watch for."),
-    (SPIRONOLACTONE, DIGOXIN, "monitor", "spironolactone",
-     "Spironolactone and its metabolites interfere with radioimmunoassays for digoxin "
-     "and increase the apparent exposure to digoxin.",
-     "Spironolactone can make some blood tests show more digoxin than is really there.",
-     "Tell whoever orders his digoxin blood test that he also takes spironolactone."),
-    (ATORVASTATIN, DIGOXIN, "monitor", "atorvastatin",
-     "Digoxin: May increase digoxin plasma levels;",
-     "Atorvastatin's label says it may increase the level of digoxin in the blood.",
-     "Ask a pharmacist whether his digoxin levels need watching."),
-    # Narrower than it could be, on purpose. The label's sentence saying CYP3A4
-    # inhibitors "increase the effect (increase INR) of warfarin" sits in a
-    # different span from the table that names atorvastatin, and a risk cites
-    # exactly one span. So the claim says only what the table span shows.
-    (WARFARIN, ATORVASTATIN, "monitor", "warfarin",
-     "CYP3A4 alprazolam, amiodarone, amlodipine, amprenavir, aprepitant, atorvastatin",
-     "Warfarin's label lists atorvastatin in its table of drugs that interact with "
-     "warfarin through CYP450 enzymes.",
-     "Ask his prescriber whether this pairing calls for extra INR checks."),
-]
-
-
-def _load_sections() -> dict[str, dict]:
-    out: dict[str, dict] = {}
-    for line in SECTIONS.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        d = json.loads(line)
-        if d["section"] == "Drug Interactions":
-            out[d["ingredient"]] = d
-    return out
-
-
-def _span_for(section: dict, must_contain: list[str]):
-    raw = RawSection(
-        setid=section["setid"], loinc=section["loinc"], section=section["section"],
-        text=section["text"], source_url=section["source_url"],
-    )
-    for span in chunk_section(raw):
-        if all(m in span.text for m in must_contain):
-            return span
-    raise SystemExit(
-        f"no single span of the {section['ingredient']} label contains all of "
-        f"{must_contain!r} - the demo would cite text that does not show its claim"
-    )
+# Plain-language explanations, keyed by the pair the REAL table resolves to.
+# The pairs themselves are not chosen here: they are whatever
+# data/interactions.csv documents between the seven demo drugs, picked by the
+# production resolver. A demo pair the live table cannot produce would show
+# judges something the product does not do, so the build fails if the table
+# yields a pair with no explanation below, or a passage that lacks its
+# highlight. Each sentence is written only from its highlighted passage.
+# (subject, object) -> (highlight, mechanism, action)
+EXPLAIN = {
+    (LISINOPRIL, SPIRONOLACTONE): (
+        "Potassium-sparing diuretics (spironolactone, amiloride, triamterene, and others) "
+        "can increase the risk of hyperkalemia.",
+        "Lisinopril's label says spironolactone can increase the risk of high blood "
+        "potassium (hyperkalemia).",
+        "Ask a pharmacist whether his potassium should be checked while he takes both."),
+    (SPIRONOLACTONE, DIGOXIN): (
+        "Digoxin: Spironolactone can interfere with radioimmunologic assays of digoxin exposure",
+        "Spironolactone can interfere with the blood test used to measure digoxin.",
+        "Tell whoever orders his digoxin blood test that he also takes spironolactone."),
+    (DIGOXIN, ATORVASTATIN): (
+        "Digoxin concentrations increased less than 50% Atorvastatin 22% 15%",
+        "Digoxin's label lists atorvastatin among drugs that raise the level of digoxin "
+        "in the blood, by less than half.",
+        "Ask a pharmacist whether his digoxin levels need checking."),
+    (DIGOXIN, METFORMIN): (
+        "Digoxin concentrations increased, but magnitude is unclear Alprazolam, azithromycin, "
+        "cyclosporine, diclofenac, diphenoxylate, epoprostenol, esomeprazole, ibuprofen, "
+        "ketoconazole, lansoprazole, metformin",
+        "Digoxin's label lists metformin among drugs that can raise the level of digoxin in "
+        "the blood, by an amount it calls unclear.",
+        "Ask a pharmacist whether his digoxin levels should be measured."),
+}
 
 
 def _result(codes: list[str], table, by_span, names, left_out: list[str]) -> SessionResult:
@@ -180,25 +145,37 @@ def _result(codes: list[str], table, by_span, names, left_out: list[str]) -> Ses
 def main() -> None:
     if not SECTIONS.exists():
         sys.exit("data/spl/sections.jsonl is missing - run scripts/fetch_spl.py first")
-    sections = _load_sections()
+    if not TABLE.exists():
+        sys.exit("data/interactions.csv is missing - run scripts/build_interactions.py first")
 
-    assertions, by_span, spans = [], {}, {}
-    for subj, obj, sev, label, highlight, mechanism, action in PAIRS:
-        span = _span_for(sections[label], [highlight])
-        assertions.append(InteractionAssertion(
-            subject_rxcui=subj, object_rxcui=obj, severity=sev, span_id=span.span_id,
-        ))
-        by_span[span.span_id] = (span, mechanism, action)
-        spans[span.span_id] = {
-            "text": span.text, "highlight": highlight, "setid": span.setid,
-            "section": span.section, "label": label, "source_url": span.source_url,
-        }
+    from tessera.corpus.spans import SpanStore
 
-    table = InteractionTable(assertions)
+    store = SpanStore.from_sections(SECTIONS)
+    with TABLE.open(encoding="utf-8") as fh:
+        table = InteractionTable([InteractionAssertion(**r) for r in csv.DictReader(fh)])
+
     names = {d["rxcui"]: d["display_name"] for d in DRUGS if d["rxcui"]}
     names[WARFARIN] = "Warfarin"
-
     confirmed = sorted(names)
+
+    by_span, spans = {}, {}
+    for a in table.resolve(CodeSet(codes=confirmed)):
+        key = (a.subject_rxcui, a.object_rxcui)
+        if key not in EXPLAIN:
+            sys.exit(f"the live table documents {names[key[0]]} -> {names[key[1]]} "
+                     f"(span {a.span_id}) but EXPLAIN has no sentence for it; write one "
+                     "from that passage before rebuilding the demo")
+        highlight, mechanism, action = EXPLAIN[key]
+        span = store.by_id(a.span_id)
+        if highlight not in span.text:
+            sys.exit(f"span {a.span_id} does not contain its highlight: {highlight[:60]!r}")
+        by_span[a.span_id] = (span, mechanism, action)
+        spans[a.span_id] = {
+            "text": span.text, "highlight": highlight, "setid": span.setid,
+            "section": span.section, "label": names[key[0]].lower(),
+            "source_url": span.source_url,
+        }
+
     without = sorted(c for c in names if c != WARFARIN)
     variants = {
         ",".join(confirmed): _result(confirmed, table, by_span, names, []),
@@ -207,9 +184,10 @@ def main() -> None:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({
-        "about": "Seeded demo built by scripts/build_demo.py from FDA label text in "
-                 "the Tessera corpus. Explanations are written from the quoted span "
-                 "only; ranking and the five-risk cap come from the real resolver.",
+        "about": "Seeded demo built by scripts/build_demo.py from data/interactions.csv "
+                 "and the FDA label text it cites, through the production resolver. "
+                 "Only the plain-language sentences are written by hand, each from "
+                 "its quoted passage.",
         "drugs": DRUGS,
         "variants": {k: v.model_dump() for k, v in variants.items()},
         "spans": spans,
