@@ -87,3 +87,16 @@ def test_spent_since_sums_only_recent_calls(tmp_path):
     t.record(CallRecord("CHEAP", "m", 1, 1, 1.0, 0.05))
     assert abs(t.spent_since(0) - 0.30) < 1e-9
     assert t.spent_since(time.time() + 60) == 0.0
+
+
+def test_telemetry_survives_concurrent_writers(tmp_path):
+    """The API reads in a threadpool and the builder runs six workers; one
+    shared sqlite connection must not drop or corrupt concurrent records."""
+    from concurrent.futures import ThreadPoolExecutor
+    from tessera.telemetry import CallRecord, Telemetry
+    t = Telemetry(tmp_path / "t.sqlite")
+    rec = CallRecord("TOOL", "m", 10, 2, 1.0, 0.001)
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(lambda _: t.record(rec), range(400)))
+    assert len(t.all()) == 400
+    assert abs(t.spent_since(0) - 0.4) < 1e-9

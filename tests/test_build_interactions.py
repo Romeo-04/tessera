@@ -1,6 +1,8 @@
 import json
 
-from scripts.build_interactions import extract_assertions
+from scripts.build_interactions import build_table, extract_assertions
+from tessera.errors import UpstreamError
+from tessera.schemas import InteractionAssertion
 
 FORMULARY = {
     "RXCUI:11289": "warfarin",
@@ -47,12 +49,14 @@ def test_section_with_no_interactions_yields_nothing():
     ) == []
 
 
-def test_unparseable_model_output_yields_nothing_rather_than_guessing():
+def test_unparseable_model_output_is_not_checked_rather_than_empty():
+    """An unreadable verdict is not "this label names no interactions" -
+    reported as empty, it would be a silent gap in the safety table."""
     class Broken:
         def complete(self, tier, messages, **kw):
             return "not json at all"
 
-    assert extract_assertions("text", "RXCUI:11289", "s", FORMULARY, Broken()) == []
+    assert extract_assertions("text", "RXCUI:11289", "s", FORMULARY, Broken()) is None
 
 
 def test_a_drug_cannot_interact_with_itself():
@@ -115,3 +119,56 @@ def test_a_drug_class_rather_than_an_ingredient_is_still_ignored():
         {"drug": "CYP3A4 inhibitors", "severity": "warning"},
     ]})
     assert extract_assertions("text", "RXCUI:11289", "s", FORMULARY, router) == []
+
+
+# ---- the build loop -----------------------------------------------------------
+
+def _a(span):
+    return InteractionAssertion(subject_rxcui="RXCUI:1", object_rxcui="RXCUI:2",
+                                severity="warning", span_id=span)
+
+
+def test_build_collects_assertions_and_lists_failed_spans(tmp_path):
+    def extract(job):
+        return None if job == "bad" else [_a(job)]
+    done, failed = build_table(["s1", "bad", "s2"], extract, tmp_path / "p.jsonl", sleep=lambda s: None)
+    assert sorted(a.span_id for a in done) == ["s1", "s2"]
+    assert failed == ["bad"]
+
+
+def test_an_upstream_error_is_retried_then_recorded_not_fatal(tmp_path):
+    calls = {"n": 0}
+
+    def extract(job):
+        if job == "flaky":
+            calls["n"] += 1
+            if calls["n"] < 2:
+                raise UpstreamError("blip")
+            return [_a(job)]
+        raise UpstreamError("down")
+
+    done, failed = build_table(["flaky", "dead"], extract, tmp_path / "p.jsonl", sleep=lambda s: None)
+    assert [a.span_id for a in done] == ["flaky"]
+    assert failed == ["dead"]
+
+
+def test_a_rerun_resumes_and_does_not_repeat_finished_spans(tmp_path):
+    progress = tmp_path / "p.jsonl"
+    seen = []
+
+    def extract(job):
+        seen.append(job)
+        return [_a(job)]
+
+    build_table(["s1", "s2"], extract, progress, sleep=lambda s: None)
+    seen.clear()
+    done, failed = build_table(["s1", "s2", "s3"], extract, progress, sleep=lambda s: None)
+    assert seen == ["s3"]
+    assert sorted(a.span_id for a in done) == ["s1", "s2", "s3"]
+
+
+def test_a_failed_span_is_retried_on_the_next_run(tmp_path):
+    progress = tmp_path / "p.jsonl"
+    build_table(["s1"], lambda j: None, progress, sleep=lambda s: None)
+    done, failed = build_table(["s1"], lambda j: [_a(j)], progress, sleep=lambda s: None)
+    assert [a.span_id for a in done] == ["s1"] and failed == []

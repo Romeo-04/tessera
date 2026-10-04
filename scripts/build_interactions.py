@@ -14,8 +14,12 @@ import csv
 import json
 import re
 import sys
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from tessera.errors import TesseraError
 from tessera.router import Tier
 from tessera.schemas import InteractionAssertion
 
@@ -23,6 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
 FORMULARY = ROOT / "data" / "formulary.csv"
 OUT = ROOT / "data" / "interactions.csv"
+PROGRESS = ROOT / "data" / "interactions.progress.jsonl"
+FAILED = ROOT / "data" / "interactions.failed.txt"
 
 PROMPT = """You are reading one section of an FDA-approved drug label.
 
@@ -78,14 +84,14 @@ def extract_assertions(
     span_id: str,
     formulary: dict[str, str],
     router,
-) -> list[InteractionAssertion]:
+) -> list[InteractionAssertion] | None:
     """Named drugs in one label section -> assertions, restricted to formulary.
 
-    Every path that cannot produce a confident, in-scope, well-graded assertion
-    returns nothing. Unreadable model output, a drug we do not carry, an
-    invented severity grade, and a label that simply names no interactions all
-    collapse to the same empty result - because the alternative is inventing a
-    safety claim, and no downstream consumer could tell the difference.
+    A drug we do not carry, an invented severity grade, or a label that names
+    no interactions all yield an empty list - the alternative is inventing a
+    safety claim. An unreadable verdict is different: it returns None, "not
+    checked", because reporting it as empty would turn a failed read into a
+    silent gap in the safety table.
     """
     by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
     # The model is told "do not infer", so it must at least be told what the
@@ -101,9 +107,9 @@ def extract_assertions(
     try:
         items = json.loads(raw).get("interactions", [])
     except (json.JSONDecodeError, AttributeError, TypeError):
-        return []
+        return None
     if not isinstance(items, list):
-        return []
+        return None
 
     out: list[InteractionAssertion] = []
     seen: set[tuple[str, str]] = set()
@@ -130,6 +136,50 @@ def extract_assertions(
     return out
 
 
+def build_table(jobs, extract, progress: Path, workers: int = 6, retries: int = 3,
+                sleep=time.sleep) -> tuple[list[InteractionAssertion], list]:
+    """Run `extract(job)` for every job; return (assertions, failed jobs).
+
+    ~940 model calls must survive a rate limit at call 600, so: each result is
+    appended to `progress` as it lands and a re-run skips jobs already done;
+    an upstream error is retried with backoff and then recorded, never fatal;
+    and a job that could not be read is listed by name rather than counted as
+    "no interactions".
+    """
+    finished: dict = {}
+    if progress.exists():
+        for line in progress.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                rec = json.loads(line)
+                if rec["assertions"] is not None:
+                    finished[rec["job"]] = [InteractionAssertion(**a) for a in rec["assertions"]]
+    lock = threading.Lock()
+
+    def one(job):
+        for attempt in range(retries):
+            try:
+                return job, extract(job)
+            except TesseraError:
+                if attempt < retries - 1:
+                    sleep(2 ** attempt)
+        return job, None
+
+    todo = [j for j in jobs if j not in finished]
+    failed = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for job, result in pool.map(one, todo):
+            record = {"job": job, "assertions": None if result is None
+                      else [a.model_dump() for a in result]}
+            with lock, progress.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(record) + "\n")
+            if result is None:
+                failed.append(job)
+            else:
+                finished[job] = result
+    done = [a for j in jobs if j in finished for a in finished[j]]
+    return done, failed
+
+
 def main() -> int:
     from tessera.corpus.chunks import chunk_section
     from tessera.router import Router
@@ -142,21 +192,19 @@ def main() -> int:
 
     rows = [json.loads(l) for l in SECTIONS.read_text(encoding="utf-8").splitlines() if l.strip()]
     interaction_rows = [r for r in rows if r["loinc"] == "34073-7"]
-    assertions: list[InteractionAssertion] = []
-
-    for i, r in enumerate(interaction_rows, 1):
-        spans = chunk_section(
-            RawSection(
+    spans = {}
+    for r in interaction_rows:
+        for span in chunk_section(RawSection(
                 setid=r["setid"], loinc=r["loinc"], section=r["section"],
-                text=r["text"], source_url=r["source_url"],
-            )
-        )
-        for span in spans:
-            assertions.extend(
-                extract_assertions(span.text, r["rxcui"], span.span_id, formulary, router)
-            )
-        print(f"[{i}/{len(interaction_rows)}] {r['ingredient']}: "
-              f"{len(assertions)} assertions so far", flush=True)
+                text=r["text"], source_url=r["source_url"])):
+            spans[span.span_id] = (span.text, r["rxcui"])
+    print(f"{len(interaction_rows)} interaction sections, {len(spans)} spans", flush=True)
+
+    def extract(span_id):
+        text, subject = spans[span_id]
+        return extract_assertions(text, subject, span_id, formulary, router)
+
+    assertions, failed = build_table(list(spans), extract, PROGRESS)
 
     with OUT.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(
@@ -167,6 +215,10 @@ def main() -> int:
             w.writerow(a.model_dump())
 
     print(f"\nwrote {len(assertions)} assertions to {OUT}")
+    if failed:
+        FAILED.write_text("\n".join(failed) + "\n", encoding="utf-8")
+        print(f"{len(failed)} spans could not be read and are NOT in the table: {FAILED}."
+              " Re-run to retry only those.")
     print(f"extraction cost: ${sum(c.cost_usd for c in router.calls()):.4f}")
     print("\nNOW REVIEW IT. Hand-check 20 rows against their cited span before "
           "committing; everything this product asserts flows from this table.")

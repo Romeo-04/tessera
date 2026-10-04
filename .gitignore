@@ -8,3 +8,5 @@ data/spl/
 .pytest_cache/
 *.egg-info/
 data/watch/
+data/interactions.progress.jsonl
+data/interactions.failed.txt
