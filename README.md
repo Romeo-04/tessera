@@ -27,7 +27,9 @@ An on-device Omni build is the intended end state and is not implemented. See
 
 **Web demo:** https://tessera-jade-gamma.vercel.app — opens on a **seeded demo**: seven real
 medications, real FDA label text, the real resolver and five-risk cap. It needs no camera, no
-upload, no account and no credentials, and it makes no model calls. The right-hand panel shows
+upload, no account and no credentials, and it makes no model calls — so its plain-language
+explanations were written by hand from each quoted passage, and the build fails if a passage is
+not verbatim in the label. The right-hand panel shows
 the exact JSON the app sends across the privacy gate.
 
 **iOS and Android:** the same Expo (React Native) codebase is a native app with a real camera,
@@ -53,8 +55,9 @@ spoke to each other, and managed at home by an adult child with no clinical trai
 that loop holds the full list, and the risk lives precisely in the gaps between prescribers.
 
 This is tractable for one reason: **the correct answers already exist in public, authoritative,
-structured data.** Tessera never asks a model to *know* medicine. It asks it to read a label,
-normalise a name, and retrieve a documented fact. Everything else is lookup.
+structured data.** Tessera never asks a model to *know* medicine. Models read a label, pull the named drugs
+out of label text once (offline, into a table a person reviews), and rephrase a cited passage.
+Everything else is lookup.
 
 ## What it does
 
@@ -65,9 +68,9 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
    options back. An unidentified drug carries no code, so nothing downstream can score it.
 4. **Only the codes reach the reasoning service.** `["RXCUI:11289", "RXCUI:1191"]`. No image, no
    name, no date, no identifier.
-5. A deterministic table resolves documented interactions; Nemotron Ultra ranks them by severity
+5. A deterministic table resolves documented interactions; code ranks them by the label's own severity wording, and Nemotron Ultra explains each one
    and explains each one *from the cited label text*.
-6. Every sentence is checked against its own citation. Anything the source does not support is
+6. Every explanation is checked against its own citation, and the "what to do" line is held to pharmacist-referral wording by a filter. Anything the source does not support is
    dropped before you ever see it.
 
 ## Architecture
@@ -90,7 +93,7 @@ normalise a name, and retrieve a documented fact. Everything else is lookup.
 ┌────────────┊─ REASONING (Nebius) ──┐
 │  evidence retrieval over FDA labels │
 │  deterministic interaction lookup   │
-│  Nemotron Ultra: rank + explain     │
+│  code ranks; Nemotron Ultra explains│
 │  entailment check: drop unsupported │
 │  names re-attached client-side after │
 └─────────────────────────────────────┘
@@ -140,10 +143,10 @@ kind of claim this project is built to avoid making.
 
 | Model | What it does | What fails without it |
 |---|---|---|
-| **Nemotron 3 Nano Omni** | OCR of curved bottle labels, multi-image reasoning in one unified context, native speech for the spoken question | We would need separate vision and speech vendors, each seeing the raw images, and the on-device end state would become unreachable — no other open model does all three modalities in one 30B/3B-active package. |
-| **Nemotron 3.5 Lightning** | High-volume cheap passes: candidate shortlisting, watch-list triage | The always-on watch becomes ~15× more expensive per check and gets cut. |
-| **Nemotron 3 Super 120B** | Native function calling to RxNorm and DailyMed; the citation entailment check | Tool orchestration degrades to brittle hand-parsed calls, and per-claim verification becomes too expensive to run on every sentence. |
-| **Nemotron 3 Ultra 550B** | Severity adjudication and plain-language explanation from retrieved evidence | Ranking collapses to the raw severity grade, and alert fatigue — the documented failure mode of every interaction checker — returns. |
+| **Nemotron 3 Nano Omni** | OCR of curved bottle labels, multi-image reasoning in one unified context, transcription of the spoken question | Reading the labels and the spoken question would need two models (or two vendors), each seeing raw personal data. One open, ~25 GB model covering both is also what makes an on-device build plausible later. |
+| **Nemotron 3.5 Lightning** | Watch-list triage of FDA safety communications | Triage on Super instead would cost roughly 4–5× more per check at list prices (unverified for Lightning until a live call). |
+| **Nemotron 3 Super 120B** | The citation entailment check, and the one-off extraction of interactions from label text | Checking every explanation on the deep tier would multiply the per-session cost; without the check, unsupported sentences would reach the screen. |
+| **Nemotron 3 Ultra 550B** | Plain-language explanation of each documented interaction, written only from its cited passage | Ordering does not depend on it — code ranks by the label's severity wording. Whether a smaller tier writes explanations that pass the citation check as often is exactly what the router ablation will measure; it is not measured yet. |
 
 ## How Nebius is used
 
@@ -165,7 +168,7 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **197 Python + 77 app, passing** |
+| Test suite | **197 Python + 88 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -183,7 +186,7 @@ outside the checked list. The result is incomplete, never wrong.
 
 ## What we deliberately did not build
 
-User accounts, multi-patient support, a native mobile app, pharmacy or insurance integration,
+User accounts, multi-patient support, pharmacy or insurance integration,
 dose scheduling and reminders, a fine-tuned model, coverage beyond the 358-drug formulary, and
 any language other than English. Each is defensible future work; none of it makes the core claim
 more true.
@@ -219,7 +222,7 @@ python -m venv .venv
 
 cp .env.example .env        # add your NEBIUS_API_KEY
 pytest                      # 197 tests, no credentials needed
-cd app && npm install && npm test   # 77 tests
+cd app && npm install && npm test   # 88 tests
 npx tsc --noEmit && npx expo lint
 ```
 
@@ -228,7 +231,7 @@ Building the evidence corpus (the first two need no API key):
 ```bash
 python scripts/build_formulary.py      # RxNorm  -> data/formulary.csv   (committed)
 python scripts/fetch_spl.py            # DailyMed -> data/spl/           (gitignored)
-python scripts/build_interactions.py   # label text -> data/interactions.csv  (REVIEW IT)
+python scripts/build_interactions.py   # label text -> data/interactions.csv  (model-extracted: REVIEW IT)
 python scripts/build_index.py          # embeddings -> data/index/       (gitignored)
 tessera check photos/*.jpg
 ```
@@ -275,6 +278,7 @@ everything this product asserts flows from that table.
 | [RxNorm](https://www.nlm.nih.gov/research/umls/rxnorm/) (US NLM) | Drug name normalisation to `RXCUI` |
 | [DailyMed](https://dailymed.nlm.nih.gov/) (US NLM) | FDA Structured Product Labels — the cited evidence |
 | [openFDA](https://open.fda.gov/) (US FDA) | Not used yet |
+| [Tavily](https://tavily.com/) | Search for the FDA safety-communication watcher (needs `TAVILY_API_KEY`) |
 
 **Note on interactions.** The NLM/RxNav Drug Interaction API was **discontinued on 2 January
 2024**. Tessera derives interaction assertions from the SPL *Drug Interactions* section itself,
