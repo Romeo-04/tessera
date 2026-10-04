@@ -36,6 +36,9 @@ describe("screenQuestion refuses dose and treatment decisions", () => {
     "can I crush the metformin",
     "should he still take lisinopril",
     "give him another furosemide tonight?",
+    // Timing changes are dosing decisions too.
+    "Can lisinopril and furosemide be taken 4 hours apart",
+    "should I space out the warfarin and atorvastatin",
   ])("refuses %j", (q) => {
     expect(screenQuestion(q, LIST).kind).toBe("refuse");
   });
@@ -44,6 +47,17 @@ describe("screenQuestion refuses dose and treatment decisions", () => {
     "he has chest pain after taking it",
     "she took too many pills",
     "he cannot breathe properly",
+    // Found by validation: these got a cited interaction answer instead.
+    "He is very drowsy and confused after his pills, can he have lisinopril with furosemide?",
+    "he is not responding, lisinopril furosemide",
+    "rash and swollen lips after lisinopril and furosemide",
+    // The same class: a symptom described now is never answered with a citation.
+    "she feels dizzy and weak since starting the water pill",
+    "his face is swelling up",
+    "she fell and hit her head, is warfarin a problem",
+    "he is vomiting and his heart is racing",
+    "there is blood in his urine since the blood thinner",
+    "she won't wake up properly",
   ])("sends %j to emergency care, not to an answer", (q) => {
     expect(screenQuestion(q, LIST).kind).toBe("urgent");
   });

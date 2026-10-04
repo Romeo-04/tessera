@@ -16,13 +16,25 @@ export type Screened =
   | { kind: "clarify"; message: string }
   | { kind: "answer"; codes: string[] };
 
-// Checked first: a question describing an emergency must never be answered
-// with a citation, however well-sourced.
+// Checked first. Any SYMPTOM the person has now goes to emergency care, never
+// to a citation - however well-sourced the citation. A list of exact emergency
+// phrases always misses one ("drowsy and confused", "swollen lips"); a broad
+// symptom vocabulary fails the safe way: a symptom question that did not need
+// the emergency message gets it anyway, and still learns nothing it should not.
 const URGENT = new RegExp(
   [
-    "chest pain", "can'?t breathe", "cannot breathe", "trouble breathing", "short(ness)? of breath",
-    "unconscious", "passed out", "fainted", "seizure", "stroke", "slurred",
-    "vomiting blood", "black stool", "bleeding (heavily|a lot|won'?t stop)",
+    // breathing, heart, consciousness
+    "chest (pain|tight\\w*)", "can'?t breathe", "cannot breathe", "trouble breathing", "short(ness)? of breath",
+    "breathless", "wheez\\w*", "heart (is )?(racing|pounding|fluttering|skipping)", "palpitations?",
+    "unconscious", "unresponsive", "not responding", "won'?t wake", "can'?t wake", "hard to wake",
+    "passed out", "faint(ed|ing)?", "collaps\\w*", "seizure", "fit", "stroke", "slurred",
+    "drowsy", "confus\\w*", "disoriented", "dizzy", "dizziness", "light-?headed", "weak(ness)?", "numb\\w*",
+    // allergy
+    "rash", "hives", "itch\\w*", "swell\\w*", "swollen", "puffy",
+    // bleeding, gut
+    "bleed\\w*", "blood in", "bruis\\w*", "black stools?", "vomit\\w*", "throwing up", "diarrh\\w*",
+    // falls, overdose
+    "fell", "fall(en)?", "hit (his|her|their) head",
     "took too many", "taken too many", "overdose", "swallowed (too many|extra|the wrong)",
   ].map((p) => `\\b${p}\\b`).join("|"),
   "i",
@@ -44,6 +56,8 @@ const DOSE_OR_TREATMENT = new RegExp(
     "(take|have|give|giving|taking)( \\w+){0,3} (more|another)",
     "hold(ing)?( off)?", "keep (taking|giving|on)", "still (take|taking|give|giving|on)",
     "continu(e|ing)", "every other", "twice", "times a day", "per day",
+    // Timing changes are dosing decisions as well.
+    "apart", "space (out|them)", "spaced", "spacing", "\\d+ hours?",
   ].map((p) => `\\b${p}\\b`).join("|"),
   "i",
 );
@@ -73,8 +87,9 @@ export function screenQuestion(question: string, drugs: Drug[]): Screened {
   if (URGENT.test(question)) {
     return {
       kind: "urgent",
-      message: "That sounds like it may need care now. Call your local emergency number or "
-        + "poison control. Tessera is not the right tool for this.",
+      message: "Tessera does not assess symptoms. If this is happening now and seems serious — "
+        + "trouble breathing, swelling, confusion, not waking, heavy bleeding, a fall — call your "
+        + "local emergency number. Otherwise, call the pharmacist or doctor today and describe it.",
     };
   }
   if (DOSE_OR_TREATMENT.test(question)) {
