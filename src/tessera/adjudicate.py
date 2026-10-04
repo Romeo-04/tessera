@@ -46,8 +46,10 @@ INTERACTIONS:
 
 
 def rank_assertions(assertions, index) -> list[InteractionAssertion]:
-    """Most severe first. Deterministic — the model never decides ordering."""
-    return sorted(assertions, key=lambda a: -SEVERITY_RANK[a.severity])
+    """Most severe first, then named before class-inferred, so under the cap
+    an inference gives way to a label that names the drug. Deterministic - the
+    model never decides ordering."""
+    return sorted(assertions, key=lambda a: (-SEVERITY_RANK[a.severity], a.via_class is not None))
 
 
 def adjudicate(assertions, index, router) -> list[RankedRisk]:
@@ -67,7 +69,8 @@ def adjudicate(assertions, index, router) -> list[RankedRisk]:
     top = rank_assertions(assertions, index)[:MAX_RISKS]
     block = "\n\n".join(
         f"span_id: {a.span_id}\nseverity: {a.severity}\n"
-        f"label text: {index.by_id(a.span_id).text}"
+        + (f"the label names this drug's class: {a.via_class}\n" if a.via_class else "")
+        + f"label text: {index.by_id(a.span_id).text}"
         for a in top
     )
 
@@ -109,6 +112,7 @@ def adjudicate(assertions, index, router) -> list[RankedRisk]:
                 span_id=a.span_id,
                 source_url=span.source_url,
                 action=action,
+                via_class=a.via_class,
             )
         )
     return out

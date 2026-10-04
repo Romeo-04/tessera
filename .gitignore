@@ -9,6 +9,7 @@ data/spl/
 *.egg-info/
 data/watch/
 data/interactions.progress.jsonl
+data/interactions.raw.jsonl
 data/interactions.failed.txt
 brag-output*/
 data/review/

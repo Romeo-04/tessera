@@ -7,6 +7,8 @@ and sorted to the top:
 
 - the cited passage never names the other drug (the builder's likeliest
   error: a drug inferred from a class the label mentions, e.g. "diuretics")
+- the row comes from a class warning ("via class"): check the class phrase
+  covers this drug, and flag it harder if the phrase is not in the passage
 - the grade is "contraindicated" (the strongest claim the product makes)
 - either drug is in the seeded demo (what judges will see)
 
@@ -37,7 +39,13 @@ def _named(name: str, text: str) -> bool:
 def review_flags(row: dict, passage: str, names: dict[str, str], demo: set[str]) -> list[str]:
     """Why a person should look at this row first; empty when nothing stands out."""
     flags = []
-    if not _named(names.get(row["object_rxcui"], ""), passage):
+    phrase = row.get("via_class") or ""
+    if phrase:
+        # The label warned about a class; the member drug is our expansion.
+        flags.append("via class")
+        if phrase.lower() not in passage.lower():
+            flags.append("class phrase not in passage")
+    elif not _named(names.get(row["object_rxcui"], ""), passage):
         flags.append("object not named in passage")
     if row["severity"] == "contraindicated":
         flags.append("contraindicated: always reviewed")
@@ -70,7 +78,8 @@ def main() -> int:
             "subject": names.get(r["subject_rxcui"], r["subject_rxcui"]),
             "object": names.get(r["object_rxcui"], r["object_rxcui"]),
             "severity": r["severity"],
-            "passage": _excerpt(span.text, names.get(r["object_rxcui"], "")),
+            "via_class": r.get("via_class") or "",
+            "passage": _excerpt(span.text, r.get("via_class") or names.get(r["object_rxcui"], "")),
             "source_url": span.source_url,
             "verdict (keep / fix / drop)": "",
             "note": "",
@@ -86,8 +95,10 @@ def main() -> int:
 
     flagged = sum(1 for x in out if x["flags"])
     unnamed = sum(1 for x in out if "object not named" in x["flags"])
+    by_class = sum(1 for x in out if x["via_class"])
     print(f"{len(out)} rows -> {OUT}")
-    print(f"{flagged} flagged for review first ({unnamed} where the passage never names the other drug)")
+    print(f"{flagged} flagged for review first ({unnamed} where the passage never names the"
+          f" other drug, {by_class} reached through a class)")
     return 0
 
 

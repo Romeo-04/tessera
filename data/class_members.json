@@ -1,0 +1,229 @@
+{
+ "ace-inhibitors": [
+  "RXCUI:29046",
+  "RXCUI:35296",
+  "RXCUI:3827",
+  "RXCUI:54552"
+ ],
+ "antidiabetics": [
+  "RXCUI:1100699",
+  "RXCUI:1368001",
+  "RXCUI:1373458",
+  "RXCUI:1488564",
+  "RXCUI:1545653",
+  "RXCUI:25789",
+  "RXCUI:33738",
+  "RXCUI:4815",
+  "RXCUI:4821",
+  "RXCUI:593411",
+  "RXCUI:6809",
+  "RXCUI:84108",
+  "RXCUI:857974"
+ ],
+ "arbs": [
+  "RXCUI:214354",
+  "RXCUI:52175",
+  "RXCUI:69749",
+  "RXCUI:83818"
+ ],
+ "atypical-antipsychotics": [
+  "RXCUI:1040028",
+  "RXCUI:115698",
+  "RXCUI:2626",
+  "RXCUI:35636",
+  "RXCUI:51272",
+  "RXCUI:61381",
+  "RXCUI:679314",
+  "RXCUI:89013"
+ ],
+ "azole-antifungals": [
+  "RXCUI:121243",
+  "RXCUI:28031",
+  "RXCUI:4450"
+ ],
+ "barbiturates": [
+  "RXCUI:8134"
+ ],
+ "benzodiazepines": [
+  "RXCUI:10355",
+  "RXCUI:2598",
+  "RXCUI:3322",
+  "RXCUI:6470"
+ ],
+ "beta-blockers": [
+  "RXCUI:1202",
+  "RXCUI:19484",
+  "RXCUI:20352",
+  "RXCUI:31555",
+  "RXCUI:6918",
+  "RXCUI:8787"
+ ],
+ "calcium-channel-blockers": [
+  "RXCUI:11170",
+  "RXCUI:17767",
+  "RXCUI:3443"
+ ],
+ "carbonic-anhydrase-inhibitors": [
+  "RXCUI:38404",
+  "RXCUI:39998"
+ ],
+ "coumarins": [
+  "RXCUI:11289"
+ ],
+ "cox2-inhibitors": [
+  "RXCUI:140587"
+ ],
+ "cyp3a4-inducers": [
+  "RXCUI:195085",
+  "RXCUI:2002",
+  "RXCUI:8134",
+  "RXCUI:8183",
+  "RXCUI:9384"
+ ],
+ "cyp3a4-inhibitors": [
+  "RXCUI:11170",
+  "RXCUI:121243",
+  "RXCUI:21212",
+  "RXCUI:233698",
+  "RXCUI:2551",
+  "RXCUI:28031",
+  "RXCUI:3008",
+  "RXCUI:3443",
+  "RXCUI:4053",
+  "RXCUI:42355",
+  "RXCUI:4450",
+  "RXCUI:85762"
+ ],
+ "cyp3a4-moderate-inhibitors": [
+  "RXCUI:11170",
+  "RXCUI:233698",
+  "RXCUI:2551",
+  "RXCUI:3008",
+  "RXCUI:3443",
+  "RXCUI:4053",
+  "RXCUI:42355",
+  "RXCUI:4450"
+ ],
+ "cyp3a4-strong-inducers": [
+  "RXCUI:2002",
+  "RXCUI:8183",
+  "RXCUI:9384"
+ ],
+ "cyp3a4-strong-inhibitors": [
+  "RXCUI:121243",
+  "RXCUI:21212",
+  "RXCUI:28031",
+  "RXCUI:85762"
+ ],
+ "digitalis": [
+  "RXCUI:3407"
+ ],
+ "diuretics": [
+  "RXCUI:1808",
+  "RXCUI:2409",
+  "RXCUI:298869",
+  "RXCUI:4603",
+  "RXCUI:5487",
+  "RXCUI:5764",
+  "RXCUI:9997"
+ ],
+ "fibrates": [
+  "RXCUI:4719",
+  "RXCUI:8703"
+ ],
+ "hiv-protease-inhibitors": [
+  "RXCUI:195088",
+  "RXCUI:85762"
+ ],
+ "insulin-secretagogues": [
+  "RXCUI:25789",
+  "RXCUI:274332",
+  "RXCUI:4815",
+  "RXCUI:4821",
+  "RXCUI:73044"
+ ],
+ "insulins": [],
+ "loop-diuretics": [
+  "RXCUI:1808",
+  "RXCUI:4603"
+ ],
+ "maois": [
+  "RXCUI:134748",
+  "RXCUI:9639"
+ ],
+ "nsaids": [
+  "RXCUI:1191",
+  "RXCUI:140587",
+  "RXCUI:3355",
+  "RXCUI:35827",
+  "RXCUI:41493",
+  "RXCUI:5640",
+  "RXCUI:5781",
+  "RXCUI:7258"
+ ],
+ "opioids": [
+  "RXCUI:10689",
+  "RXCUI:1819",
+  "RXCUI:2670",
+  "RXCUI:4337",
+  "RXCUI:5489",
+  "RXCUI:7052",
+  "RXCUI:7804"
+ ],
+ "phenothiazines": [],
+ "potassium-sparing-diuretics": [
+  "RXCUI:298869",
+  "RXCUI:9997"
+ ],
+ "quinolones": [
+  "RXCUI:139462",
+  "RXCUI:2551",
+  "RXCUI:82122"
+ ],
+ "ras-inhibitors": [
+  "RXCUI:214354",
+  "RXCUI:29046",
+  "RXCUI:35296",
+  "RXCUI:3827",
+  "RXCUI:52175",
+  "RXCUI:54552",
+  "RXCUI:69749",
+  "RXCUI:83818"
+ ],
+ "salicylates": [
+  "RXCUI:1191"
+ ],
+ "ssris": [
+  "RXCUI:2556",
+  "RXCUI:321988",
+  "RXCUI:32937",
+  "RXCUI:36437",
+  "RXCUI:42355",
+  "RXCUI:4493"
+ ],
+ "statins": [
+  "RXCUI:301542",
+  "RXCUI:36567",
+  "RXCUI:42463",
+  "RXCUI:83367"
+ ],
+ "sulfonylureas": [
+  "RXCUI:25789",
+  "RXCUI:4815",
+  "RXCUI:4821"
+ ],
+ "thiazide-diuretics": [
+  "RXCUI:2409",
+  "RXCUI:5487",
+  "RXCUI:5764"
+ ],
+ "thyroid": [
+  "RXCUI:10582",
+  "RXCUI:10814"
+ ],
+ "tricyclics": [
+  "RXCUI:3638",
+  "RXCUI:704",
+  "RXCUI:7531"
+ ]
+}

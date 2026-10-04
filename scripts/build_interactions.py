@@ -23,19 +23,29 @@ from tessera.errors import TesseraError
 from tessera.router import Tier
 from tessera.schemas import InteractionAssertion
 
+try:
+    from scripts.class_map import match_class
+except ImportError:  # run as `python scripts/build_interactions.py`
+    from class_map import match_class
+
 ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
 FORMULARY = ROOT / "data" / "formulary.csv"
 OUT = ROOT / "data" / "interactions.csv"
-PROGRESS = ROOT / "data" / "interactions.progress.jsonl"
+PROGRESS = ROOT / "data" / "interactions.raw.jsonl"
 FAILED = ROOT / "data" / "interactions.failed.txt"
+CLASS_MEMBERS = ROOT / "data" / "class_members.json"
 
 PROMPT = """You are reading one section of an FDA-approved drug label.
 
 Subject drug: {subject_name}
 
-List ONLY drugs or drug ingredients that this text explicitly says interact
-with the subject drug. Do not infer. Do not add drugs that are not named here.
+List what this text explicitly says interacts with the subject drug. Do not
+infer. Do not add anything that is not written here.
+
+  "interactions": drugs or drug ingredients named individually.
+  "classes": drug classes named as a class, written exactly as the text
+             writes them (e.g. "ACE inhibitors", "potassium-sparing diuretics").
 
 Grade severity using the text's own wording:
   "contraindicated" - the text says do not co-administer
@@ -43,9 +53,10 @@ Grade severity using the text's own wording:
   "monitor"         - the text advises monitoring or dose adjustment
 
 Return strict JSON only:
-{{"interactions": [{{"drug": "<name>", "severity": "<grade>"}}]}}
+{{"interactions": [{{"drug": "<name>", "severity": "<grade>"}}],
+  "classes": [{{"class": "<class as written>", "severity": "<grade>"}}]}}
 
-If the text names no interacting drugs, return {{"interactions": []}}.
+If the text names nothing, return {{"interactions": [], "classes": []}}.
 
 TEXT:
 {text}
@@ -63,9 +74,8 @@ def _resolve_object(name: str, by_name: dict[str, str]) -> str | None:
     whole word inside the returned name.
 
     Whole-word only, and longest ingredient first, so "aspirin" does not claim
-    a string that a longer formulary name matches better. A drug *class* such
-    as "CYP3A4 inhibitors" matches nothing and is correctly dropped - we can
-    only assert about drugs we can resolve to a code.
+    a string that a longer formulary name matches better. A class such as
+    "CYP3A4 inhibitors" matches nothing here; classes go through class_map.
     """
     name = name.strip().lower()
     if not name:
@@ -78,67 +88,94 @@ def _resolve_object(name: str, by_name: dict[str, str]) -> str | None:
     return None
 
 
+def extract_raw(section_text: str, subject_name: str, router) -> dict | None:
+    """The model's reading of one label section, kept exactly as returned.
+
+    This is the only step that costs money, so its output is stored raw and
+    everything after it (formulary matching, class expansion) can be redone
+    offline. An unreadable verdict returns None, "not checked": reporting it as
+    empty would turn a failed read into a silent gap in the safety table.
+    """
+    raw = router.complete(
+        Tier.TOOL,
+        [{"role": "user",
+          "content": PROMPT.format(subject_name=subject_name, text=section_text[:6000])}],
+        response_format={"type": "json_object"},
+    )
+    try:
+        parsed = json.loads(raw)
+    except (json.JSONDecodeError, TypeError):  # TypeError: an empty reply (None)
+        return None
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("interactions", []), list):
+        return None
+    classes = parsed.get("classes", [])
+    return {"interactions": parsed.get("interactions", []),
+            "classes": classes if isinstance(classes, list) else []}
+
+
+def _items(raw: dict, list_key: str, name_key: str):
+    for item in raw.get(list_key) or []:
+        if isinstance(item, dict):
+            yield str(item.get(name_key, "")), str(item.get("severity", "")).strip().lower()
+
+
+def assertions_from(
+    raw: dict,
+    subject_rxcui: str,
+    span_id: str,
+    by_name: dict[str, str],
+    class_members: dict[str, list[str]],
+) -> list[InteractionAssertion]:
+    """One raw reading -> assertions about formulary drugs, offline.
+
+    A drug we do not carry, an invented severity grade, a class we have not
+    mapped, or a label that names nothing all yield no assertion - the
+    alternative is inventing a safety claim. Named drugs come first, so a drug
+    the label both names and covers by class is cited for its name.
+    """
+    out: list[InteractionAssertion] = []
+    seen: set[str] = {subject_rxcui}
+
+    def add(obj: str, severity: str, via_class: str | None) -> None:
+        if obj in seen or severity not in VALID_SEVERITY:
+            return
+        seen.add(obj)
+        out.append(InteractionAssertion(subject_rxcui=subject_rxcui, object_rxcui=obj,
+                                        severity=severity, span_id=span_id,
+                                        via_class=via_class))
+
+    for name, severity in _items(raw, "interactions", "drug"):
+        obj = _resolve_object(name, by_name)
+        if obj:
+            add(obj, severity, None)
+    for phrase, severity in _items(raw, "classes", "class"):
+        key = match_class(phrase)
+        for obj in class_members.get(key, []) if key else []:
+            add(obj, severity, phrase.strip())
+    return out
+
+
 def extract_assertions(
     section_text: str,
     subject_rxcui: str,
     span_id: str,
     formulary: dict[str, str],
     router,
+    class_members: dict[str, list[str]] | None = None,
 ) -> list[InteractionAssertion] | None:
-    """Named drugs in one label section -> assertions, restricted to formulary.
-
-    A drug we do not carry, an invented severity grade, or a label that names
-    no interactions all yield an empty list - the alternative is inventing a
-    safety claim. An unreadable verdict is different: it returns None, "not
-    checked", because reporting it as empty would turn a failed read into a
-    silent gap in the safety table.
-    """
-    by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
+    """extract_raw then assertions_from, for one section in one call."""
     # The model is told "do not infer", so it must at least be told what the
     # subject drug IS. A bare RXCUI gives it nothing to reason from.
-    subject_name = formulary.get(subject_rxcui, subject_rxcui)
-    raw = router.complete(
-        Tier.TOOL,
-        [{"role": "user",
-          "content": PROMPT.format(
-              subject_name=subject_name, text=section_text[:6000])}],
-        response_format={"type": "json_object"},
-    )
-    try:
-        items = json.loads(raw).get("interactions", [])
-    except (json.JSONDecodeError, AttributeError, TypeError):
+    raw = extract_raw(section_text, formulary.get(subject_rxcui, subject_rxcui), router)
+    if raw is None:
         return None
-    if not isinstance(items, list):
-        return None
-
-    out: list[InteractionAssertion] = []
-    seen: set[tuple[str, str]] = set()
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        name = str(item.get("drug", ""))
-        severity = str(item.get("severity", "")).strip().lower()
-        obj = _resolve_object(name, by_name)
-        if not obj or severity not in VALID_SEVERITY or obj == subject_rxcui:
-            continue
-        key = (subject_rxcui, obj)
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(
-            InteractionAssertion(
-                subject_rxcui=subject_rxcui,
-                object_rxcui=obj,
-                severity=severity,
-                span_id=span_id,
-            )
-        )
-    return out
+    by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
+    return assertions_from(raw, subject_rxcui, span_id, by_name, class_members or {})
 
 
 def build_table(jobs, extract, progress: Path, workers: int = 6, retries: int = 3,
-                sleep=time.sleep) -> tuple[list[InteractionAssertion], list]:
-    """Run `extract(job)` for every job; return (assertions, failed jobs).
+                sleep=time.sleep) -> tuple[dict, list]:
+    """Run `extract(job)` for every job; return ({job: result}, failed jobs).
 
     ~940 model calls must survive a rate limit at call 600, so: each result is
     appended to `progress` as it lands and a re-run skips jobs already done;
@@ -151,8 +188,8 @@ def build_table(jobs, extract, progress: Path, workers: int = 6, retries: int = 
         for line in progress.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 rec = json.loads(line)
-                if rec["assertions"] is not None:
-                    finished[rec["job"]] = [InteractionAssertion(**a) for a in rec["assertions"]]
+                if rec["result"] is not None:
+                    finished[rec["job"]] = rec["result"]
     lock = threading.Lock()
 
     def one(job):
@@ -168,16 +205,13 @@ def build_table(jobs, extract, progress: Path, workers: int = 6, retries: int = 
     failed = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
         for job, result in pool.map(one, todo):
-            record = {"job": job, "assertions": None if result is None
-                      else [a.model_dump() for a in result]}
             with lock, progress.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps(record) + "\n")
+                fh.write(json.dumps({"job": job, "result": result}) + "\n")
             if result is None:
                 failed.append(job)
             else:
                 finished[job] = result
-    done = [a for j in jobs if j in finished for a in finished[j]]
-    return done, failed
+    return {j: finished[j] for j in jobs if j in finished}, failed
 
 
 def main() -> int:
@@ -202,19 +236,31 @@ def main() -> int:
 
     def extract(span_id):
         text, subject = spans[span_id]
-        return extract_assertions(text, subject, span_id, formulary, router)
+        return extract_raw(text, formulary.get(subject, subject), router)
 
-    assertions, failed = build_table(list(spans), extract, PROGRESS)
+    raws, failed = build_table(list(spans), extract, PROGRESS)
+
+    # Offline from here: re-running with a changed class map costs nothing.
+    members = (json.loads(CLASS_MEMBERS.read_text(encoding="utf-8"))
+               if CLASS_MEMBERS.exists() else {})
+    if not members:
+        print(f"no {CLASS_MEMBERS.name}: class warnings are skipped."
+              " Run scripts/build_class_members.py first.")
+    by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
+    assertions = [a for span_id, raw in raws.items()
+                  for a in assertions_from(raw, spans[span_id][1], span_id, by_name, members)]
 
     with OUT.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(
-            fh, fieldnames=["subject_rxcui", "object_rxcui", "severity", "span_id"]
+            fh, fieldnames=["subject_rxcui", "object_rxcui", "severity", "span_id", "via_class"]
         )
         w.writeheader()
         for a in assertions:
             w.writerow(a.model_dump())
 
-    print(f"\nwrote {len(assertions)} assertions to {OUT}")
+    named = sum(a.via_class is None for a in assertions)
+    print(f"\nwrote {len(assertions)} assertions to {OUT}"
+          f" ({named} named, {len(assertions) - named} through a class)")
     if failed:
         FAILED.write_text("\n".join(failed) + "\n", encoding="utf-8")
         print(f"{len(failed)} spans could not be read and are NOT in the table: {FAILED}."

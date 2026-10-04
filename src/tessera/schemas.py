@@ -73,6 +73,15 @@ class InteractionAssertion(BaseModel):
     object_rxcui: str
     severity: Literal["contraindicated", "warning", "monitor"]
     span_id: str
+    # The class phrase as the label wrote it ("ACE inhibitors") when the label
+    # warned about the object's class rather than naming it. None means the
+    # label names the object drug itself.
+    via_class: str | None = None
+
+    @field_validator("via_class", mode="before")
+    @classmethod
+    def _blank_is_named(cls, v):
+        return v or None
 
 
 class RankedRisk(BaseModel):
@@ -92,6 +101,10 @@ class RankedRisk(BaseModel):
     # The cited label text itself. Public FDA text, so it may travel; it lets
     # the reader check the sentence above against its source in place.
     quote: str | None = None
+    # Set when the label warns about the object's class ("ACE inhibitors")
+    # rather than naming it, so the reader is told why the quote does not
+    # mention their drug by name.
+    via_class: str | None = None
 
     @property
     def subject_label(self) -> str:

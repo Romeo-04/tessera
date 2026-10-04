@@ -38,3 +38,20 @@ def test_rows_touching_a_demo_drug_are_flagged():
 
 def test_a_clean_row_has_no_flags():
     assert review_flags(row("RXCUI:9997", "RXCUI:9997"), "spironolactone", NAMES, set()) == []
+
+
+def class_row(subject, obj, phrase, severity="warning"):
+    return dict(row(subject, obj, severity), via_class=phrase)
+
+
+def test_a_class_row_is_checked_for_its_class_phrase_not_the_drug_name():
+    text = "Diuretics: excessive drop in blood pressure."
+    flags = review_flags(class_row("RXCUI:29046", "RXCUI:4603", "Diuretics"), text, NAMES, set())
+    assert "object not named in passage" not in flags
+    assert "via class" in flags
+
+
+def test_a_class_phrase_missing_from_its_passage_is_flagged():
+    flags = review_flags(class_row("RXCUI:29046", "RXCUI:4603", "loop diuretics"),
+                         "Diuretics: excessive drop.", NAMES, set())
+    assert "class phrase not in passage" in flags
