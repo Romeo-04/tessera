@@ -36,7 +36,7 @@ def test_extracts_one_record_per_bottle(tmp_path):
 def test_uses_the_omni_tier(tmp_path):
     router = StubRouter({"drugs": []})
     extract_drugs([_img(tmp_path)], router)
-    assert router.seen[0] is Tier.OMNI
+    assert router.seen[0] is Tier.VISION
 
 
 def test_every_image_is_attached_to_the_single_call(tmp_path):

@@ -18,24 +18,26 @@ class Tier(str, Enum):
     CHEAP = "CHEAP"   # high-volume triage and shortlisting
     TOOL = "TOOL"     # function calling, entailment
     DEEP = "DEEP"     # adjudication — once per session, never in a loop
-    OMNI = "OMNI"     # vision and audio
+    VISION = "VISION"  # reads label photographs
 
 
 MODEL_FOR_TIER: dict[Tier, str] = {
     Tier.CHEAP: "nvidia/Nemotron-3_5-Lightning",
     Tier.TOOL: "nvidia/nemotron-3-super-120b-a12b",
     Tier.DEEP: "nvidia/Nemotron-3-Ultra-550b-a55b",
-    Tier.OMNI: "nvidia/Nemotron-3-Nano-Omni",
+    # Nemotron 3 Nano Omni was the plan; Token Factory does not serve it (404,
+    # absent from the model catalog, 2026-10-04). MiniCPM-V is an open model
+    # built for document reading; switching back is this one line.
+    Tier.VISION: "openbmb/MiniCPM-V-4_5",
 }
 
-# USD per 1M tokens (input, output), verified 2026-09-27.
-# OMNI pricing is unconfirmed upstream; treated as Super until the live model
-# list says otherwise. See the plan's Appendix item 1.
+# USD per 1M tokens (input, output), from Nebius's model catalog
+# (tokenfactory.nebius.com/model-catalog.md), checked 2026-10-04.
 PRICE_PER_M: dict[Tier, tuple[float, float]] = {
     Tier.CHEAP: (0.06, 0.24),
     Tier.TOOL: (0.30, 0.90),
     Tier.DEEP: (1.00, 3.00),
-    Tier.OMNI: (0.30, 0.90),
+    Tier.VISION: (0.658, 1.11),
 }
 
 

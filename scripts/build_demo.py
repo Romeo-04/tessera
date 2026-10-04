@@ -41,7 +41,7 @@ METFORMIN = "RXCUI:6809"
 ATORVASTATIN = "RXCUI:83367"
 WARFARIN = "RXCUI:11289"
 
-# What Omni would read off seven bottles. Names here never leave the browser.
+# What the vision model would read off seven bottles. Names here never leave the browser.
 DRUGS = [
     {"raw_name": "LISINOPRIL 10MG TAB", "strength": "10 mg", "form": "tablet",
      "directions": "Take one tablet by mouth every morning",

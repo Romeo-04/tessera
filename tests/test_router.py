@@ -49,7 +49,9 @@ def test_each_tier_maps_to_its_exact_model_id():
     assert MODEL_FOR_TIER[Tier.CHEAP] == "nvidia/Nemotron-3_5-Lightning"
     assert MODEL_FOR_TIER[Tier.TOOL] == "nvidia/nemotron-3-super-120b-a12b"
     assert MODEL_FOR_TIER[Tier.DEEP] == "nvidia/Nemotron-3-Ultra-550b-a55b"
-    assert MODEL_FOR_TIER[Tier.OMNI] == "nvidia/Nemotron-3-Nano-Omni"
+    # Omni is not served on Token Factory (404, absent from the catalog, 2026-10-04).
+    assert MODEL_FOR_TIER[Tier.VISION] == "openbmb/MiniCPM-V-4_5"
+    assert not hasattr(Tier, "OMNI")
 
 
 def test_router_sends_the_tier_model_and_returns_content(tmp_path):

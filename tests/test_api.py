@@ -46,9 +46,16 @@ def make(read=None, assess=None, limiter=None, ceiling=None, alerts_path=None):
 
 
 def test_health_reports_whether_live_mode_is_available():
-    assert make().get("/health").json() == {"status": "ok", "live": False}
+    assert make().get("/health").json() == {"status": "ok", "live": False, "voice": False}
     live = make(read=Recorder(), assess=Recorder())
-    assert live.get("/health").json() == {"status": "ok", "live": True}
+    assert live.get("/health").json() == {"status": "ok", "live": True, "voice": False}
+
+
+def test_health_reports_voice_only_when_a_transcriber_is_wired():
+    """The app shows the mic only when this is true - no mic that cannot work."""
+    deps = Deps(read_fn=Recorder(), assess_fn=Recorder(), transcribe_fn=lambda p, k: "x",
+                limiter=RateLimiter(max_calls=100, per_seconds=60), ceiling=None, alerts_path=None)
+    assert TestClient(create_app(deps)).get("/health").json()["voice"] is True
 
 
 # ---- the gate is the schema -------------------------------------------------

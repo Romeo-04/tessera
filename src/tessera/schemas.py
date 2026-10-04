@@ -14,7 +14,7 @@ CONFIRM_THRESHOLD = 0.75
 
 
 class DrugRecord(BaseModel):
-    """What Omni read off one label. Device-side only — never leaves."""
+    """What the vision model read off one label. Device-side only — never leaves."""
 
     raw_name: str
     strength: str | None = None

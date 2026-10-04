@@ -43,7 +43,7 @@ function respond(q: string, drugs: Drug[], result: SessionResult): Turn[] {
 }
 
 export default function Ask() {
-  const { checked, result, live, logWire } = useSession();
+  const { checked, result, voice, logWire } = useSession();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
   const [heard, setHeard] = useState(false);
@@ -70,12 +70,12 @@ export default function Ask() {
   const bar = (
     <View>
       {heard && <Text style={s.heard}>This is what was heard. Fix anything that is wrong, then ask.</Text>}
-      {live && !heard && mic.state.kind !== "error" && (
+      {voice && !heard && mic.state.kind !== "error" && (
         <Text style={s.heard}>{"Asking out loud sends your recording to Tessera's server to be transcribed, then deletes it."}</Text>
       )}
       {mic.state.kind === "error" && <Text style={[s.heard, { color: color.warn }]}>{mic.state.message}</Text>}
       <View style={s.bar}>
-        {live && (
+        {voice && (
           <Pressable accessibilityRole="button"
                      accessibilityLabel={mic.state.kind === "recording" ? "Stop recording" : "Ask out loud"}
                      accessibilityState={{ busy: mic.state.kind === "transcribing" }}

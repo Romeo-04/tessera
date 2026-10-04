@@ -53,7 +53,7 @@ def ablation_table(calls) -> str:
         "| Tier | Model | Calls | Tokens in | Tokens out | Mean latency (ms) | Cost |",
         "|---|---|---|---|---|---|---|",
     ]
-    for tier in ("OMNI", "CHEAP", "TOOL", "DEEP"):
+    for tier in ("VISION", "CHEAP", "TOOL", "DEEP"):
         cs = by.get(tier)
         if not cs:
             continue

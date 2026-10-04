@@ -3,7 +3,7 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
   type ReactNode,
 } from "react";
-import { assessLive, liveAvailable, readLive, type PhotoInput } from "../lib/api";
+import { assessLive, liveAvailable, readLive, serverStatus, type PhotoInput } from "../lib/api";
 import {
   assessDemo, codeSetFor, combine, demoAmbiguities, demoDrugs, rejoinNames,
 } from "../lib/session";
@@ -18,6 +18,8 @@ const EMPTY: SessionResult = {
 interface Session {
   mode: Mode;
   live: boolean;
+  /** The server can transcribe a spoken question. */
+  voice: boolean;
   busy: boolean;
   notice: string | null;
   drugs: Drug[];
@@ -49,6 +51,7 @@ export function useSession(): Session {
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("demo");
   const [live, setLive] = useState(false);
+  const [voice, setVoice] = useState(false);
   // Resolves once /health has answered, so an early tap does not guess "demo".
   const liveCheck = useRef<Promise<boolean> | null>(null);
   const [busy, setBusy] = useState(false);
@@ -63,8 +66,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const session = useRef(0);
 
   useEffect(() => {
-    liveCheck.current = liveAvailable();
-    liveCheck.current.then(setLive);
+    const status = serverStatus();
+    liveCheck.current = status.then((s) => s.live);
+    status.then((s) => { setLive(s.live); setVoice(s.voice); });
   }, []);
 
   const clear = useCallback(() => {
@@ -225,10 +229,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<Session>(() => ({
-    mode, live, busy, notice, drugs, ambiguities, choices, excluded, result, wire,
+    mode, live, voice, busy, notice, drugs, ambiguities, choices, excluded, result, wire,
     checked: resolved().names,
     startDemo, startLive, recheck, logWire, decide, runAssess, afterReading, reset,
-  }), [mode, live, busy, notice, drugs, ambiguities, choices, excluded, result, wire, resolved,
+  }), [mode, live, voice, busy, notice, drugs, ambiguities, choices, excluded, result, wire, resolved,
     startDemo, startLive, recheck, logWire, decide, runAssess, afterReading, reset]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
