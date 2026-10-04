@@ -110,6 +110,22 @@ EXPLAIN = {
         "Digoxin's label lists metformin among drugs that can raise the level of digoxin in "
         "the blood, by an amount it calls unclear.",
         "Ask a pharmacist whether his digoxin levels should be measured."),
+    # Class warnings: the label names the class, and the demo drug is in it.
+    (FUROSEMIDE, LISINOPRIL): (
+        "Furosemide combined with angiotensin converting enzyme inhibitors or angiotensin II "
+        "receptor blockers may lead to severe hypotension and deterioration in renal function, "
+        "including renal failure.",
+        "Furosemide's label warns that taking it with an ACE inhibitor such as lisinopril can "
+        "cause severely low blood pressure and harm the kidneys.",
+        "Ask his prescriber whether his blood pressure and kidney function should be checked "
+        "while he takes both."),
+    (LISINOPRIL, METFORMIN): (
+        "Concomitant administration of lisinopril and antidiabetic medicines (insulins, oral "
+        "hypoglycemic agents) may cause an increased blood-glucose-lowering effect with risk of "
+        "hypoglycemia.",
+        "Lisinopril's label warns that with diabetes medicines such as metformin it can lower "
+        "blood sugar further, with a risk of hypoglycemia.",
+        "Ask a pharmacist which signs of low blood sugar to watch for."),
 }
 
 
@@ -135,6 +151,7 @@ def _result(codes: list[str], table, by_span, names, left_out: list[str]) -> Ses
             subject_name=names[a.subject_rxcui], object_name=names[a.object_rxcui],
             severity=a.severity, mechanism=mechanism, span_id=a.span_id,
             source_url=span.source_url, action=action, quote=span.text,
+            via_class=a.via_class,
         ))
     return SessionResult(
         risks=risks, excluded_drugs=left_out,

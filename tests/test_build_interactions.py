@@ -1,6 +1,8 @@
 import json
 
-from scripts.build_interactions import assertions_from, build_table, extract_assertions, extract_raw
+from scripts.build_interactions import (
+    apply_rejections, assertions_from, build_table, extract_assertions, extract_raw,
+)
 from tessera.errors import UpstreamError
 from tessera.schemas import InteractionAssertion
 
@@ -252,3 +254,23 @@ def test_an_empty_model_reply_is_unreadable_not_a_crash():
         def complete(self, tier, messages, **kw):
             return None
     assert extract_raw("text", "warfarin", Empty()) is None
+
+
+# ---- rejected claims ----------------------------------------------------------
+
+def _row(obj, span="s", via=None):
+    return InteractionAssertion(subject_rxcui="RXCUI:4603", object_rxcui=obj, severity="contraindicated",
+                                span_id=span, via_class=via)
+
+
+def test_a_rejected_class_claim_drops_every_drug_it_expanded_to():
+    """"Lithium should not be given with diuretics" is not about furosemide."""
+    rows = [_row("RXCUI:9997", via="diuretics"), _row("RXCUI:5487", via="diuretics"), _row("RXCUI:6448")]
+    rejected = [{"span_id": "s", "subject_rxcui": "RXCUI:4603", "claim": "diuretics", "reason": "x"}]
+    assert [a.object_rxcui for a in apply_rejections(rows, rejected)] == ["RXCUI:6448"]
+
+
+def test_a_rejected_named_claim_is_matched_by_its_code():
+    rows = [_row("RXCUI:6448"), _row("RXCUI:6448", span="other")]
+    rejected = [{"span_id": "s", "subject_rxcui": "RXCUI:4603", "claim": "RXCUI:6448", "reason": "x"}]
+    assert [a.span_id for a in apply_rejections(rows, rejected)] == ["other"]

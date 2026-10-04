@@ -1,0 +1,4 @@
+span_id,subject_rxcui,claim,reason
+11f757f1-34073-7-14-985c6885b82e,RXCUI:85762,CYP3A4 inhibitors,"The sentence is about lomitapide exposure, not ritonavir with other CYP3A4 inhibitors."
+11f757f1-34073-7-14-985c6885b82e,RXCUI:85762,HMG-CoA Reductase Inhibitor,The label names lovastatin and simvastatin only; the class would wrongly add every statin.
+d5b9f12e-34073-7-0-b762d2889804,RXCUI:4603,diuretics,"The sentence is about lithium with diuretics, not furosemide with other diuretics."

@@ -73,3 +73,12 @@ def test_vague_wordings_stay_unmapped():
     for phrase in ["sympathomimetics", "drugs that reduce metformin clearance",
                    "drugs affecting glycemic control", "neprilysin inhibitor"]:
         assert match_class(phrase) is None, phrase
+
+
+def test_non_opioid_is_not_an_opioid():
+    assert match_class("Analgesics, Non-opioid (selective blocker of Na v 1.8 sodium channels)") is None
+
+
+def test_partial_agonist_opioids_are_their_own_class_not_every_opioid():
+    assert match_class("Mixed Agonist/Antagonist and Partial Agonist Opioid Analgesics") == "partial-agonist-opioids"
+    assert match_class("other opioids") == "opioids"

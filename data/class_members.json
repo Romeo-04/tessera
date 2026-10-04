@@ -170,6 +170,9 @@
   "RXCUI:7052",
   "RXCUI:7804"
  ],
+ "partial-agonist-opioids": [
+  "RXCUI:1819"
+ ],
  "phenothiazines": [],
  "potassium-sparing-diuretics": [
   "RXCUI:298869",

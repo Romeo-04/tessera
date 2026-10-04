@@ -136,8 +136,11 @@ CLASS_MAP: list[dict] = [
     {"key": "maois",
      "patterns": [r"\bMAOIs?\b", r"monoamine\s+oxidase\s+inhibitors?"],
      "rxclass": [("Monoamine Oxidase Inhibitor", "EPC")]},
+    {"key": "partial-agonist-opioids",
+     "patterns": [r"(mixed\s+agonist|partial\s+agonist).*opioid"],
+     "ingredients": ["buprenorphine", "butorphanol", "nalbuphine", "pentazocine"]},
     {"key": "opioids",
-     "patterns": [r"\bopioids?\b"],
+     "patterns": [r"(?<!non-)(?<!non )\bopioids?\b"],
      "rxclass": [("Opioid Agonist", "EPC")],
      "exclude": ["loperamide"]},  # gut-acting; not what an opioid CNS warning means
     {"key": "benzodiazepines",

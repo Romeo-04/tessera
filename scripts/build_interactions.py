@@ -35,6 +35,7 @@ OUT = ROOT / "data" / "interactions.csv"
 PROGRESS = ROOT / "data" / "interactions.raw.jsonl"
 FAILED = ROOT / "data" / "interactions.failed.txt"
 CLASS_MEMBERS = ROOT / "data" / "class_members.json"
+REJECTED = ROOT / "data" / "interactions.rejected.csv"
 
 PROMPT = """You are reading one section of an FDA-approved drug label.
 
@@ -155,6 +156,19 @@ def assertions_from(
     return out
 
 
+def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict]
+                     ) -> list[InteractionAssertion]:
+    """Drop claims a reviewer rejected, keyed by span, subject and claim.
+
+    `claim` is the class phrase for a class claim, so one rejection removes
+    every drug that phrase expanded to, or the object code for a named one.
+    Rejections live in a committed file so a rebuild cannot bring them back.
+    """
+    gone = {(r["span_id"], r["subject_rxcui"], r["claim"]) for r in rejected}
+    return [a for a in assertions
+            if (a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui) not in gone]
+
+
 def extract_assertions(
     section_text: str,
     subject_rxcui: str,
@@ -249,6 +263,11 @@ def main() -> int:
     by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
     assertions = [a for span_id, raw in raws.items()
                   for a in assertions_from(raw, spans[span_id][1], span_id, by_name, members)]
+    rejected = (list(csv.DictReader(REJECTED.open(encoding="utf-8")))
+                if REJECTED.exists() else [])
+    before = len(assertions)
+    assertions = apply_rejections(assertions, rejected)
+    print(f"{len(rejected)} reviewed rejections removed {before - len(assertions)} rows")
 
     with OUT.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(
