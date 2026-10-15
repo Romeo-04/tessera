@@ -29,14 +29,10 @@ def encode_image(path: Path) -> str:
 def extract_drugs(image_paths: list[Path], router) -> list[DrugRecord]:
     """Read every visible label in one vision-model call.
 
-    All photographs go into a single request rather than one call per image:
-    Omni keeps a unified multimodal context, so it can tell that two shots of
-    the same bottle are one drug. Calling per image would lose that and double
+    All photographs go into a single request rather than one call per image,
+    so the model sees every shot at once and can tell that two shots of the
+    same bottle are one drug. Calling per image would lose that and multiply
     the cost.
-
-    The same model handles the spoken question elsewhere in the product. That
-    collapse - one model for OCR and speech - is why the device side needs no
-    second vendor, and it is what makes the privacy split possible at all.
     """
     content: list[dict] = [{"type": "text", "text": PROMPT}]
     for p in image_paths:

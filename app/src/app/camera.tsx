@@ -11,7 +11,7 @@ import { color, font, radius, size, space } from "../theme";
 
 /**
  * Multi-shot capture. Several bottles per photo is fine; several photos is
- * fine too - Omni reads them in one call and merges repeats. Every way this
+ * fine too - the vision model reads them in one call and merges repeats. Every way this
  * can fail (permission denied, no camera, camera error) ends at the photo
  * picker, never at a dead end - and every state has its own Close, because
  * on iOS this full-screen modal covers the app bar.

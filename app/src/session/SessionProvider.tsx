@@ -89,7 +89,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setDrugs(demoDrugs());
     setAmbiguities(demoAmbiguities());
     setWire([{
-      boundary: "photos", method: "POST", url: "Token Factory · Nemotron 3 Nano Omni",
+      boundary: "photos", method: "POST", url: "Token Factory · MiniCPM-V",
       body: "content: [ 7 × image_url ]\n// demo: nothing was sent", sent: false,
     }]);
     // Falling back from a live check that is already on /reading must not
@@ -109,7 +109,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     router.push("/reading");
     const kb = Math.round(photos.reduce((n, p) => n + (p.bytes ?? 0), 0) / 1024);
     setWire([{
-      boundary: "photos", method: "POST", url: "/api/read → Nemotron 3 Nano Omni",
+      boundary: "photos", method: "POST", url: "/api/read → MiniCPM-V",
       body: `photos: ${photos.length} × image${kb ? `, ${kb} KB` : ""}\n// deleted on the server after the call`,
       sent: true,
     }]);

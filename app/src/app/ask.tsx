@@ -49,7 +49,7 @@ export default function Ask() {
   const [heard, setHeard] = useState(false);
   const onText = useCallback((text: string) => { setQ(text); setHeard(true); }, []);
   const onSent = useCallback(() => logWire({
-    boundary: "photos", method: "POST", url: "/api/transcribe → Nemotron 3 Nano Omni",
+    boundary: "photos", method: "POST", url: "/api/transcribe → speech model",
     body: ["audio: 1 × recording of your question",
       "// transcribed, then deleted; only the words come back"].join("\n"),
     sent: true,

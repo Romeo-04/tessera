@@ -4,7 +4,7 @@ import type { WireEntry } from "../lib/types";
 import { useSession } from "../session/SessionProvider";
 import { color, font, radius, size, space } from "../theme";
 
-const ALL_TIERS = ["OMNI", "CHEAP", "TOOL", "DEEP"] as const;
+const ALL_TIERS = ["VISION", "CHEAP", "TOOL", "DEEP"] as const;
 
 type Key = "capture" | "reading" | "confirm" | "results" | "citation" | "ask" | "watch" | "list";
 
@@ -17,17 +17,18 @@ const NARRATION: Record<Key, { title: string; body: string; tiers: string[] }> =
   },
   reading: {
     title: "One model reads every label",
-    body: "Nemotron 3 Nano Omni reads all the photos in a single call and keeps one context "
-      + "across them, so two shots of the same bottle are recognised as one drug. Each name is "
-      + "then normalised to an RxNorm ingredient code — or deliberately left without one.",
-    tiers: ["OMNI"],
+    body: "A vision model (MiniCPM-V on Nebius Token Factory) reads all the photos in a single "
+      + "call, so two shots of the same bottle are recognised as one drug. Each name is then "
+      + "normalised to an RxNorm ingredient code — or deliberately left without one. Nemotron "
+      + "does the reasoning that follows.",
+    tiers: ["VISION"],
   },
   confirm: {
     title: "Abstaining, for real",
     body: "When two different drugs score too close to call, the bottle gets no code at all. A "
       + "code that does not exist cannot cross the gate, so no risk can be built from a "
       + "medication the system has just admitted it cannot name.",
-    tiers: ["OMNI"],
+    tiers: ["VISION"],
   },
   results: {
     title: "A few, not fourteen",
@@ -46,12 +47,11 @@ const NARRATION: Record<Key, { title: string; body: string; tiers: string[] }> =
   },
   ask: {
     title: "The refusal is code, not a prompt",
-    body: "A typed question is screened by a deterministic filter on the device before anything "
-      + "else runs. A spoken one is first sent to Omni to be transcribed - the one step here that "
-      + "leaves the device - and the words come back for you to check before the same filter "
-      + "screens them. Dose and treatment questions are refused; emergencies are sent to "
-      + "emergency care. Everything else is answered only from the cited results.",
-    tiers: ["OMNI"],
+    body: "A question is screened by a deterministic filter on the device before anything "
+      + "else runs. Dose and treatment questions are refused; emergencies are sent to "
+      + "emergency care. Everything else is answered only from the cited results. Spoken "
+      + "questions are switched off: no model on Token Factory accepts audio.",
+    tiers: [],
   },
   watch: {
     title: "Checked, then kept checked",
@@ -82,8 +82,8 @@ function wireCopy(wire: WireEntry[]): { title: string; body: string } {
     return {
       title: "The photographs",
       body: "The first boundary, stated honestly: perception runs in the cloud today, so the "
-        + "images reach Tessera's API and Nebius for Omni to read. They are deleted after the "
-        + "call. On-device Omni is the intended end state and is not built yet.",
+        + "images reach Tessera's API and Nebius for a vision model to read. They are deleted "
+        + "after the call. Reading on the device is the intended end state and is not built yet.",
     };
   }
   return {
