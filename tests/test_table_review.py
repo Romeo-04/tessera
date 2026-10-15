@@ -99,3 +99,42 @@ def test_wilson_interval_is_honest_at_the_edges():
     lo, hi = wilson_interval(90, 100)
     assert 0.82 < lo < 0.84 and 0.94 < hi < 0.96
     assert wilson_interval(0, 0) == (None, None)
+
+
+# ---- review findings -----------------------------------------------------------
+
+from scripts.apply_review import table_precision, unmatched
+from scripts.build_interactions import claim_key
+
+
+def test_a_typographic_hyphen_does_not_break_a_rejection():
+    assert claim_key("s", "RXCUI:9", "Beta‑blockers ") == claim_key("s", "RXCUI:9", "beta-blockers")
+
+
+def test_a_claim_written_two_ways_is_one_claim():
+    claims = group_claims([row("RXCUI:9", "RXCUI:10", via="NSAIDs"), row("RXCUI:9", "RXCUI:11", via="nsaids ")])
+    assert len(claims) == 1 and len(claims[0]["objects"]) == 2
+
+
+def test_a_claim_with_mixed_grades_must_be_reviewed():
+    claims = group_claims([row("RXCUI:9", "RXCUI:10", "monitor", via="NSAIDs"),
+                           row("RXCUI:9", "RXCUI:11", "warning", via="NSAIDs")])
+    must, _ = select_for_review(claims, set(), set(), n_sample=0)
+    assert must and "mixed grades" in must[0]["why"]
+
+
+def test_table_precision_weights_each_group_by_its_size():
+    """Named and class claims are sampled 50/50 but are not 50/50 of the table;
+    the must-review group is reviewed in full, so it is known, not estimated."""
+    p = table_precision(
+        groups={"named": (40, 50), "class": (25, 50), "must review": (250, 262)},
+        sizes={"named": 1608, "class": 663, "must review": 262})
+    assert round(p["estimate"], 3) == round((1608 * 0.8 + 663 * 0.5 + 250) / 2533, 3)
+    assert p["groups"]["named"]["lo"] < 0.8 < p["groups"]["named"]["hi"]
+
+
+def test_a_verdict_that_matches_no_claim_in_the_table_is_reported():
+    claims = {claim_key("s", "RXCUI:9", "NSAIDs")}
+    bad = unmatched([{"span_id": "s", "subject_rxcui": "RXCUI:9", "claim": "Beta?blockers"},
+                     {"span_id": "s", "subject_rxcui": "RXCUI:9", "claim": "nsaids"}], claims)
+    assert [b["claim"] for b in bad] == ["Beta?blockers"]

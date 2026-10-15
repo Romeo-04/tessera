@@ -20,9 +20,16 @@ Needs no key and no outside data.
 from __future__ import annotations
 
 import csv
+import json
 import random
 import re
+import sys
 from pathlib import Path
+
+try:
+    from scripts.build_interactions import claim_key
+except ImportError:  # run as `python scripts/review_sheet.py`
+    from build_interactions import claim_key
 
 ROOT = Path(__file__).resolve().parents[1]
 TABLE = ROOT / "data" / "interactions.csv"
@@ -30,6 +37,7 @@ FORMULARY = ROOT / "data" / "formulary.csv"
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
 OUT = ROOT / "data" / "review" / "interactions-review.csv"
 CONFLICTS = ROOT / "data" / "review" / "grade-conflicts.csv"
+MANIFEST = ROOT / "data" / "review" / "review-manifest.json"
 SAMPLE = 100
 SEED = 20261015
 
@@ -73,17 +81,26 @@ def group_claims(rows: list[dict]) -> list[dict]:
     claims: dict[tuple[str, str, str], dict] = {}
     for r in rows:
         via = r.get("via_class") or ""
-        key = (r["span_id"], r["subject_rxcui"], via or r["object_rxcui"])
+        # The same key data/interactions.rejected.csv is matched by, so one
+        # verdict here is exactly one rejection there.
+        key = claim_key(r["span_id"], r["subject_rxcui"], via or r["object_rxcui"])
         c = claims.setdefault(key, {"span_id": r["span_id"], "subject_rxcui": r["subject_rxcui"],
-                                    "claim": key[2], "via_class": via, "severity": r["severity"],
-                                    "objects": [], "rows": []})
+                                    "claim": via or r["object_rxcui"], "via_class": via,
+                                    "severities": set(), "objects": [], "rows": []})
         c["objects"].append(r["object_rxcui"])
         c["rows"].append(r)
+        c["severities"].add(r["severity"])
+    order = {"monitor": 1, "warning": 2, "contraindicated": 3}
+    for c in claims.values():
+        c["severity"] = max(c["severities"], key=order.get)
     return list(claims.values())
 
 
 def _must_review(c: dict, demo: set[str], conflicts: set[tuple[str, str, str]]) -> list[str]:
     why = []
+    if len(c["severities"]) > 1:
+        # One verdict regrades a whole claim, so its rows must agree first.
+        why.append("mixed grades")
     if c["severity"] == "contraindicated":
         why.append("contraindicated")
     if c["subject_rxcui"] in demo and any(o in demo for o in c["objects"]):
@@ -121,8 +138,19 @@ def _excerpt(passage: str, term: str, width: int = 500) -> str:
     return ("…" if start else "") + passage[start:start + width] + ("…" if start + width < len(passage) else "")
 
 
+def _has_verdicts(path: Path) -> bool:
+    if not path.exists():
+        return False
+    with path.open(encoding="utf-8-sig", errors="replace") as fh:
+        return any((r.get(VERDICT) or "").strip() for r in csv.DictReader(fh))
+
+
 def main() -> int:
     from tessera.corpus.spans import SpanStore
+
+    if _has_verdicts(OUT) and "--force" not in sys.argv:
+        sys.exit(f"{OUT} already has verdicts in it. Run scripts/apply_review.py first, or pass"
+                 " --force to throw them away.")
 
     names = {r["rxcui"]: r["ingredient"] for r in csv.DictReader(FORMULARY.open(encoding="utf-8"))}
     spans = SpanStore.from_sections(SECTIONS)
@@ -153,6 +181,18 @@ def main() -> int:
                 "subject_rxcui": c["subject_rxcui"],
                 "claim": c["claim"],
             })
+
+    # What apply_review needs to turn the sample into a table-wide figure:
+    # how many claims each sampled group stands for, and which ones were drawn.
+    named_rest = sum(1 for c in group_claims(rows) if not c["via_class"]) - sum(
+        1 for c in must if not c["via_class"])
+    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    MANIFEST.write_text(json.dumps({
+        "seed": SEED, "claims": len(group_claims(rows)), "rows": len(rows),
+        "sizes": {"must review": len(must), "named": named_rest,
+                  "class": len(group_claims(rows)) - len(must) - named_rest},
+        "sample": [[c["span_id"], c["subject_rxcui"], c["claim"]] for c in sample],
+    }, indent=1), encoding="utf-8")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", newline="", encoding="utf-8-sig") as fh:

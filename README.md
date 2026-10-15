@@ -180,7 +180,7 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **340 Python + 95 app, passing** |
+| Test suite | **345 Python + 95 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -235,7 +235,7 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 340 tests, no credentials needed
+pytest                      # 345 tests, no credentials needed
 cd app && npm install && npm test   # 95 tests
 npx tsc --noEmit && npx expo lint
 ```
@@ -300,15 +300,18 @@ reviewer rejects go in `data/interactions.rejected.csv` and stay rejected across
 *claim* (a class sentence that reached eight drugs is one verdict), about 360 lines, roughly
 three hours. Two sections:
 
-- **must review**: every "contraindicated" claim, every claim between two demo drugs, and every
-  claim the model graded two ways.
-- **sample**: 100 claims drawn at random (fixed seed, half named, half class). These are what
-  turn a review into a measured number instead of "we fixed what we looked at".
+- **must review**: every "contraindicated" claim, every claim between two demo drugs, every named
+  drug the model graded two ways in one passage, and any claim whose rows disagree on grade.
+- **sample**: 100 of the remaining claims drawn at random (fixed seed, 50 named and 50 class).
+  These are what turn a review into a measured number instead of "we fixed what we looked at".
 
 For each line, read the passage and write `keep`, `drop` (the passage does not say this), or
 `regrade` with a `corrected_severity`. Then `python scripts/apply_review.py` writes the drops
-and regrades to `data/interactions.rejected.csv`, and the sample's precision, with 95% Wilson
-intervals, to `evals/table_review.md`. Rebuilding the table afterwards makes no model calls.
+and regrades to `data/interactions.rejected.csv`, and precision to `evals/table_review.md`: per
+group (must-review, named, class) with 95% Wilson intervals, plus a table-wide estimate that
+weights each group by its share of the table's claims, since the sample is 50/50 and the table
+is not. Counts are claims, not rows. A verdict that no longer matches a claim, or a sheet saved
+as anything but UTF-8, stops the script. Rebuilding the table afterwards makes no model calls.
 
 ## Data sources
 
