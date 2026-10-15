@@ -131,6 +131,9 @@ def ingredients_of(rxcui: str) -> tuple[tuple[str, str], ...]:
 # Only the leading candidates decide the answer and the runner-up margin, and
 # each needs a lookup, so the tail is not mapped.
 MAP_TOP = 5
+# How close a real candidate must score for a placeholder ahead of it to be
+# treated as a tie and dropped. Same width as normalize.AMBIGUITY_MARGIN.
+PLACEHOLDER_TIE = 0.05
 
 
 def match_ingredients(
@@ -149,11 +152,11 @@ def match_ingredients(
     name a drug the patient does not take alone), and a concept whose
     ingredient lookup failed.
     """
-    def lookup(c: Candidate) -> tuple[tuple[str, str], ...]:
+    def lookup(c: Candidate) -> tuple[tuple[str, str], ...] | None:
         try:
             return ingredient_fn(c.rxcui)
         except httpx.HTTPError:
-            return ()
+            return None  # failed, which is not the same as "has no ingredient"
 
     top = match_fn(term, max_entries=max_entries)[:MAP_TOP]
     # One lookup per candidate, concurrently: sequential lookups made a
@@ -161,9 +164,20 @@ def match_ingredients(
     with ThreadPoolExecutor(max_workers=MAP_TOP) as pool:
         mapped = list(pool.map(lookup, top))
 
+    def placeholder(c: Candidate, ings) -> bool:
+        # Nothing names it and it has no ingredient: a proprietary vocabulary's
+        # entry, not a drug. Seen tying the real metformin ER product at the top.
+        return ings == () and not c.display_name
+
+    real = [c.score for c, ings in zip(top, mapped) if not placeholder(c, ings)]
     out: dict[str, Candidate] = {}
     for c, ings in zip(top, mapped):
-        if len(ings) == 1:
+        # Dropped only when a real candidate ties it. A placeholder that leads
+        # clearly is kept, so the result abstains: dropping it would promote a
+        # weaker runner-up into a confident answer the patient may not take.
+        if placeholder(c, ings) and any(s >= c.score - PLACEHOLDER_TIE for s in real):
+            continue
+        if ings and len(ings) == 1:
             code, name = ings[0]
             c = c.model_copy(update={"rxcui": code, "display_name": name or c.display_name})
         if c.rxcui not in out:
