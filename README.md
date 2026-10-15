@@ -172,14 +172,16 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **307 Python + 95 app, passing** |
+| Test suite | **322 Python + 95 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
 | Severity precision@5 | not yet measured |
 | Citation support rate | not yet measured |
 | Label reading, first live call | 2 of 2 **synthetic** test labels read and normalised exactly, in one MiniCPM-V call: 2.4 s, $0.00048. Real bottle photos are next. |
-| Cost per session | estimated ≈ $0.035 from catalog prices; **not yet measured end to end** |
+| Cost per session | **measured: median $0.0056, worst $0.0140** across 13 live sessions (the demo list plus 12 seeded lists with at least one documented interaction; `python -m evals.measure_sessions`) |
+| Latency per session | **median 7.3 s, worst 14.8 s** (resolver, one Nemotron Ultra adjudication call, one verification call per risk) |
+| Explanations withheld by the verifier | **1 of 27** in each of two runs, down from 5 and 7 of 27 before the adjudicator was pointed at the sentences about each pair. A withheld explanation marks the session incomplete; it never reads as "nothing found". The verifier is a model checking a model, so this measures agreement, not correctness. |
 
 Verified against the live RxNorm API on 2026-10-03: labels resolve to strength-level concepts
 (`METF0RMIN 500 mg` → `316256`, "metformin 500 MG"), so every candidate is mapped to its
@@ -225,7 +227,7 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 307 tests, no credentials needed
+pytest                      # 322 tests, no credentials needed
 cd app && npm install && npm test   # 95 tests
 npx tsc --noEmit && npx expo lint
 ```

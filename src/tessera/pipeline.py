@@ -77,6 +77,7 @@ def assess(
     table,
     router,
     covered_rxcuis: set[str] | None = None,
+    names: dict[str, str] | None = None,
 ) -> SessionResult:
     """Codes in, cited risks keyed by code out. The server side of the gate.
 
@@ -114,7 +115,7 @@ def assess(
             f"{MAX_RISKS} most severe."
         )
 
-    risks = adjudicate(assertions, index, router)
+    risks = adjudicate(assertions, index, router, names)
     unexplained = considered - len(risks)
 
     kept, dropped = verify_risks(risks, index, router)
@@ -183,6 +184,7 @@ def run_session(
     formulary_rxcuis: set[str],
     match_fn=match_ingredients,
     covered_rxcuis: set[str] | None = None,
+    names: dict[str, str] | None = None,
 ) -> SessionResult:
     """Photographs in, cited risks out. The whole product in one function.
 
@@ -199,4 +201,4 @@ def run_session(
 
     # ---- everything below this line sees codes only ------------------------
     codes = to_code_set(perception.drugs)
-    return combine(perception, assess(codes, index, table, router, covered_rxcuis))
+    return combine(perception, assess(codes, index, table, router, covered_rxcuis, names))

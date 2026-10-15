@@ -52,6 +52,18 @@ def _load_corpus(settings):
     return index, table, formulary, covered
 
 
+def formulary_names(settings) -> dict[str, str]:
+    """Code -> ingredient name for the whole formulary. Public data, server side:
+    it lets the adjudicator point at the label sentences about a pair without
+    anything about the user crossing the gate. Optional: without it, the
+    adjudicator still gets the whole passage."""
+    path = settings.data_dir / "formulary.csv"
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8") as fh:
+        return {r["rxcui"]: r["ingredient"] for r in csv.DictReader(fh)}
+
+
 @app.command()
 def check(photos: list[Path] = typer.Argument(..., help="Label photographs")) -> None:
     """Read medication labels and report cited interaction risks."""
@@ -74,7 +86,7 @@ def check(photos: list[Path] = typer.Argument(..., help="Label photographs")) ->
     try:
         result = run_session(
             list(photos), index, table, router, formulary,
-            covered_rxcuis=covered or None,
+            covered_rxcuis=covered or None, names=formulary_names(settings),
         )
     except RateLimitedError:
         typer.echo(

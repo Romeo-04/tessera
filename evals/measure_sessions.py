@@ -42,19 +42,20 @@ def code_sets(table, covered: set[str], n: int = SAMPLED, seed: int = SEED) -> l
 
 
 def main() -> None:
-    from tessera.cli import _load_corpus
+    from tessera.cli import _load_corpus, formulary_names
     from tessera.config import get_settings
     from tessera.pipeline import assess
     from tessera.router import Router
     from tessera.schemas import CodeSet
 
     index, table, _, covered = _load_corpus(get_settings())
+    names = formulary_names(get_settings())
     router = Router()
     rows = []
     for codes in code_sets(table, covered):
         before = len(router.calls())
         started = time.perf_counter()
-        result = assess(CodeSet(codes=codes), index, table, router, covered or None)
+        result = assess(CodeSet(codes=codes), index, table, router, covered or None, names)
         latency = time.perf_counter() - started
         calls = router.calls()[before:]
         withheld = sum(int(m.group(1)) for n in result.notes

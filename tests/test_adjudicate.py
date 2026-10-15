@@ -150,3 +150,47 @@ def test_a_class_risk_says_which_class_the_label_named():
     (risk,) = adjudicate([class_assertion("warning", 1, "ACE inhibitors")], FakeIndex(), R())
     assert risk.via_class == "ACE inhibitors"
     assert "ACE inhibitors" in capture["prompt"]
+
+
+class LongIndex(FakeIndex):
+    def by_id(self, span_id):
+        span = super().by_id(span_id)
+        return span.model_copy(update={"text": (
+            "Exercise caution with drugs metabolized by CYP2D6. "
+            "Concomitant use with SSRIs, SNRIs or Tryptophan is not recommended. "
+            "Use caution with warfarin because of bleeding risk.")})
+
+
+def _capturing():
+    capture = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            capture["prompt"] = messages[0]["content"]
+            return json.dumps({"risks": [{"span_id": "s1", "mechanism": "m",
+                                          "action": "Ask a pharmacist."}]})
+    return R(), capture
+
+
+def test_the_sentences_about_the_pair_are_pointed_out_for_a_class_risk():
+    """Measured live: given a whole passage, the model summarised all of it and
+    the verifier withheld the result. It must be told which part is this pair."""
+    router, capture = _capturing()
+    adjudicate([class_assertion("warning", 1, "SSRIs")], LongIndex(), router)
+    focus = capture["prompt"].split("about this interaction:")[1].split("label text:")[0]
+    assert "SSRIs, SNRIs or Tryptophan is not recommended" in focus
+    assert "warfarin" not in focus
+
+
+def test_a_named_risk_is_focused_by_the_drug_name_from_the_server_side_formulary():
+    router, capture = _capturing()
+    a = assertion("warning", 1).model_copy(update={"object_rxcui": "RXCUI:11289"})
+    adjudicate([a], LongIndex(), router, names={"RXCUI:11289": "warfarin"})
+    focus = capture["prompt"].split("about this interaction:")[1].split("label text:")[0]
+    assert "warfarin because of bleeding risk" in focus and "SSRIs" not in focus
+
+
+def test_without_a_matching_sentence_there_is_no_focus_line():
+    router, capture = _capturing()
+    adjudicate([assertion("warning", 1)], LongIndex(), router)
+    assert "about this interaction:" not in capture["prompt"]

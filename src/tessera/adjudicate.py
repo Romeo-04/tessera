@@ -33,6 +33,8 @@ caregiver with no clinical training.
 For each interaction below you are given the EXACT text of the FDA-approved
 label section that documents it. Write the mechanism in one plain sentence,
 using ONLY what that text says. Do not add pharmacology it does not state.
+When the sentences about the interaction are given, explain only what those
+sentences say, not the rest of the passage.
 
 You must NEVER recommend starting, stopping, or changing a dose. Every action
 must direct the reader to a pharmacist or prescriber.
@@ -52,7 +54,21 @@ def rank_assertions(assertions, index) -> list[InteractionAssertion]:
     return sorted(assertions, key=lambda a: (-SEVERITY_RANK[a.severity], a.via_class is not None))
 
 
-def adjudicate(assertions, index, router) -> list[RankedRisk]:
+def focus_sentences(text: str, term: str | None) -> str:
+    """The sentences of a cited passage that mention `term`, verbatim.
+
+    A Drug Interactions passage often covers several drugs. Given all of it,
+    the model summarised all of it, and the verifier rightly withheld the
+    result. Pointing at the sentences about this pair is still label text: the
+    model is told which words matter, not anything about the user.
+    """
+    if not term:
+        return ""
+    want = re.compile(rf"\b{re.escape(term.strip())}\b", re.IGNORECASE)
+    return " ".join(x for x in re.split(r"(?<=[.;])\s+", text) if want.search(x))
+
+
+def adjudicate(assertions, index, router, names: dict[str, str] | None = None) -> list[RankedRisk]:
     """Rank, cap at five, then explain each strictly from its cited span.
 
     Ranking happens in code before the model is involved, so what reaches the
@@ -67,12 +83,16 @@ def adjudicate(assertions, index, router) -> list[RankedRisk]:
         return []
 
     top = rank_assertions(assertions, index)[:MAX_RISKS]
-    block = "\n\n".join(
-        f"span_id: {a.span_id}\nseverity: {a.severity}\n"
-        + (f"the label names this drug's class: {a.via_class}\n" if a.via_class else "")
-        + f"label text: {index.by_id(a.span_id).text}"
-        for a in top
-    )
+
+    def entry(a: InteractionAssertion) -> str:
+        text = index.by_id(a.span_id).text
+        focus = focus_sentences(text, a.via_class or (names or {}).get(a.object_rxcui))
+        return (f"span_id: {a.span_id}\nseverity: {a.severity}\n"
+                + (f"the label names this drug's class: {a.via_class}\n" if a.via_class else "")
+                + (f"the sentences about this interaction: {focus}\n" if focus else "")
+                + f"label text: {text}")
+
+    block = "\n\n".join(entry(a) for a in top)
 
     raw = router.complete(
         Tier.DEEP,
