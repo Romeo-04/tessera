@@ -9,7 +9,7 @@ import sys
 import time
 from pathlib import Path
 
-from tessera.sources.rxnorm import approximate_match, ingredients_of, match_ingredients
+from tessera.sources.rxnorm import approximate_match, ingredients_of
 
 ROOT = Path(__file__).resolve().parents[1]
 SEED = ROOT / "data" / "formulary_seed.csv"
@@ -17,11 +17,23 @@ OUT = ROOT / "data" / "formulary.csv"
 
 
 def resolve(name: str, match_fn=approximate_match, ingredient_fn=ingredients_of):
-    """A seed name -> its RxNorm ingredient (or None). The formulary is keyed
-    by ingredient; taking approximateTerm's top match as-is once stored a
-    product ("ursodiol 300 MG Oral Capsule") for ursodiol."""
-    cands = match_ingredients(name, max_entries=5, match_fn=match_fn, ingredient_fn=ingredient_fn)
-    return cands[0] if cands else None
+    """A seed name -> its single RxNorm ingredient, or None.
+
+    The formulary is keyed by ingredient. Taking approximateTerm's top match
+    as-is once stored a product ("ursodiol 300 MG Oral Capsule") for ursodiol.
+    The ingredient is confirmed directly: match_ingredients would keep the
+    product's own code on a lookup failure or a combination, so here a lookup
+    failure raises (and main() lists the name as unresolved) and anything that
+    is not exactly one ingredient is None.
+    """
+    cands = match_fn(name, max_entries=5)
+    if not cands:
+        return None
+    ings = ingredient_fn(cands[0].rxcui)
+    if len(ings) != 1:
+        return None
+    code, ing_name = ings[0]
+    return cands[0].model_copy(update={"rxcui": code, "display_name": ing_name or cands[0].display_name})
 
 
 def main() -> int:

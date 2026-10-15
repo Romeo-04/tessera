@@ -32,7 +32,7 @@ export default function Confirm() {
               return (
                 <Row key={o.rxcui} icon={pick?.rxcui === o.rxcui ? "✓" : String(i + 1)}
                      title={o.display_name} selected={pick?.rxcui === o.rxcui} disabled={unavailable}
-                     detail={`${o.rxcui} · match ${o.score.toFixed(3)}${unavailable ? " · demo has no precomputed answer" : ""}`}
+                     detail={`${o.rxcui} · match ${o.score.toFixed(3)}${o.in_formulary === false ? " · outside Tessera's list, would not be checked" : ""}${unavailable ? " · demo has no precomputed answer" : ""}`}
                      onPress={() => decide(a.raw_name, o)} />
               );
             })}

@@ -57,15 +57,21 @@ def normalize_drugs(
                                       confidence=0.0, candidates=[]))
             continue
 
+        # Every option says whether Tessera can check it, so a question never
+        # offers an unflagged choice that would silently go unchecked.
+        candidates = [c.model_copy(update={"in_formulary": c.rxcui in formulary_rxcuis})
+                      for c in candidates]
         best = candidates[0]
-        tied = len(candidates) > 1 and (best.score - candidates[1].score) < AMBIGUITY_MARGIN
+        tied_with = [c for c in candidates if best.score - c.score < AMBIGUITY_MARGIN]
+        ambiguous = len(tied_with) > 1
 
         # Out of scope: we carry no label evidence for what this actually is.
-        # Only when the best match is clear. In a tie the top is not an
-        # identification of anything, and telling the user "this is
-        # lanthanum carbonate, outside our list" when it is as likely calcium
-        # carbonate is naming the wrong drug; the tie is asked below.
-        if best.rxcui not in formulary_rxcuis and not tied:
+        # When the best match is clear, or when everything tied with it is out
+        # of scope too. If a drug we carry is tied with it, the top is not an
+        # identification of anything - telling the user "this is lanthanum
+        # carbonate, outside our list" when it is as likely calcium carbonate
+        # names the wrong drug - so that tie is asked below.
+        if not any(c.in_formulary for c in tied_with):
             out.append(NormalizedDrug(
                 record=rec, rxcui=None, display_name=best.display_name,
                 confidence=0.0, candidates=candidates[:3], in_formulary=False,
@@ -73,10 +79,6 @@ def normalize_drugs(
             continue
 
         too_weak = best.raw_score is not None and best.raw_score < MIN_RAW_SCORE
-        ambiguous = (
-            len(candidates) > 1
-            and (best.score - candidates[1].score) < AMBIGUITY_MARGIN
-        )
 
         if too_weak or ambiguous:
             out.append(NormalizedDrug(
