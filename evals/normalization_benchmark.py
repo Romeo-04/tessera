@@ -3,21 +3,29 @@
     python -m evals.normalization_benchmark          # free; uses the public RxNorm API
 
 This is NOT the hand-labelled gold set (data/gold/normalization.jsonl, which
-needs real bottle photos). It measures the step after reading: given label-like
-text, does Tessera land on the right ingredient code, abstain, or name the
-wrong drug? Inputs and answers both come from RxNorm itself, never from a
-model:
+needs real bottle photos), and it does not test the camera. It measures the
+step after reading: given label-like text, does Tessera land on the right
+ingredient, ask, or name the wrong drug? Inputs and answers both come from
+RxNorm itself, never from a model:
 
-- clean: a single-ingredient product name as a label prints it
-  ("ATORVASTATIN 20 MG TABLET"), from RxNorm's clinical drug names
-- ocr:   the same text with two deterministic OCR-style misreadings
-  (O/0, I/1, S/5, B/8, rn/m, a dropped letter)
-- brand: the brand name and strength, where RxNorm has a single-ingredient
-  branded product ("LIPITOR 20 MG")
+- clean: a single-ingredient oral tablet or capsule, written as a label prints
+  it ("ATORVASTATIN 20 MG TABLET"). These are RxNorm's own names fed back to
+  RxNorm's matcher, so they are close to an upper bound, not a hard test.
+- ocr:   the same text with two deterministic OCR-style misreadings inside the
+  drug name (O/0, I/1, S/5, B/8, rn/m, a dropped letter).
+- brand: the brand name and dose strength, from a single-ingredient branded
+  product ("LIPITOR 20 MG").
 
-The truth is the formulary ingredient the product is made of. "wrong" - naming
-a different drug without asking - is the number that matters for safety;
-"abstained" means the app would ask the user instead.
+Drugs with no single-ingredient oral tablet or capsule in RxNorm (injections,
+inhalers, creams) are skipped, because they do not come in a pill bottle.
+
+Outcomes:
+- correct:      the right formulary ingredient
+- asked:        no code; the app shows options or says it could not read it
+- out of scope: no code, and the app says a drug outside its list - but names
+                the right drug (e.g. RxNorm's "ursodeoxycholate" for ursodiol)
+- wrong:        a different drug, either as a code or as the out-of-scope name
+                the user would be shown. This is the number that matters.
 
 Cases are cached in evals/normalization_cases.jsonl so a rerun measures the
 same inputs; results go to evals/normalization_results.json.
@@ -38,30 +46,46 @@ N_DRUGS = 100
 SEED = 20261015
 RXNAV = "https://rxnav.nlm.nih.gov/REST"
 
-_DROP = re.compile(r"\b(oral|delayed release oral|for oral suspension)\b", re.IGNORECASE)
+_DROP = re.compile(r"\b(oral|delayed release oral)\b", re.IGNORECASE)
+_PREFIX = re.compile(r"^\s*([\d.]+\s*(HR|ML|ACTUAT|MG)\s+)+", re.IGNORECASE)
+_ORAL = re.compile(r"\bOral (Tablet|Capsule)\b", re.IGNORECASE)
 # OCR confusions in the direction a camera actually gets them wrong.
 _SWAPS = [("O", "0"), ("I", "1"), ("L", "1"), ("S", "5"), ("B", "8"), ("M", "RN"), ("E", "F")]
 
 
 def label_text(product_name: str) -> str:
     """RxNorm's "atorvastatin 20 MG Oral Tablet" as a label prints it."""
-    return " ".join(_DROP.sub("", product_name).split()).upper()
+    return " ".join(_DROP.sub("", _PREFIX.sub("", product_name)).split()).upper()
 
 
-def ocr_noise(text: str, seed: int, n: int = 2) -> str:
-    """Two misreadings in the drug name only; the strength and form stay."""
-    m = re.search(r"\s\d", text)
-    name, rest = (text[:m.start()], text[m.start():]) if m else (text, "")
+def pick_product(clinical_names: list[str]) -> str | None:
+    """A single-ingredient oral tablet or capsule: immediate release first,
+    then the lowest strength. None if the drug does not come as one."""
+    oral = [n for n in clinical_names if _ORAL.search(n) and " / " not in n]
+    if not oral:
+        return None
+
+    def strength(n: str) -> float:
+        m = re.search(r"([\d.]+)\s*MG", n)
+        return float(m.group(1)) if m else 0.0
+    return sorted(oral, key=lambda n: ("Release" in n, strength(n), n))[0]
+
+
+def ocr_noise(text: str, ingredient: str, seed: int, n: int = 2) -> str:
+    """Two misreadings inside the drug's own name; everything else stays."""
+    m = re.search(re.escape(ingredient), text, re.IGNORECASE)
+    start, end = (m.start(), m.end()) if m else (0, len(text.split()[0]))
+    name = text[start:end]
     rng = random.Random(seed)
     for _ in range(n):
-        options = [(i, a, b) for a, b in _SWAPS for i in [k for k in range(len(name)) if name.startswith(a, k)]]
+        options = [(i, a, b) for a, b in _SWAPS for i in range(len(name)) if name.startswith(a, i)]
         if options and rng.random() < 0.8:
             i, a, b = rng.choice(options)
             name = name[:i] + b + name[i + len(a):]
         elif len(name) > 4:
             i = rng.randrange(1, len(name) - 1)
             name = name[:i] + name[i + 1:]
-    return name + rest
+    return text[:start] + name + text[end:]
 
 
 def brand_of(branded_names: list[str]) -> str | None:
@@ -73,22 +97,40 @@ def brand_of(branded_names: list[str]) -> str | None:
     return None
 
 
-def outcome(predicted: str | None, truth: str) -> str:
-    if predicted is None:
-        return "abstained"
-    return "correct" if predicted == truth else "wrong"
+def brand_case(brand: str, clean: str) -> str | None:
+    """"LIPITOR 20 MG": the brand with the product's dose strength, never a volume."""
+    m = re.search(r"\b\d[\d.]*\s*(MG|MCG|UNT)\b", clean)
+    return f"{brand.upper()} {m.group(0)}" if m else None
+
+
+def _same_drug(guess: str, truth: str) -> bool:
+    """Is an out-of-scope name the true drug under another RxNorm name?
+    A heuristic, stated as one: containment or a shared first four letters
+    ("ursodeoxycholate" / "ursodiol")."""
+    g, t = guess.lower(), truth.lower()
+    return t in g or g in t or g[:4] == t[:4]
+
+
+def outcome(predicted: str | None, truth: str, in_formulary: bool,
+            best_guess: str | None, truth_name: str) -> str:
+    if predicted is not None:
+        return "correct" if predicted == truth else "wrong"
+    if not in_formulary and best_guess:
+        return "out of scope" if _same_drug(best_guess, truth_name) else "wrong"
+    return "asked"
 
 
 def summarize(outcomes: list[str]) -> dict:
     from evals.metrics import wilson_interval
 
     n = len(outcomes)
-    c, a, w = (outcomes.count(k) for k in ("correct", "abstained", "wrong"))
-    lo, hi = wilson_interval(w, n)
-    return {"n": n, "correct": c, "abstained": a, "wrong": w,
-            "accuracy_when_answered": c / (c + w) if c + w else None,
-            "coverage": (c + w) / n if n else None,
-            "wrong_rate": w / n if n else None, "wrong_rate_lo": lo, "wrong_rate_hi": hi}
+    counts = {k: outcomes.count(k) for k in ("correct", "asked", "out of scope", "wrong")}
+    lo, hi = wilson_interval(counts["wrong"], n)
+    answered = counts["correct"] + counts["wrong"]
+    return {"n": n, **counts,
+            "accuracy_when_answered": counts["correct"] / answered if answered else None,
+            "wrong_rate": counts["wrong"] / n if n else None,
+            "wrong_rate_lo": lo, "wrong_rate_hi": hi}
 
 
 def _related(rxcui: str, ttys: str) -> list[str]:
@@ -107,17 +149,17 @@ def build_cases() -> list[dict]:
     rng = random.Random(SEED)
     cases = []
     for i, r in enumerate(sorted(rng.sample(rows, N_DRUGS), key=lambda r: r["ingredient"])):
-        clinical = sorted(n for n in _related(r["rxcui"], "SCD") if " / " not in n)
-        if not clinical:
+        product = pick_product(_related(r["rxcui"], "SCD"))
+        if not product:
             continue
-        clean = label_text(clinical[0])
-        cases.append({"truth": r["rxcui"], "kind": "clean", "text": clean})
-        cases.append({"truth": r["rxcui"], "kind": "ocr", "text": ocr_noise(clean, seed=SEED + i)})
-        brand = brand_of(sorted(_related(r["rxcui"], "SBD")))
-        strength = re.search(r"\d[\d.]*\s*(MG|MCG|ML|UNT|%)", clean)
-        if brand and strength:
-            cases.append({"truth": r["rxcui"], "kind": "brand",
-                          "text": f"{brand.upper()} {strength.group(0)}"})
+        clean = label_text(product)
+        base = {"truth": r["rxcui"], "truth_name": r["ingredient"]}
+        cases.append({**base, "kind": "clean", "text": clean})
+        cases.append({**base, "kind": "ocr", "text": ocr_noise(clean, r["ingredient"], seed=SEED + i)})
+        brand = brand_of(sorted(n for n in _related(r["rxcui"], "SBD") if _ORAL.search(n)))
+        text = brand_case(brand, clean) if brand else None
+        if text:
+            cases.append({**base, "kind": "brand", "text": text})
     return cases
 
 
@@ -133,21 +175,23 @@ def main() -> None:
     results = []
     for c in cases:
         (d,) = normalize_drugs([DrugRecord(raw_name=c["text"])], formulary)
-        results.append({**c, "predicted": d.rxcui, "outcome": outcome(d.rxcui, c["truth"]),
-                        "best_guess": d.display_name})
-        if results[-1]["outcome"] == "wrong":
-            print(f"  WRONG {c['kind']:5} {c['text']!r} -> {d.rxcui} ({d.display_name})")
+        o = outcome(d.rxcui, c["truth"], d.in_formulary, d.display_name, c["truth_name"])
+        results.append({**c, "predicted": d.rxcui, "in_formulary": d.in_formulary,
+                        "best_guess": d.display_name, "outcome": o})
+        if o != "correct":
+            print(f"  {o:12} {c['kind']:5} {c['text']!r} -> {d.rxcui} ({d.display_name})", flush=True)
 
-    report = {"all": summarize([r["outcome"] for r in results])}
+    report = {"drugs_sampled": N_DRUGS, "drugs_with_a_pill_product": len({c["truth"] for c in cases}),
+              "all": summarize([r["outcome"] for r in results])}
     for kind in ("clean", "ocr", "brand"):
         report[kind] = summarize([r["outcome"] for r in results if r["kind"] == kind])
-    report["wrong_cases"] = [r for r in results if r["outcome"] == "wrong"]
+    report["cases"] = results
     RESULTS.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     for k in ("all", "clean", "ocr", "brand"):
         s = report[k]
-        print(f"{k:6} n={s['n']:3}  correct {s['correct']:3}  abstained {s['abstained']:3}  "
-              f"wrong {s['wrong']:2} (95% CI up to {s['wrong_rate_hi'] or 0:.1%})  "
-              f"accuracy when answered {s['accuracy_when_answered'] or 0:.1%}")
+        print(f"{k:6} n={s['n']:3}  correct {s['correct']:3}  asked {s['asked']:3}  "
+              f"out of scope {s['out of scope']:2}  wrong {s['wrong']:2} "
+              f"(95% CI up to {s['wrong_rate_hi'] or 0:.1%})")
 
 
 if __name__ == "__main__":
