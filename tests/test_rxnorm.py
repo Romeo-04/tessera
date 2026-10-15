@@ -227,3 +227,17 @@ def test_a_nameless_concept_that_maps_to_an_ingredient_is_kept():
     )
     out = match_ingredients("WARF SOD", match_fn=match, ingredient_fn=ing)
     assert [(c.rxcui, c.display_name) for c in out] == [("RXCUI:11289", "warfarin")]
+
+
+def test_a_placeholder_that_leads_clearly_is_kept_so_the_result_abstains():
+    """Review: if the placeholder is the clear leader and the real drug is not in
+    the top five, dropping it would promote a weak runner-up into a confident
+    identification of a drug the patient may not take. Only a tie is dropped."""
+    match, ing = _fake(
+        [Candidate(rxcui="RXCUI:1808202", display_name="", score=1.0, raw_score=16.0),
+         Candidate(rxcui="RXCUI:4821", display_name="glipizide", score=0.56, raw_score=9.0),
+         Candidate(rxcui="RXCUI:6809", display_name="metformin", score=0.44, raw_score=7.0)],
+        {"RXCUI:4821": (("RXCUI:4821", "glipizide"),), "RXCUI:6809": (("RXCUI:6809", "metformin"),)},
+    )
+    out = match_ingredients("x", match_fn=match, ingredient_fn=ing)
+    assert out[0].rxcui == "RXCUI:1808202"
