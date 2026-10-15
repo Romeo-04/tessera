@@ -28,7 +28,8 @@ const NARRATION: Record<Key, { title: string; body: string; tiers: string[] }> =
     body: "When two different drugs score too close to call, the bottle gets no code at all. A "
       + "code that does not exist cannot cross the gate, so no risk can be built from a "
       + "medication the system has just admitted it cannot name.",
-    tiers: ["VISION"],
+    // No model decides this: a fixed RxNorm score margin does (normalize.py).
+    tiers: [],
   },
   results: {
     title: "A few, not fourteen",
