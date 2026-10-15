@@ -157,6 +157,8 @@ def assertions_from(
             continue
         excluded = excluded_text(phrase)
         members = {m for key in match_classes(phrase) for m in class_members.get(key, [])}
+        # "diuretics except potassium-sparing diuretics": a class can be excluded too.
+        members -= {m for key in match_classes(excluded) for m in class_members.get(key, [])}
         for obj in sorted(members):
             if obj == subject_rxcui or obj in named:
                 continue
@@ -188,8 +190,9 @@ def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict
     """Drop claims a reviewer rejected, keyed by span, subject and claim.
 
     `claim` is the class phrase for a class claim, so one rejection removes
-    every drug that phrase expanded to, or the object code for a named one.
-    Phrases compare case- and space-insensitively, because a rebuild may
+    every drug that phrase expanded to, or the object code for a named one. A
+    row with `corrected_severity` regrades the claim instead of removing it,
+    for a real interaction the model graded wrongly. Phrases compare case- and space-insensitively, because a rebuild may
     re-read the same label with different capitalisation; a rejection that no
     longer matches anything goes to `unused` instead of failing silently.
     Rejections live in a committed file so a rebuild cannot bring them back.
@@ -199,10 +202,13 @@ def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict
     kept = []
     for a in assertions:
         key = _claim_key(a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui)
-        if key in gone:
-            hit.add(key)
-        else:
+        if key not in gone:
             kept.append(a)
+            continue
+        hit.add(key)
+        corrected = (gone[key].get("corrected_severity") or "").strip()
+        if corrected:
+            kept.append(a.model_copy(update={"severity": corrected}))
     for key, r in gone.items():
         if key not in hit:
             unused(r)

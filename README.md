@@ -226,7 +226,7 @@ python -m venv .venv
 
 cp .env.example .env        # add your NEBIUS_API_KEY
 pytest                      # 307 tests, no credentials needed
-cd app && npm install && npm test   # 91 tests
+cd app && npm install && npm test   # 95 tests
 npx tsc --noEmit && npx expo lint
 ```
 

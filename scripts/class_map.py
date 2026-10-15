@@ -119,7 +119,8 @@ CLASS_MAP: list[dict] = [
      "patterns": [r"insulin\s+secretagogues?"],
      "ingredients": ["glimepiride", "glipizide", "glyburide", "repaglinide", "nateglinide"]},
     {"key": "insulins",
-     "patterns": [r"\binsulins?\b(?!\s+secretagogue)"],
+     # Not "non-insulin", "insulin sensitizers", "insulin resistance".
+     "patterns": [r"(?<!non-)(?<!non )\binsulins?\b(?!\s+(secretagogue|sensiti|resistan))"],
      "rxclass": [("Insulin", "EPC")]},
     {"key": "antidiabetics",
      # Not "blood glucose lowering": "drugs that may decrease the blood glucose
@@ -234,7 +235,9 @@ CLASS_MAP: list[dict] = [
 
 # Words that make a phrase name only part of a class. The label names the
 # members it means elsewhere; expanding to the whole class would over-claim.
-_SUBSET = re.compile(r"\b(certain|select|selected|some|specific|intravenous|IV)\b", re.IGNORECASE)
+# "Weak" CYP3A4 inhibitors are on neither the strong nor the moderate list.
+_SUBSET = re.compile(r"\b(certain|select|selected|some|specific|intravenous|IV|weak|mild)\b",
+                     re.IGNORECASE)
 _EXCLUSION = re.compile(r"\b(other\s+than|but\s+not|except(\s+for)?|excluding)\b(?P<rest>.*)",
                         re.IGNORECASE)
 _HYPHENS = re.compile(r"[­‐‑‒–—―−]")

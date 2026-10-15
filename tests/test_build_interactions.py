@@ -336,3 +336,21 @@ def test_a_rejection_that_matches_nothing_is_reported():
                      [{"span_id": "gone", "subject_rxcui": "RXCUI:4603", "claim": "diuretics", "reason": "x"}],
                      unused=unused.append)
     assert [r["span_id"] for r in unused] == ["gone"]
+
+
+def test_a_correction_regrades_a_claim_instead_of_dropping_it():
+    """Ritonavir's label: "Titrate atorvastatin ... dose carefully" is monitor,
+    though the same table row calls lovastatin contraindicated."""
+    rows = [_row("RXCUI:83367")]
+    rejected = [{"span_id": "s", "subject_rxcui": "RXCUI:4603", "claim": "RXCUI:83367",
+                 "reason": "x", "corrected_severity": "monitor"}]
+    (a,) = apply_rejections(rows, rejected)
+    assert a.severity == "monitor"
+
+
+def test_a_class_named_in_the_exclusion_is_subtracted():
+    members = {"diuretics": ["RXCUI:1191", "RXCUI:860975"], "potassium-sparing-diuretics": ["RXCUI:860975"]}
+    raw = {"interactions": [], "classes": [
+        {"class": "diuretics except potassium-sparing diuretics", "severity": "warning"}]}
+    out = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, members)
+    assert [a.object_rxcui for a in out] == ["RXCUI:1191"]

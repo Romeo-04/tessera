@@ -116,3 +116,13 @@ def test_keys_are_unique_and_refinements_point_at_real_keys():
     assert len(keys) == len(set(keys))
     for e in CLASS_MAP:
         assert set(e.get("refines", [])) <= set(keys), e["key"]
+
+
+@pytest.mark.parametrize("phrase", ["non-insulin antidiabetic agents", "insulin sensitizers",
+                                    "drugs that increase insulin resistance"])
+def test_insulin_named_only_as_a_property_is_not_insulin(phrase):
+    assert "insulins" not in match_classes(phrase)
+
+
+def test_weak_cyp3a4_inhibitors_are_not_read_as_strong_or_moderate():
+    assert match_classes("weak CYP3A4 inhibitors") == []
