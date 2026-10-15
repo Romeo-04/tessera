@@ -58,11 +58,12 @@ def rank_assertions(assertions, index) -> list[InteractionAssertion]:
 _SENTENCE = re.compile(r"(?<!e\.g\.)(?<!i\.e\.)(?<!approx\.)(?<=[.;])\s+")
 # Words that, right before a class term, make it a narrower class.
 _NARROWER = re.compile(
-    r"(\w+-\w+|sparing|depleting|loop|thiazide|strong|moderate|weak|potent|mild"
+    r"(potassium-sparing|potassium-depleting|sparing|depleting|loop|thiazide(-type|-like)?"
+    r"|strong|moderate|weak|potent|mild"
     r"|dihydropyridine|cardioselective|selective|non)\s+$", re.IGNORECASE)
 
 
-def focus_sentences(text: str, term: str | None) -> str:
+def focus_sentences(text: str, term: str | None, is_class: bool = False) -> str:
     """The sentences of a cited passage that mention `term`, verbatim.
 
     A Drug Interactions passage often covers several drugs. Given all of it,
@@ -78,7 +79,8 @@ def focus_sentences(text: str, term: str | None) -> str:
     def about(sentence: str) -> bool:
         # "diuretics" must not focus on "Potassium-sparing diuretics ...": a
         # qualifier just before the term names a different, narrower class.
-        return any(not _NARROWER.search(sentence[:m.start()]) for m in want.finditer(sentence))
+        return any(not (is_class and _NARROWER.search(sentence[:m.start()]))
+                   for m in want.finditer(sentence))
 
     return " ".join(x for x in _SENTENCE.split(text) if about(x))
 
@@ -108,7 +110,8 @@ def adjudicate(assertions, index, router, names: dict[str, str] | None = None) -
 
     def entry(key: str, a: InteractionAssertion) -> str:
         text = index.by_id(a.span_id).text
-        focus = focus_sentences(text, a.via_class or (names or {}).get(a.object_rxcui))
+        focus = focus_sentences(text, a.via_class or (names or {}).get(a.object_rxcui),
+                                is_class=a.via_class is not None)
         return (f"span_id: {key}\nseverity: {a.severity}\n"
                 + (f"the label names this drug's class: {a.via_class}\n" if a.via_class else "")
                 + (f"the sentences about this interaction: {focus}\n" if focus else "")

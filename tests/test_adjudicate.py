@@ -219,7 +219,7 @@ def test_two_pairs_citing_one_passage_each_get_their_own_explanation():
 def test_a_class_term_inside_a_narrower_class_is_not_the_focus():
     text = ("Diuretics: excessive drop in blood pressure. "
             "Potassium-sparing diuretics (spironolactone) can increase the risk of hyperkalemia.")
-    focus = focus_sentences(text, "diuretics")
+    focus = focus_sentences(text, "diuretics", is_class=True)
     assert focus == "Diuretics: excessive drop in blood pressure."
 
 
@@ -231,3 +231,9 @@ def test_focus_does_not_split_on_e_g():
 def test_a_blank_term_or_one_ending_in_a_bracket_is_handled():
     assert focus_sentences("Anything at all.", "   ") == ""
     assert focus_sentences("Avoid ARBs (losartan). Other.", "ARBs (losartan)") == "Avoid ARBs (losartan)."
+
+
+def test_a_named_drug_after_a_hyphenated_word_is_still_the_focus():
+    text = "Low-dose aspirin increases bleeding. Aspirin levels are unaffected."
+    assert focus_sentences(text, "aspirin") == text
+    assert focus_sentences("Co-administered warfarin raises INR.", "warfarin") == "Co-administered warfarin raises INR."

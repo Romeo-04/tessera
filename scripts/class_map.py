@@ -279,7 +279,7 @@ def match_classes(phrase: str, context: str = "") -> list[str]:
         # Only the phrase's own sentence: a cue in the sentence before is about
         # something else, and reading it would drop real members.
         before = text[max(0, hit.start() - _CONTEXT_WINDOW):hit.start()]
-        before = re.split(r"[.;]\s", before)[-1]
+        before = re.split(r"(?<!e\.g)(?<!i\.e)(?<!approx)[.;]\s", before)[-1]
         for key, cue, instead in _CONTEXT:
             if key in keys and cue.search(before):
                 keys = [instead if k == key else k for k in keys]
