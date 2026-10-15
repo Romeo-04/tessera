@@ -41,6 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "evals" / "normalization_cases.jsonl"
 RESULTS = ROOT / "evals" / "normalization_results.json"
+PROGRESS = ROOT / "evals" / "normalization_progress.jsonl"  # gitignored; lets a stopped run resume
 FORMULARY = ROOT / "data" / "formulary.csv"
 N_DRUGS = 100
 SEED = 20261015
@@ -163,6 +164,27 @@ def build_cases() -> list[dict]:
     return cases
 
 
+def run_cases(cases: list[dict], judge, progress: Path) -> list[dict]:
+    """judge(case) for every case, appending each result to `progress` as it
+    lands; a rerun skips cases already there. A run stopped part-way (memory
+    pressure stopped one at case ~30 of 241) loses nothing."""
+    done: dict[str, dict] = {}
+    if progress.exists():
+        for line in progress.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                r = json.loads(line)
+                done[r["kind"] + "|" + r["text"]] = r
+    out = []
+    for c in cases:
+        key = c["kind"] + "|" + c["text"]
+        if key not in done:
+            done[key] = judge(c)
+            with progress.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(done[key]) + "\n")
+        out.append(done[key])
+    return out
+
+
 def main() -> None:
     from tessera.normalize import normalize_drugs
     from tessera.schemas import DrugRecord
@@ -172,14 +194,15 @@ def main() -> None:
     cases = [json.loads(x) for x in CASES.read_text(encoding="utf-8").splitlines() if x.strip()]
     formulary = {r["rxcui"] for r in csv.DictReader(FORMULARY.open(encoding="utf-8"))}
 
-    results = []
-    for c in cases:
+    def judge(c: dict) -> dict:
         (d,) = normalize_drugs([DrugRecord(raw_name=c["text"])], formulary)
         o = outcome(d.rxcui, c["truth"], d.in_formulary, d.display_name, c["truth_name"])
-        results.append({**c, "predicted": d.rxcui, "in_formulary": d.in_formulary,
-                        "best_guess": d.display_name, "outcome": o})
         if o != "correct":
             print(f"  {o:12} {c['kind']:5} {c['text']!r} -> {d.rxcui} ({d.display_name})", flush=True)
+        return {**c, "predicted": d.rxcui, "in_formulary": d.in_formulary,
+                "best_guess": d.display_name, "outcome": o}
+
+    results = run_cases(cases, judge, PROGRESS)
 
     report = {"drugs_sampled": N_DRUGS, "drugs_with_a_pill_product": len({c["truth"] for c in cases}),
               "all": summarize([r["outcome"] for r in results])}

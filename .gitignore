@@ -13,3 +13,4 @@ data/interactions.raw.jsonl
 data/interactions.failed.txt
 brag-output*/
 data/review/
+evals/normalization_progress.jsonl

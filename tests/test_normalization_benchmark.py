@@ -54,3 +54,19 @@ def test_summary_reports_wrong_answers_with_an_interval():
     assert s["n"] == 100 and s["wrong"] == 2 and s["asked"] == 6 and s["out of scope"] == 2
     assert s["accuracy_when_answered"] == 90 / 92
     assert s["wrong_rate_hi"] > 0.02
+
+
+def test_a_rerun_skips_cases_already_measured(tmp_path):
+    from evals.normalization_benchmark import run_cases
+    cases = [{"truth": "RXCUI:1", "truth_name": "a", "kind": "clean", "text": t} for t in ("A", "B", "C")]
+    seen = []
+
+    def judge(c):
+        seen.append(c["text"])
+        return {**c, "outcome": "correct"}
+
+    progress = tmp_path / "p.jsonl"
+    run_cases(cases[:2], judge, progress)
+    seen.clear()
+    out = run_cases(cases, judge, progress)
+    assert seen == ["C"] and [r["text"] for r in out] == ["A", "B", "C"]
