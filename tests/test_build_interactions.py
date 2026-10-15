@@ -354,3 +354,11 @@ def test_a_class_named_in_the_exclusion_is_subtracted():
         {"class": "diuretics except potassium-sparing diuretics", "severity": "warning"}]}
     out = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, members)
     assert [a.object_rxcui for a in out] == ["RXCUI:1191"]
+
+
+def test_the_passage_text_can_narrow_a_class():
+    members = {"diuretics": ["RXCUI:1191", "RXCUI:860975"], "potassium-depleting-diuretics": ["RXCUI:1191"]}
+    raw = {"interactions": [], "classes": [{"class": "diuretics", "severity": "monitor"}]}
+    context = "with potassium-depleting agents (e.g., amphotericin B, diuretics), observe closely"
+    out = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, members, context=context)
+    assert [a.object_rxcui for a in out] == ["RXCUI:1191"]

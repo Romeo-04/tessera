@@ -126,3 +126,22 @@ def test_insulin_named_only_as_a_property_is_not_insulin(phrase):
 
 def test_weak_cyp3a4_inhibitors_are_not_read_as_strong_or_moderate():
     assert match_classes("weak CYP3A4 inhibitors") == []
+
+
+def test_diuretics_named_as_potassium_depleting_agents_are_not_potassium_sparing():
+    """Corticosteroid labels: "potassium-depleting agents (e.g., amphotericin B,
+    diuretics)". The model extracts "diuretics"; spironolactone is not meant."""
+    context = ("When corticosteroids are administered concomitantly with potassium-depleting "
+               "agents (e.g., amphotericin B, diuretics), patients should be observed closely.")
+    assert match_classes("diuretics", context) == ["potassium-depleting-diuretics"]
+    assert match_classes("diuretics", "Diuretics: excessive drop in blood pressure.") == ["diuretics"]
+
+
+def test_a_cue_in_an_earlier_sentence_does_not_narrow_the_class():
+    context = "Avoid potassium-depleting agents. Diuretics: excessive drop in blood pressure."
+    assert match_classes("Diuretics", context) == ["diuretics"]
+
+
+def test_e_g_inside_the_qualifier_does_not_cut_the_cue_off():
+    context = "with potassium-depleting agents (e.g. amphotericin B, diuretics), observe closely."
+    assert match_classes("diuretics", context) == ["potassium-depleting-diuretics"]

@@ -77,6 +77,7 @@ def assess(
     table,
     router,
     covered_rxcuis: set[str] | None = None,
+    names: dict[str, str] | None = None,
 ) -> SessionResult:
     """Codes in, cited risks keyed by code out. The server side of the gate.
 
@@ -114,7 +115,7 @@ def assess(
             f"{MAX_RISKS} most severe."
         )
 
-    risks = adjudicate(assertions, index, router)
+    risks = adjudicate(assertions, index, router, names)
     unexplained = considered - len(risks)
 
     kept, dropped = verify_risks(risks, index, router)
@@ -126,14 +127,20 @@ def assess(
             f"{len(dropped)} statement(s) were withheld because the cited label "
             "text did not support them."
         )
-
     if unexplained > 0:
-        # The table found interactions the model failed to put into words.
-        # Silence here would read as "no interactions found", which is the
-        # opposite of what happened.
         notes.append(
-            f"{unexplained} documented interaction(s) could not be explained and "
-            "are not shown. This result is incomplete - please ask a pharmacist."
+            f"{unexplained} documented interaction(s) could not be explained."
+        )
+
+    if unexplained > 0 or dropped:
+        # The table found interactions that are not on screen - either the
+        # model failed to put them into words, or the verifier refused the
+        # words it chose. Either way the interaction is real and documented, so
+        # "ok" would read as "nothing else found", the opposite of what happened.
+        notes.append(
+            f"{unexplained + len(dropped)} of the {considered} most severe documented "
+            "interaction(s) are not shown. "
+            "This result is incomplete - please ask a pharmacist."
         )
         status = "analysis_incomplete"
     elif unchecked:
@@ -178,6 +185,7 @@ def run_session(
     formulary_rxcuis: set[str],
     match_fn=match_ingredients,
     covered_rxcuis: set[str] | None = None,
+    names: dict[str, str] | None = None,
 ) -> SessionResult:
     """Photographs in, cited risks out. The whole product in one function.
 
@@ -194,4 +202,4 @@ def run_session(
 
     # ---- everything below this line sees codes only ------------------------
     codes = to_code_set(perception.drugs)
-    return combine(perception, assess(codes, index, table, router, covered_rxcuis))
+    return combine(perception, assess(codes, index, table, router, covered_rxcuis, names))

@@ -95,3 +95,17 @@ def test_the_source_text_is_actually_put_in_front_of_the_model():
 def test_nothing_to_verify_is_not_an_error():
     kept, dropped = verify_risks([], FakeIndex(), router_saying())
     assert kept == [] and dropped == []
+
+
+def test_the_verdict_is_asked_for_deterministically():
+    """Measured live: re-running the same sessions withheld different sentences.
+    A yes/no support check that flips between runs is not a check."""
+    seen = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            seen.update(kw)
+            return json.dumps({"supported": True})
+
+    verify_risks([risk("s1", "m")], FakeIndex(), R())
+    assert seen.get("temperature") == 0

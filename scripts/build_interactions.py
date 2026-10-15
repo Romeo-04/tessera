@@ -131,6 +131,7 @@ def assertions_from(
     by_name: dict[str, str],
     class_members: dict[str, list[str]],
     on_conflict=lambda conflict: None,
+    context: str = "",
 ) -> list[InteractionAssertion]:
     """One raw reading -> assertions about formulary drugs, offline.
 
@@ -142,7 +143,8 @@ def assertions_from(
     mention beats any grade from a class; among grades of the same kind the most
     severe wins, as it does across labels in the resolver. Emission order never
     decides. When named grades disagree, `on_conflict` receives
-    (subject, object, span_id, grades) so a reviewer sees it.
+    (subject, object, span_id, grades) so a reviewer sees it. `context` is the
+    passage itself, which can narrow a class phrase (class_map._CONTEXT).
     """
     name_of = {code: name for name, code in by_name.items()}
     named: dict[str, set[str]] = {}
@@ -156,7 +158,7 @@ def assertions_from(
         if severity not in VALID_SEVERITY:
             continue
         excluded = excluded_text(phrase)
-        members = {m for key in match_classes(phrase) for m in class_members.get(key, [])}
+        members = {m for key in match_classes(phrase, context) for m in class_members.get(key, [])}
         # "diuretics except potassium-sparing diuretics": a class can be excluded too.
         members -= {m for key in match_classes(excluded) for m in class_members.get(key, [])}
         for obj in sorted(members):
@@ -313,7 +315,8 @@ def main() -> int:
     conflicts: list[tuple] = []
     assertions = [a for span_id in spans if span_id in raws
                   for a in assertions_from(raws[span_id], spans[span_id][1], span_id, by_name,
-                                           members, on_conflict=conflicts.append)]
+                                           members, on_conflict=conflicts.append,
+                                           context=spans[span_id][0])]
     rejected = (list(csv.DictReader(REJECTED.open(encoding="utf-8")))
                 if REJECTED.exists() else [])
     unused: list[dict] = []

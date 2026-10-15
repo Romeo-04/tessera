@@ -114,9 +114,17 @@ the reasoning code path never receives a name. They are served by the same host 
 [Deployment honesty](#deployment-honesty) for what that does and does not guarantee. Names are
 re-joined in the browser.
 
-The one-sentence version: **the reasoning service never learns what anyone is taking — it sees
-numeric codes and returns numeric codes, and the names are re-joined on the side that already
-had them.**
+The one-sentence version: **the reasoning service sees numeric codes and public FDA label text,
+and returns numeric codes; nothing from the photograph — the patient's name, the pharmacy, the
+prescriber, the raw label text — ever reaches it, and the names are re-joined on the side that
+already had them.**
+
+To be exact about what that does *not* hide: an RxNorm code identifies a drug, so the
+reasoning service does learn which medications are in the set it was sent, as any interaction
+checker must. What it never gets is anything that says *whose* medications they are. The
+adjudicator is also shown which sentences of a cited label passage mention the other drug or
+its class; those sentences are found server side from the public formulary, keyed by codes the
+service already has, so they reveal nothing the codes did not.
 
 ### Deployment honesty
 
@@ -172,14 +180,16 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **307 Python + 95 app, passing** |
+| Test suite | **329 Python + 95 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
 | Severity precision@5 | not yet measured |
 | Citation support rate | not yet measured |
 | Label reading, first live call | 2 of 2 **synthetic** test labels read and normalised exactly, in one MiniCPM-V call: 2.4 s, $0.00048. Real bottle photos are next. |
-| Cost per session | estimated ≈ $0.035 from catalog prices; **not yet measured end to end** |
+| Cost per session | **measured: median $0.0058, worst $0.0105** across 13 live sessions (the demo list plus 12 seeded lists with at least one documented interaction; `python -m evals.measure_sessions`, latest run in `evals/sessions.jsonl`) |
+| Latency per session | **median 6.8 s, worst 14.1 s** (resolver, one Nemotron Ultra adjudication call, one verification call per risk) |
+| Explanations withheld by the verifier | **1, 0 and 2 of 27** in three runs, down from **7 of 27** before the adjudicator was pointed at the sentences about each pair (every run is in `evals/runs/`). A withheld explanation marks the session incomplete, never "nothing found". The verifier is a model checking a model, so this measures agreement, not correctness. |
 
 Verified against the live RxNorm API on 2026-10-03: labels resolve to strength-level concepts
 (`METF0RMIN 500 mg` → `316256`, "metformin 500 MG"), so every candidate is mapped to its
@@ -225,7 +235,7 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 307 tests, no credentials needed
+pytest                      # 329 tests, no credentials needed
 cd app && npm install && npm test   # 95 tests
 npx tsc --noEmit && npx expo lint
 ```

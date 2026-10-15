@@ -127,6 +127,11 @@ def test_a_withheld_claim_is_reported_to_the_user(tmp_path):
     )
     assert result.risks == []
     assert any("withheld" in n.lower() for n in result.notes)
+    # A documented interaction exists and nothing is shown: that is not "ok".
+    # Measured live before this fix, withheld sessions still reported "ok".
+    assert result.status == "analysis_incomplete"
+    # Under the cap the count is out of the ones considered, not all documented.
+    assert any("1 of the 1 most severe" in n for n in result.notes)
 
 
 def test_an_adjudicator_that_explains_nothing_is_not_reported_as_all_clear(tmp_path):

@@ -51,3 +51,30 @@ def test_ablation_table_reports_each_tier_with_its_cost():
     assert "1000" in deep  # mean latency, ms
     assert "$0.0032" in deep
     assert table.splitlines()[0].startswith("| Tier")
+
+
+# ---- live session summary ------------------------------------------------------
+
+from evals.metrics import session_summary
+
+
+def test_session_summary_reports_median_and_worst_not_just_mean():
+    sessions = [{"cost_usd": c, "latency_s": l, "shown": 2, "withheld": 0, "status": "ok"}
+                for c, l in [(0.01, 4.0), (0.02, 6.0), (0.09, 30.0)]]
+    s = session_summary(sessions)
+    assert s["n"] == 3
+    assert s["cost_median"] == 0.02 and s["cost_max"] == 0.09
+    assert s["latency_median"] == 6.0 and s["latency_max"] == 30.0
+
+
+def test_session_summary_counts_the_verifier_withholding_sentences():
+    sessions = [{"cost_usd": 0.01, "latency_s": 1.0, "shown": 3, "withheld": 1, "status": "ok"},
+                {"cost_usd": 0.01, "latency_s": 1.0, "shown": 4, "withheld": 0, "status": "analysis_incomplete"}]
+    s = session_summary(sessions)
+    assert s["sentences_written"] == 8 and s["sentences_withheld"] == 1
+    assert s["statuses"] == {"ok": 1, "analysis_incomplete": 1}
+
+
+def test_no_sessions_is_not_a_number():
+    assert session_summary([])["n"] == 0
+    assert session_summary([])["cost_median"] is None

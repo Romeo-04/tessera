@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tessera.adjudicate import MAX_RISKS, adjudicate, rank_assertions
+from tessera.adjudicate import MAX_RISKS, adjudicate, focus_sentences, rank_assertions
 from tessera.errors import RateLimitedError
 from tessera.router import Tier
 from tessera.schemas import EvidenceSpan, InteractionAssertion
@@ -150,3 +150,90 @@ def test_a_class_risk_says_which_class_the_label_named():
     (risk,) = adjudicate([class_assertion("warning", 1, "ACE inhibitors")], FakeIndex(), R())
     assert risk.via_class == "ACE inhibitors"
     assert "ACE inhibitors" in capture["prompt"]
+
+
+class LongIndex(FakeIndex):
+    def by_id(self, span_id):
+        span = super().by_id(span_id)
+        return span.model_copy(update={"text": (
+            "Exercise caution with drugs metabolized by CYP2D6. "
+            "Concomitant use with SSRIs, SNRIs or Tryptophan is not recommended. "
+            "Use caution with warfarin because of bleeding risk.")})
+
+
+def _capturing():
+    capture = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            capture["prompt"] = messages[0]["content"]
+            return json.dumps({"risks": [{"span_id": "s1", "mechanism": "m",
+                                          "action": "Ask a pharmacist."}]})
+    return R(), capture
+
+
+def test_the_sentences_about_the_pair_are_pointed_out_for_a_class_risk():
+    """Measured live: given a whole passage, the model summarised all of it and
+    the verifier withheld the result. It must be told which part is this pair."""
+    router, capture = _capturing()
+    adjudicate([class_assertion("warning", 1, "SSRIs")], LongIndex(), router)
+    focus = capture["prompt"].split("about this interaction:")[1].split("label text:")[0]
+    assert "SSRIs, SNRIs or Tryptophan is not recommended" in focus
+    assert "warfarin" not in focus
+
+
+def test_a_named_risk_is_focused_by_the_drug_name_from_the_server_side_formulary():
+    router, capture = _capturing()
+    a = assertion("warning", 1).model_copy(update={"object_rxcui": "RXCUI:11289"})
+    adjudicate([a], LongIndex(), router, names={"RXCUI:11289": "warfarin"})
+    focus = capture["prompt"].split("about this interaction:")[1].split("label text:")[0]
+    assert "warfarin because of bleeding risk" in focus and "SSRIs" not in focus
+
+
+def test_without_a_matching_sentence_there_is_no_focus_line():
+    router, capture = _capturing()
+    adjudicate([assertion("warning", 1)], LongIndex(), router)
+    assert "about this interaction:" not in capture["prompt"]
+
+
+def test_two_pairs_citing_one_passage_each_get_their_own_explanation():
+    """Review finding: answers keyed by span_id alone gave both pairs the last one."""
+    capture = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            prompt = messages[0]["content"]
+            ids = [line.split(": ", 1)[1] for line in prompt.splitlines() if line.startswith("span_id: ")]
+            capture["ids"] = ids
+            return json.dumps({"risks": [{"span_id": i, "mechanism": f"about {i}",
+                                          "action": "Ask a pharmacist."} for i in ids]})
+
+    a = assertion("warning", 1).model_copy(update={"object_rxcui": "RXCUI:11289"})
+    b = class_assertion("warning", 1, "SSRIs")
+    out = adjudicate([a, b], LongIndex(), R(), names={"RXCUI:11289": "warfarin"})
+    assert len(set(capture["ids"])) == 2
+    assert len({r.mechanism for r in out}) == 2
+    assert all(r.span_id == "s1" for r in out)
+
+
+def test_a_class_term_inside_a_narrower_class_is_not_the_focus():
+    text = ("Diuretics: excessive drop in blood pressure. "
+            "Potassium-sparing diuretics (spironolactone) can increase the risk of hyperkalemia.")
+    focus = focus_sentences(text, "diuretics", is_class=True)
+    assert focus == "Diuretics: excessive drop in blood pressure."
+
+
+def test_focus_does_not_split_on_e_g():
+    text = "Use caution with NSAIDs (e.g. ibuprofen) because of bleeding. Other text."
+    assert focus_sentences(text, "NSAIDs") == "Use caution with NSAIDs (e.g. ibuprofen) because of bleeding."
+
+
+def test_a_blank_term_or_one_ending_in_a_bracket_is_handled():
+    assert focus_sentences("Anything at all.", "   ") == ""
+    assert focus_sentences("Avoid ARBs (losartan). Other.", "ARBs (losartan)") == "Avoid ARBs (losartan)."
+
+
+def test_a_named_drug_after_a_hyphenated_word_is_still_the_focus():
+    text = "Low-dose aspirin increases bleeding. Aspirin levels are unaffected."
+    assert focus_sentences(text, "aspirin") == text
+    assert focus_sentences("Co-administered warfarin raises INR.", "warfarin") == "Co-administered warfarin raises INR."

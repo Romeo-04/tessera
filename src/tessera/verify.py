@@ -50,6 +50,9 @@ def verify_risks(
             [{"role": "user",
               "content": PROMPT.format(source=source, claim=r.mechanism)}],
             response_format={"type": "json_object"},
+            # A yes/no support check must give the same answer twice; measured
+            # live, the default temperature withheld different sentences per run.
+            temperature=0,
         )
         try:
             supported = bool(json.loads(raw).get("supported", False))

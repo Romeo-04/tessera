@@ -137,11 +137,12 @@ def default_deps() -> Deps:
     limiter = RateLimiter(settings.calls_per_window, settings.window_seconds)
     alerts = settings.data_dir / "watch" / "alerts.json"
     try:
-        from tessera.cli import _load_corpus
+        from tessera.cli import _load_corpus, formulary_names
         from tessera.pipeline import assess, perceive
         from tessera.router import Router
 
         index, table, formulary, covered = _load_corpus(settings)
+        names = formulary_names(settings)
         router = Router()
     except FileNotFoundError as exc:
         log.warning("corpus not built (%s): live routes disabled", exc)
@@ -149,7 +150,7 @@ def default_deps() -> Deps:
 
     return Deps(
         read_fn=lambda paths: perceive(paths, router, formulary),
-        assess_fn=lambda codes: assess(codes, index, table, router, covered or None),
+        assess_fn=lambda codes: assess(codes, index, table, router, covered or None, names),
         limiter=limiter,
         ceiling=SpendCeiling(router.spent_since, settings.daily_usd),
         alerts_path=alerts,
