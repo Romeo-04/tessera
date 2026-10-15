@@ -1,0 +1,286 @@
+{"truth": "RXCUI:16681", "kind": "clean", "text": "ACARBOSE 100 MG TABLET"}
+{"truth": "RXCUI:16681", "kind": "ocr", "text": "ACRB0SE 100 MG TABLET"}
+{"truth": "RXCUI:16681", "kind": "brand", "text": "PRECOSE 100 MG"}
+{"truth": "RXCUI:161", "kind": "clean", "text": "100 ML ACETAMINOPHEN 10 MG/ML INJECTION"}
+{"truth": "RXCUI:161", "kind": "ocr", "text": "100 ML ACETARNINOPHFN 10 MG/ML INJECTION"}
+{"truth": "RXCUI:161", "kind": "brand", "text": "MAPAP 100 ML"}
+{"truth": "RXCUI:327361", "kind": "clean", "text": "0.1 ML ADALIMUMAB 100 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:327361", "kind": "ocr", "text": "0.1 ML ADAL1MUMA8 100 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:327361", "kind": "brand", "text": "HUMIRA 0.1 ML"}
+{"truth": "RXCUI:46041", "kind": "clean", "text": "ALENDRONIC ACID 0.933 MG/ML SOLUTION"}
+{"truth": "RXCUI:46041", "kind": "ocr", "text": "ALENR0NIC ACID 0.933 MG/ML SOLUTION"}
+{"truth": "RXCUI:46041", "kind": "brand", "text": "BINOSTO 0.933 MG"}
+{"truth": "RXCUI:17300", "kind": "clean", "text": "24 HR ALFUZOSIN HYDROCHLORIDE 10 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:17300", "kind": "ocr", "text": "24 HR A1FUZOSIN HYDR0CHLORIDE 10 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:17300", "kind": "brand", "text": "UROXATRAL 10 MG"}
+{"truth": "RXCUI:17767", "kind": "clean", "text": "AMLODIPINE 1 MG/ML SOLUTION"}
+{"truth": "RXCUI:17767", "kind": "ocr", "text": "AMLODIP1NF 1 MG/ML SOLUTION"}
+{"truth": "RXCUI:17767", "kind": "brand", "text": "NORLIQVA 1 MG"}
+{"truth": "RXCUI:596724", "kind": "clean", "text": "ANAGRELIDE 0.5 MG CAPSULE"}
+{"truth": "RXCUI:596724", "kind": "ocr", "text": "ANAGREL1DF 0.5 MG CAPSULE"}
+{"truth": "RXCUI:596724", "kind": "brand", "text": "AGRYLIN 0.5 MG"}
+{"truth": "RXCUI:1364430", "kind": "clean", "text": "APIXABAN 0.15 MG POWDER"}
+{"truth": "RXCUI:1364430", "kind": "ocr", "text": "AIXA8AN 0.15 MG POWDER"}
+{"truth": "RXCUI:1364430", "kind": "brand", "text": "ELIQUIS 0.15 MG"}
+{"truth": "RXCUI:18993", "kind": "clean", "text": "BENZONATATE 100 MG CAPSULE"}
+{"truth": "RXCUI:18993", "kind": "ocr", "text": "8ENZ0NATATE 100 MG CAPSULE"}
+{"truth": "RXCUI:18993", "kind": "brand", "text": "TESSALON PERLES 100 MG"}
+{"truth": "RXCUI:1588", "kind": "clean", "text": "BIOTIN 0.3 MG TABLET"}
+{"truth": "RXCUI:1588", "kind": "ocr", "text": "B10TIN 0.3 MG TABLET"}
+{"truth": "RXCUI:1588", "kind": "brand", "text": "APPEAREX 0.3 MG"}
+{"truth": "RXCUI:1808", "kind": "clean", "text": "2 ML BUMETANIDE 0.25 MG/ML INJECTION"}
+{"truth": "RXCUI:1808", "kind": "ocr", "text": "2 ML BUMFTANIDF 0.25 MG/ML INJECTION"}
+{"truth": "RXCUI:1808", "kind": "brand", "text": "BUMEX 2 ML"}
+{"truth": "RXCUI:1897", "kind": "clean", "text": "CALCIUM CARBONATE 1000 MG CHEWABLE TABLET"}
+{"truth": "RXCUI:1897", "kind": "ocr", "text": "CALC1URN CARBONATE 1000 MG CHEWABLE TABLET"}
+{"truth": "RXCUI:1897", "kind": "brand", "text": "TUMS 1000 MG"}
+{"truth": "RXCUI:2002", "kind": "clean", "text": "12 HR CARBAMAZEPINE 100 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:2002", "kind": "ocr", "text": "12 HR CAR8ARNAZEPINE 100 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:2002", "kind": "brand", "text": "CARBATROL 100 MG"}
+{"truth": "RXCUI:2409", "kind": "clean", "text": "CHLORTHALIDONE 12.5 MG TABLET"}
+{"truth": "RXCUI:2409", "kind": "ocr", "text": "CHLORTHALDONF 12.5 MG TABLET"}
+{"truth": "RXCUI:2409", "kind": "brand", "text": "HEMICLOR 12.5 MG"}
+{"truth": "RXCUI:2447", "kind": "clean", "text": "SUGAR-FREE CHOLESTYRAMINE RESIN 4000 MG POWDER"}
+{"truth": "RXCUI:2447", "kind": "ocr", "text": "SUGAR-FREE CHO1ESTYRAMINE RE5IN 4000 MG POWDER"}
+{"truth": "RXCUI:2447", "kind": "brand", "text": "PREVALITE 4000 MG"}
+{"truth": "RXCUI:2556", "kind": "clean", "text": "CITALOPRAM 10 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:2556", "kind": "ocr", "text": "CTA1OPRAM 10 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:2556", "kind": "brand", "text": "CELEXA 10 MG"}
+{"truth": "RXCUI:21212", "kind": "clean", "text": "24 HR CLARITHROMYCIN 500 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:21212", "kind": "ocr", "text": "24 HR C1ARITHR0MYCIN 500 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:21212", "kind": "brand", "text": "BIAXIN 500 MG"}
+{"truth": "RXCUI:2596", "kind": "clean", "text": "CLOMIPHENE CITRATE 50 MG TABLET"}
+{"truth": "RXCUI:2596", "kind": "ocr", "text": "CLOM1PHENF CITRATE 50 MG TABLET"}
+{"truth": "RXCUI:2596", "kind": "brand", "text": "CLOMID 50 MG"}
+{"truth": "RXCUI:3008", "kind": "clean", "text": "0.4 ML CYCLOSPORINE 0.5 MG/ML OPHTHALMIC SUSPENSION"}
+{"truth": "RXCUI:3008", "kind": "ocr", "text": "0.4 ML CYCLO5POR1NE 0.5 MG/ML OPHTHALMIC SUSPENSION"}
+{"truth": "RXCUI:3008", "kind": "brand", "text": "RESTASIS 0.4 ML"}
+{"truth": "RXCUI:3102", "kind": "clean", "text": "DANAZOL 100 MG CAPSULE"}
+{"truth": "RXCUI:3102", "kind": "ocr", "text": "DANAZ01 100 MG CAPSULE"}
+{"truth": "RXCUI:283838", "kind": "clean", "text": "0.3 ML DARBEPOETIN ALFA 0.2 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:283838", "kind": "ocr", "text": "0.3 RNL DARBEP0ETIN ALFA 0.2 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:283838", "kind": "brand", "text": "ARANESP 0.3 ML"}
+{"truth": "RXCUI:993449", "kind": "clean", "text": "1 ML DENOSUMAB 60 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:993449", "kind": "ocr", "text": "1 RNL DENO5UMAB 60 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:993449", "kind": "brand", "text": "PROLIA 1 ML"}
+{"truth": "RXCUI:195085", "kind": "clean", "text": "EFAVIRENZ 100 MG CAPSULE"}
+{"truth": "RXCUI:195085", "kind": "ocr", "text": "FFAV1RENZ 100 MG CAPSULE"}
+{"truth": "RXCUI:1545653", "kind": "clean", "text": "EMPAGLIFLOZIN 10 MG TABLET"}
+{"truth": "RXCUI:1545653", "kind": "ocr", "text": "EMPLIFLOZIN 10 MG TABLET"}
+{"truth": "RXCUI:1545653", "kind": "brand", "text": "JARDIANCE 10 MG"}
+{"truth": "RXCUI:3827", "kind": "clean", "text": "ENALAPRIL MALEATE 1 MG/ML SOLUTION"}
+{"truth": "RXCUI:3827", "kind": "ocr", "text": "ENALAPI1 MALEATE 1 MG/ML SOLUTION"}
+{"truth": "RXCUI:3827", "kind": "brand", "text": "EPANED 1 MG"}
+{"truth": "RXCUI:105694", "kind": "clean", "text": "1 ML EPOETIN ALFA 10000 UNT/ML INJECTION"}
+{"truth": "RXCUI:105694", "kind": "ocr", "text": "1 L EPOETIN A1FA 10000 UNT/ML INJECTION"}
+{"truth": "RXCUI:105694", "kind": "brand", "text": "EPOGEN 1 ML"}
+{"truth": "RXCUI:2045613", "kind": "clean", "text": "1 ML ERENUMAB-AOOE 140 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:2045613", "kind": "ocr", "text": "1 MLRENUMAB-AOOE 140 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:2045613", "kind": "brand", "text": "AIMOVIG 1 ML"}
+{"truth": "RXCUI:1992672", "kind": "clean", "text": "ERTUGLIFLOZIN 15 MG TABLET"}
+{"truth": "RXCUI:1992672", "kind": "ocr", "text": "FRTUG1IFLOZIN 15 MG TABLET"}
+{"truth": "RXCUI:1992672", "kind": "brand", "text": "STEGLATRO 15 MG"}
+{"truth": "RXCUI:4053", "kind": "clean", "text": "ERYTHROMYCIN 0.005 MG/MG OPHTHALMIC OINTMENT"}
+{"truth": "RXCUI:4053", "kind": "ocr", "text": "FRYTHRORNYCIN 0.005 MG/MG OPHTHALMIC OINTMENT"}
+{"truth": "RXCUI:4053", "kind": "brand", "text": "EYEMYCIN 0.005 MG"}
+{"truth": "RXCUI:4083", "kind": "clean", "text": "1000 MG ESTRADIOL 0.001 MG/MG TOPICAL GEL"}
+{"truth": "RXCUI:4083", "kind": "ocr", "text": "1000MG ESTRADI0L 0.001 MG/MG TOPICAL GEL"}
+{"truth": "RXCUI:4083", "kind": "brand", "text": "DIVIGEL 1000 MG"}
+{"truth": "RXCUI:4110", "kind": "clean", "text": "ETHAMBUTOL HYDROCHLORIDE 100 MG TABLET"}
+{"truth": "RXCUI:4110", "kind": "ocr", "text": "ETHAMBUTOL HYDR0CH1ORIDE 100 MG TABLET"}
+{"truth": "RXCUI:4110", "kind": "brand", "text": "MYAMBUTOL 100 MG"}
+{"truth": "RXCUI:258494", "kind": "clean", "text": "EXEMESTANE 25 MG TABLET"}
+{"truth": "RXCUI:258494", "kind": "ocr", "text": "EXEMFSTANF 25 MG TABLET"}
+{"truth": "RXCUI:258494", "kind": "brand", "text": "AROMASIN 25 MG"}
+{"truth": "RXCUI:24947", "kind": "clean", "text": "24 HR FERROUS SULFATE 142 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:24947", "kind": "ocr", "text": "24 HR FERR0US 5ULFATE 142 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:24947", "kind": "brand", "text": "SLOW-FE 142 MG"}
+{"truth": "RXCUI:87636", "kind": "clean", "text": "FEXOFENADINE HYDROCHLORIDE 120 MG TABLET"}
+{"truth": "RXCUI:87636", "kind": "ocr", "text": "FEXOFENADINE HYDR0CHLORIDF 120 MG TABLET"}
+{"truth": "RXCUI:87636", "kind": "brand", "text": "ALLEGRA 120 MG"}
+{"truth": "RXCUI:68442", "kind": "clean", "text": "0.5 ML FILGRASTIM 0.6 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:68442", "kind": "ocr", "text": "0.5 M1 FILGRASTIRN 0.6 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:68442", "kind": "brand", "text": "NEUPOGEN 0.5 ML"}
+{"truth": "RXCUI:25255", "kind": "clean", "text": "FORMOTEROL FUMARATE 0.01 MG/ML INHALATION SOLUTION"}
+{"truth": "RXCUI:25255", "kind": "ocr", "text": "FORRNOTERO1 FUMARATE 0.01 MG/ML INHALATION SOLUTION"}
+{"truth": "RXCUI:25255", "kind": "brand", "text": "PERFOROMIST 0.01 MG"}
+{"truth": "RXCUI:4815", "kind": "clean", "text": "GLYBURIDE 1.25 MG TABLET"}
+{"truth": "RXCUI:4815", "kind": "ocr", "text": "GLY8UR1DE 1.25 MG TABLET"}
+{"truth": "RXCUI:4815", "kind": "brand", "text": "GLYNASE 1.25 MG"}
+{"truth": "RXCUI:5032", "kind": "clean", "text": "12 HR GUAIFENESIN 1200 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:5032", "kind": "ocr", "text": "12 HR GUA1FNESIN 1200 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:5032", "kind": "brand", "text": "MUCINEX 1200 MG"}
+{"truth": "RXCUI:5224", "kind": "clean", "text": "0.5 ML HEPARIN SODIUM, PORCINE 10000 UNT/ML CARTRIDGE"}
+{"truth": "RXCUI:5224", "kind": "ocr", "text": "0.5 ML HEPARIN S0DIUM, PORCNE 10000 UNT/ML CARTRIDGE"}
+{"truth": "RXCUI:5489", "kind": "clean", "text": "12 HR HYDROCODONE BITARTRATE 10 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:5489", "kind": "ocr", "text": "12 HR HYDROC0DONE 8ITARTRATE 10 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:5489", "kind": "brand", "text": "ZOHYDRO 10 MG"}
+{"truth": "RXCUI:5492", "kind": "clean", "text": "HYDROCORTISONE 0.001 MG/MG TOPICAL OINTMENT"}
+{"truth": "RXCUI:5492", "kind": "ocr", "text": "HYDROCOT1SONE 0.001 MG/MG TOPICAL OINTMENT"}
+{"truth": "RXCUI:5492", "kind": "brand", "text": "HEMORRODIL PLUS 0.001 MG"}
+{"truth": "RXCUI:5781", "kind": "clean", "text": "INDOMETHACIN 1 MG INJECTION"}
+{"truth": "RXCUI:5781", "kind": "ocr", "text": "INDOMFTHAC1N 1 MG INJECTION"}
+{"truth": "RXCUI:5781", "kind": "brand", "text": "TIVORBEX 1 MG"}
+{"truth": "RXCUI:51428", "kind": "clean", "text": "1.6 ML INSULIN ASPART, HUMAN 100 UNT/ML CARTRIDGE"}
+{"truth": "RXCUI:51428", "kind": "ocr", "text": "1.6 RNL IN5ULIN ASPART, HUMAN 100 UNT/ML CARTRIDGE"}
+{"truth": "RXCUI:51428", "kind": "brand", "text": "FIASP 1.6 ML"}
+{"truth": "RXCUI:86009", "kind": "clean", "text": "0.5 UNT DOSES 3 ML INSULIN LISPRO 100 UNT/ML PEN INJECTOR"}
+{"truth": "RXCUI:86009", "kind": "ocr", "text": "0.5 UNT OSE5 3 ML INSULIN LISPRO 100 UNT/ML PEN INJECTOR"}
+{"truth": "RXCUI:86009", "kind": "brand", "text": "HUMALOG 0.5 UNT"}
+{"truth": "RXCUI:7213", "kind": "clean", "text": "200 ACTUAT IPRATROPIUM BROMIDE 0.017 MG/ACTUAT METERED DOSE INHALER"}
+{"truth": "RXCUI:7213", "kind": "ocr", "text": "200 ACTUAT 1PRATROP1UM BROMIDE 0.017 MG/ACTUAT METERED DOSE INHALER"}
+{"truth": "RXCUI:7213", "kind": "brand", "text": "ATROVENT 0.017 MG"}
+{"truth": "RXCUI:72965", "kind": "clean", "text": "LETROZOLE 2.5 MG TABLET"}
+{"truth": "RXCUI:72965", "kind": "ocr", "text": "1ETROZO1E 2.5 MG TABLET"}
+{"truth": "RXCUI:72965", "kind": "brand", "text": "FEMARA 2.5 MG"}
+{"truth": "RXCUI:6375", "kind": "clean", "text": "LEVODOPA 42 MG INHALATION POWDER"}
+{"truth": "RXCUI:6375", "kind": "ocr", "text": "1EV0DOPA 42 MG INHALATION POWDER"}
+{"truth": "RXCUI:6375", "kind": "brand", "text": "INBRIJA 42 MG"}
+{"truth": "RXCUI:6373", "kind": "clean", "text": "LEVONORGESTREL 0.000583 MG/HR INTRAUTERINE SYSTEM"}
+{"truth": "RXCUI:6373", "kind": "ocr", "text": "LEVNORGESTRFL 0.000583 MG/HR INTRAUTERINE SYSTEM"}
+{"truth": "RXCUI:6373", "kind": "brand", "text": "SKYLA 0.000583 MG"}
+{"truth": "RXCUI:10582", "kind": "clean", "text": "1 ML LEVOTHYROXINE SODIUM 0.1 MG/ML INJECTION"}
+{"truth": "RXCUI:10582", "kind": "ocr", "text": "1 ML LEV0THYROXINF SODIUM 0.1 MG/ML INJECTION"}
+{"truth": "RXCUI:10582", "kind": "brand", "text": "THYROKARE 1 ML"}
+{"truth": "RXCUI:1100699", "kind": "clean", "text": "LINAGLIPTIN 5 MG TABLET"}
+{"truth": "RXCUI:1100699", "kind": "ocr", "text": "LINAG11PTIN 5 MG TABLET"}
+{"truth": "RXCUI:1100699", "kind": "brand", "text": "TRADJENTA 5 MG"}
+{"truth": "RXCUI:190376", "kind": "clean", "text": "100 ML LINEZOLID 2 MG/ML INJECTION"}
+{"truth": "RXCUI:190376", "kind": "ocr", "text": "100 M1 LINEZ0LID 2 MG/ML INJECTION"}
+{"truth": "RXCUI:190376", "kind": "brand", "text": "ZYVOX 100 ML"}
+{"truth": "RXCUI:10814", "kind": "clean", "text": "1 ML LIOTHYRONINE SODIUM 0.01 MG/ML INJECTION"}
+{"truth": "RXCUI:10814", "kind": "ocr", "text": "1 RNL LIOTHYRNINE SODIUM 0.01 MG/ML INJECTION"}
+{"truth": "RXCUI:10814", "kind": "brand", "text": "CYTOMEL 1 ML"}
+{"truth": "RXCUI:52175", "kind": "clean", "text": "LOSARTAN POTASSIUM 10 MG/ML SUSPENSION"}
+{"truth": "RXCUI:52175", "kind": "ocr", "text": "LO5ARTAN OTASSIUM 10 MG/ML SUSPENSION"}
+{"truth": "RXCUI:52175", "kind": "brand", "text": "ARBLI 10 MG"}
+{"truth": "RXCUI:6691", "kind": "clean", "text": "0.65 ML MEDROXYPROGESTERONE ACETATE 160 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:6691", "kind": "ocr", "text": "0.65 L MEDROXYPROGESTERONF ACETATE 160 MG/ML PREFILLED SYRINGE"}
+{"truth": "RXCUI:6691", "kind": "brand", "text": "DEPO-SUBQ PROVERA 0.65 ML"}
+{"truth": "RXCUI:6719", "kind": "clean", "text": "24 HR MEMANTINE HYDROCHLORIDE 14 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:6719", "kind": "ocr", "text": "24 HR RNEMANTINE HYDROCHL0RIDE 14 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:6719", "kind": "brand", "text": "NAMENDA 14 MG"}
+{"truth": "RXCUI:52582", "kind": "clean", "text": "24 HR MESALAMINE 375 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:52582", "kind": "ocr", "text": "24 HR RNFSALAMINE 375 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:52582", "kind": "brand", "text": "APRISO 375 MG"}
+{"truth": "RXCUI:6809", "kind": "clean", "text": "24 HR METFORMIN HYDROCHLORIDE 500 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:6809", "kind": "ocr", "text": "24 H METFORMIN HYDROCHLOR1DE 500 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:6809", "kind": "brand", "text": "GLUCOPHAGE 500 MG"}
+{"truth": "RXCUI:6851", "kind": "clean", "text": "0.15 ML METHOTREXATE 50 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:6851", "kind": "ocr", "text": "0.15 RNL METHOTRFXATE 50 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:6851", "kind": "brand", "text": "RASUVO 0.15 ML"}
+{"truth": "RXCUI:6902", "kind": "clean", "text": "1 ML METHYLPREDNISOLONE ACETATE 40 MG/ML INJECTION"}
+{"truth": "RXCUI:6902", "kind": "ocr", "text": "1 ML MFTHYLPREDN1SOLONE ACETATE 40 MG/ML INJECTION"}
+{"truth": "RXCUI:6902", "kind": "brand", "text": "DEPO-MEDROL 1 ML"}
+{"truth": "RXCUI:6980", "kind": "clean", "text": "24 HR MINOCYCLINE 105 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:6980", "kind": "ocr", "text": "24 HR RN1NOCYCLINE 105 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:6980", "kind": "brand", "text": "MINOLIRA 105 MG"}
+{"truth": "RXCUI:88249", "kind": "clean", "text": "MONTELUKAST 10 MG TABLET"}
+{"truth": "RXCUI:88249", "kind": "ocr", "text": "M0NTELUKST 10 MG TABLET"}
+{"truth": "RXCUI:88249", "kind": "brand", "text": "SINGULAIR 10 MG"}
+{"truth": "RXCUI:139462", "kind": "clean", "text": "250 ML MOXIFLOXACIN 1.6 MG/ML INJECTION"}
+{"truth": "RXCUI:139462", "kind": "ocr", "text": "250 ML MOXIF1OXAC1N 1.6 MG/ML INJECTION"}
+{"truth": "RXCUI:139462", "kind": "brand", "text": "AVELOX 250 ML"}
+{"truth": "RXCUI:31555", "kind": "clean", "text": "NEBIVOLOL 10 MG TABLET"}
+{"truth": "RXCUI:31555", "kind": "ocr", "text": "NE8IVO1OL 10 MG TABLET"}
+{"truth": "RXCUI:31555", "kind": "brand", "text": "BYSTOLIC 10 MG"}
+{"truth": "RXCUI:7417", "kind": "clean", "text": "12 HR NIFEDIPINE 10 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:7417", "kind": "ocr", "text": "12 HR N1FEDIPNE 10 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:7417", "kind": "brand", "text": "AFEDITAB CR 10 MG"}
+{"truth": "RXCUI:7514", "kind": "clean", "text": "NORETHINDRONE 0.35 MG TABLET"}
+{"truth": "RXCUI:7514", "kind": "ocr", "text": "NORETHINDR0NF 0.35 MG TABLET"}
+{"truth": "RXCUI:7514", "kind": "brand", "text": "GALLIFREY 0.35 MG"}
+{"truth": "RXCUI:7804", "kind": "clean", "text": "12 HR OXYCODONE HYDROCHLORIDE 10 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:7804", "kind": "ocr", "text": "12 HR OYCOD0NE HYDROCHLORIDE 10 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:7804", "kind": "brand", "text": "XTAMPZA 10 MG"}
+{"truth": "RXCUI:32937", "kind": "clean", "text": "24 HR PAROXETINE HYDROCHLORIDE 12.5 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:32937", "kind": "ocr", "text": "24 HR PAROXFTINE HYDROCHL0RIDE 12.5 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:32937", "kind": "brand", "text": "PAXIL 12.5 MG"}
+{"truth": "RXCUI:8183", "kind": "clean", "text": "2 ML PHENYTOIN SODIUM 50 MG/ML CARTRIDGE"}
+{"truth": "RXCUI:8183", "kind": "ocr", "text": "2 ML PHFNYTOIN SODIURN 50 MG/ML CARTRIDGE"}
+{"truth": "RXCUI:8183", "kind": "brand", "text": "DILANTIN 2 ML"}
+{"truth": "RXCUI:8308", "kind": "clean", "text": "0.5 ML VITAMIN K1 2 MG/ML INJECTION"}
+{"truth": "RXCUI:8308", "kind": "ocr", "text": "0.5 L V1TAMIN K1 2 MG/ML INJECTION"}
+{"truth": "RXCUI:8308", "kind": "brand", "text": "VETA-K1 0.5 ML"}
+{"truth": "RXCUI:8591", "kind": "clean", "text": "10 ML POTASSIUM CHLORIDE 2 MEQ/ML INJECTION"}
+{"truth": "RXCUI:8591", "kind": "ocr", "text": "10 RNL POTASSIUM CHLOR1DE 2 MEQ/ML INJECTION"}
+{"truth": "RXCUI:8591", "kind": "brand", "text": "KLOR-CON 10 ML"}
+{"truth": "RXCUI:613391", "kind": "clean", "text": "PRASUGREL 10 MG TABLET"}
+{"truth": "RXCUI:613391", "kind": "ocr", "text": "PRASUGRF1 10 MG TABLET"}
+{"truth": "RXCUI:613391", "kind": "brand", "text": "EFFIENT 10 MG"}
+{"truth": "RXCUI:8794", "kind": "clean", "text": "PROPYLTHIOURACIL 50 MG TABLET"}
+{"truth": "RXCUI:8794", "kind": "ocr", "text": "PROPYLTHI0URACI1 50 MG TABLET"}
+{"truth": "RXCUI:8896", "kind": "clean", "text": "12 HR PSEUDOEPHEDRINE HYDROCHLORIDE 120 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:8896", "kind": "ocr", "text": "1 HR PSEUDOEPHEDRINE HYDROCHLORIDF 120 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:8896", "kind": "brand", "text": "CONTAC COLD 120 MG"}
+{"truth": "RXCUI:8987", "kind": "clean", "text": "PYRAZINAMIDE 500 MG TABLET"}
+{"truth": "RXCUI:8987", "kind": "ocr", "text": "PYRAZ1NARNIDE 500 MG TABLET"}
+{"truth": "RXCUI:684879", "kind": "clean", "text": "PYRIDOXINE HYDROCHLORIDE 100 MG/ML INJECTABLE SOLUTION"}
+{"truth": "RXCUI:684879", "kind": "ocr", "text": "PYRID0XINE HYDR0CHLORIDE 100 MG/ML INJECTABLE SOLUTION"}
+{"truth": "RXCUI:11246", "kind": "clean", "text": "2 ML VITAMIN A 50000 UNT/ML INJECTION"}
+{"truth": "RXCUI:11246", "kind": "ocr", "text": "2 ML V1TAM1N A 50000 UNT/ML INJECTION"}
+{"truth": "RXCUI:11246", "kind": "brand", "text": "AQUASOL A 2 ML"}
+{"truth": "RXCUI:9346", "kind": "clean", "text": "RIBOFLAVIN 10 MG TABLET"}
+{"truth": "RXCUI:9346", "kind": "ocr", "text": "RIB0F1AVIN 10 MG TABLET"}
+{"truth": "RXCUI:73056", "kind": "clean", "text": "RISEDRONATE SODIUM 150 MG TABLET"}
+{"truth": "RXCUI:73056", "kind": "ocr", "text": "RISEDRONATE SODIRN 150 MG TABLET"}
+{"truth": "RXCUI:73056", "kind": "brand", "text": "ACTONEL 150 MG"}
+{"truth": "RXCUI:1114195", "kind": "clean", "text": "RIVAROXABAN 1 MG/ML SUSPENSION"}
+{"truth": "RXCUI:1114195", "kind": "ocr", "text": "RIVAR0XA8AN 1 MG/ML SUSPENSION"}
+{"truth": "RXCUI:1114195", "kind": "brand", "text": "XARELTO 1 MG"}
+{"truth": "RXCUI:301542", "kind": "clean", "text": "ROSUVASTATIN 10 MG CAPSULE"}
+{"truth": "RXCUI:301542", "kind": "ocr", "text": "RSUVASTATIN 10 MG CAPSULE"}
+{"truth": "RXCUI:301542", "kind": "brand", "text": "EZALLOR 10 MG"}
+{"truth": "RXCUI:857974", "kind": "clean", "text": "SAXAGLIPTIN 2.5 MG TABLET"}
+{"truth": "RXCUI:857974", "kind": "ocr", "text": "SAXGL1PTIN 2.5 MG TABLET"}
+{"truth": "RXCUI:857974", "kind": "brand", "text": "ONGLYZA 2.5 MG"}
+{"truth": "RXCUI:36437", "kind": "clean", "text": "SERTRALINE 100 MG TABLET"}
+{"truth": "RXCUI:36437", "kind": "ocr", "text": "SRTRAL1NE 100 MG TABLET"}
+{"truth": "RXCUI:36437", "kind": "brand", "text": "ZOLOFT 100 MG"}
+{"truth": "RXCUI:9997", "kind": "clean", "text": "SPIRONOLACTONE 1 MG/ML SUSPENSION"}
+{"truth": "RXCUI:9997", "kind": "ocr", "text": "SPIRON0LACONE 1 MG/ML SUSPENSION"}
+{"truth": "RXCUI:9997", "kind": "brand", "text": "ALDACTONE 1 MG"}
+{"truth": "RXCUI:37418", "kind": "clean", "text": "0.5 ML SUMATRIPTAN 12 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:37418", "kind": "ocr", "text": "0.5 M1 5UMATRIPTAN 12 MG/ML AUTO-INJECTOR"}
+{"truth": "RXCUI:37418", "kind": "brand", "text": "IMITREX 0.5 ML"}
+{"truth": "RXCUI:358263", "kind": "clean", "text": "PULMONARY HYPERTENSION TADALAFIL 20 MG TABLET"}
+{"truth": "RXCUI:358263", "kind": "ocr", "text": "PUMONARY HYPERTENSI0N TADALAFIL 20 MG TABLET"}
+{"truth": "RXCUI:358263", "kind": "brand", "text": "ADCIRCA 20 MG"}
+{"truth": "RXCUI:10324", "kind": "clean", "text": "TAMOXIFEN 10 MG TABLET"}
+{"truth": "RXCUI:10324", "kind": "ocr", "text": "TAM0XIFFN 10 MG TABLET"}
+{"truth": "RXCUI:10324", "kind": "brand", "text": "SOLTAMOX 10 MG"}
+{"truth": "RXCUI:32915", "kind": "clean", "text": "0.56 ML TERIPARATIDE 0.3 MG/ML PEN INJECTOR"}
+{"truth": "RXCUI:32915", "kind": "ocr", "text": "0.56 ML TERIPARAT1DF 0.3 MG/ML PEN INJECTOR"}
+{"truth": "RXCUI:32915", "kind": "brand", "text": "YORVIPATH 0.56 ML"}
+{"truth": "RXCUI:69120", "kind": "clean", "text": "10 ACTUAT TIOTROPIUM 0.0025 MG/ACTUAT INHALATION SPRAY"}
+{"truth": "RXCUI:69120", "kind": "ocr", "text": "10 ACTUAT TIOTR0PIURN 0.0025 MG/ACTUAT INHALATION SPRAY"}
+{"truth": "RXCUI:69120", "kind": "brand", "text": "SPIRIVA 0.0025 MG"}
+{"truth": "RXCUI:119565", "kind": "clean", "text": "24 HR TOLTERODINE TARTRATE 2 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:119565", "kind": "ocr", "text": "24 HR TOLTFRODINF TARTRATE 2 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:119565", "kind": "brand", "text": "DETROL 2 MG"}
+{"truth": "RXCUI:38404", "kind": "clean", "text": "24 HR TOPIRAMATE 100 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:38404", "kind": "ocr", "text": "24 HR T0P1RAMATE 100 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:38404", "kind": "brand", "text": "TROKENDI 100 MG"}
+{"truth": "RXCUI:10689", "kind": "clean", "text": "12 HR TRAMADOL HYDROCHLORIDE 150 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:10689", "kind": "ocr", "text": "12 HR TRARNAD0L HYDROCHLORIDE 150 MG EXTENDED RELEASE TABLET"}
+{"truth": "RXCUI:10689", "kind": "brand", "text": "CONZIP 150 MG"}
+{"truth": "RXCUI:10691", "kind": "clean", "text": "10 ML TRANEXAMIC ACID 100 MG/ML INJECTION"}
+{"truth": "RXCUI:10691", "kind": "ocr", "text": "10 ML TRANXAMI ACID 100 MG/ML INJECTION"}
+{"truth": "RXCUI:10691", "kind": "brand", "text": "CYKLOKAPRON 10 ML"}
+{"truth": "RXCUI:858747", "kind": "clean", "text": "URSODIOL 300 MG CAPSULE"}
+{"truth": "RXCUI:858747", "kind": "ocr", "text": "URSODI01 300 MG CAPSULE"}
+{"truth": "RXCUI:69749", "kind": "clean", "text": "VALSARTAN 160 MG CAPSULE"}
+{"truth": "RXCUI:69749", "kind": "ocr", "text": "VA15ARTAN 160 MG CAPSULE"}
+{"truth": "RXCUI:69749", "kind": "brand", "text": "DIOVAN 160 MG"}
+{"truth": "RXCUI:11124", "kind": "clean", "text": "100 ML VANCOMYCIN 5 MG/ML INJECTION"}
+{"truth": "RXCUI:11124", "kind": "ocr", "text": "100 M1 VANCORNYCIN 5 MG/ML INJECTION"}
+{"truth": "RXCUI:11124", "kind": "brand", "text": "TYZAVAN 100 ML"}
+{"truth": "RXCUI:11170", "kind": "clean", "text": "2 ML VERAPAMIL HYDROCHLORIDE 2.5 MG/ML INJECTION"}
+{"truth": "RXCUI:11170", "kind": "ocr", "text": "2 ML VERAPARNIL HYDROCHLOR1DE 2.5 MG/ML INJECTION"}
+{"truth": "RXCUI:11170", "kind": "brand", "text": "VERELAN 2 ML"}
+{"truth": "RXCUI:121243", "kind": "clean", "text": "20 ML VORICONAZOLE 10 MG/ML INJECTION"}
+{"truth": "RXCUI:121243", "kind": "ocr", "text": "20 RNL VORICONAZ0LE 10 MG/ML INJECTION"}
+{"truth": "RXCUI:121243", "kind": "brand", "text": "VFEND 20 ML"}
+{"truth": "RXCUI:11289", "kind": "clean", "text": "WARFARIN SODIUM 0.5 MG TABLET"}
+{"truth": "RXCUI:11289", "kind": "ocr", "text": "WARFARIN 5ODIURN 0.5 MG TABLET"}
+{"truth": "RXCUI:11289", "kind": "brand", "text": "COUMADIN 0.5 MG"}

@@ -180,10 +180,11 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **347 Python + 95 app, passing** |
+| Test suite | **352 Python + 95 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
-| RXCUI top-1 accuracy | not yet measured — needs the gold set |
+| RXCUI top-1 accuracy | not yet measured on real bottle photos — needs the gold set |
+| Drug-name normalisation, **synthetic** | **0 wrong in 286** (95% upper bound 1.3%); 262 named correctly, 24 asked the user instead. Inputs are RxNorm product names written as a label prints them, the same with two OCR-style misreadings, and brand names; the answers come from RxNorm, not a model (`python -m evals.normalization_benchmark`). This tests the step after reading, not the camera. |
 | Severity precision@5 | not yet measured |
 | Citation support rate | not yet measured |
 | Label reading, first live call | 2 of 2 **synthetic** test labels read and normalised exactly, in one MiniCPM-V call: 2.4 s, $0.00048. Real bottle photos are next. |
@@ -235,7 +236,7 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 347 tests, no credentials needed
+pytest                      # 352 tests, no credentials needed
 cd app && npm install && npm test   # 95 tests
 npx tsc --noEmit && npx expo lint
 ```
