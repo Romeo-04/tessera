@@ -122,3 +122,31 @@ def test_a_risk_with_no_mechanism_text_is_dropped():
     then be sent to the verifier to check whether a source supports ''."""
     router = router_returning([{"span_id": "s1", "mechanism": "  ", "action": "Ask."}])
     assert adjudicate([assertion("warning", 1)], FakeIndex(), router) == []
+
+
+def class_assertion(sev, i, phrase):
+    return assertion(sev, i).model_copy(update={"via_class": phrase})
+
+
+def test_at_equal_severity_named_interactions_outrank_class_ones():
+    """Under the five-risk cap, the inference from a class is what gives way."""
+    ranked = rank_assertions(
+        [class_assertion("warning", 1, "NSAIDs"), assertion("warning", 2),
+         class_assertion("contraindicated", 3, "MAOIs")],
+        FakeIndex(),
+    )
+    assert [a.span_id for a in ranked] == ["s3", "s2", "s1"]
+
+
+def test_a_class_risk_says_which_class_the_label_named():
+    capture = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            capture["prompt"] = messages[0]["content"]
+            return json.dumps({"risks": [{"span_id": "s1", "mechanism": "m",
+                                          "action": "Ask a pharmacist."}]})
+
+    (risk,) = adjudicate([class_assertion("warning", 1, "ACE inhibitors")], FakeIndex(), R())
+    assert risk.via_class == "ACE inhibitors"
+    assert "ACE inhibitors" in capture["prompt"]

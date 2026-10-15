@@ -27,7 +27,7 @@ def encode_image(path: Path) -> str:
 
 
 def extract_drugs(image_paths: list[Path], router) -> list[DrugRecord]:
-    """Read every visible label in one Omni call.
+    """Read every visible label in one vision-model call.
 
     All photographs go into a single request rather than one call per image:
     Omni keeps a unified multimodal context, so it can tell that two shots of
@@ -43,7 +43,7 @@ def extract_drugs(image_paths: list[Path], router) -> list[DrugRecord]:
         content.append({"type": "image_url", "image_url": {"url": encode_image(p)}})
 
     raw = router.complete(
-        Tier.OMNI,
+        Tier.VISION,
         [{"role": "user", "content": content}],
         response_format={"type": "json_object"},
     )

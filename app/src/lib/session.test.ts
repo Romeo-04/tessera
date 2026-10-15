@@ -57,11 +57,13 @@ describe("the seeded demo", () => {
     expect(demoAmbiguities()).toHaveLength(1);
   });
 
-  it("with the ambiguous drug confirmed, shows five of six and says so", () => {
+  it("with the ambiguous drug confirmed, shows the five most severe pairs the live table documents", () => {
     const r = assessDemo([...known, warfarin]);
     expect(r.risks).toHaveLength(5);
     expect(r.status).toBe("ok");
-    expect(r.notes.join(" ")).toContain("6 documented interactions");
+    // Six are documented, so the cap applies and the note must say so.
+    expect(r.notes.join(" ")).toContain("most severe");
+    expect(r.risks.filter((x) => x.via_class)).toHaveLength(2);
   });
 
   it("with the ambiguous drug left out, is partial and names what was left out", () => {

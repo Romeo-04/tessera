@@ -48,9 +48,15 @@ async function call<T>(path: string, init: RequestInit): Promise<Outcome<T>> {
   return { ok: false, reason, fallback: b.fallback === "demo" };
 }
 
+/** What the server can do. `voice` gates the mic: no mic is shown that cannot work. */
+export async function serverStatus(): Promise<{ live: boolean; voice: boolean }> {
+  const r = await call<{ live?: boolean; voice?: boolean }>("/health", { method: "GET" });
+  if (!r.ok) return { live: false, voice: false };
+  return { live: r.value.live === true, voice: r.value.voice === true };
+}
+
 export async function liveAvailable(): Promise<boolean> {
-  const r = await call<{ live: boolean }>("/health", { method: "GET" });
-  return r.ok && r.value.live === true;
+  return (await serverStatus()).live;
 }
 
 /** A photo as the camera or picker hands it over. */

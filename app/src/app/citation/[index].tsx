@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { Note, Screen, Sev, T } from "../../components/ui";
-import { citeExcerpt } from "../../lib/cite";
+import { citeExcerpt, classNote } from "../../lib/cite";
 import { pairLabel } from "../../lib/status";
 import { demoHighlight } from "../../lib/session";
 import { useSession } from "../../session/SessionProvider";
@@ -18,7 +18,8 @@ export default function Citation() {
   const demo = mode === "demo";
   const quote = risk.quote ?? "";
   const ex = citeExcerpt(quote, demo ? demoHighlight(risk.span_id) : null,
-    [risk.object_name, risk.subject_name].filter((n): n is string => !!n));
+    [risk.object_name, risk.subject_name].filter((n): n is string => !!n), risk.via_class);
+  const viaClass = classNote(risk);
   const shown = ex.pre.length + ex.mark.length + ex.post.length;
 
   return (
@@ -37,6 +38,7 @@ export default function Citation() {
               )}
             </Text>
           </View>
+          {viaClass && <Note>{viaClass}</Note>}
           {quote.length > shown && (
             <Pressable accessibilityRole="button" onPress={() => setFull((f) => !f)} hitSlop={8}>
               <Text style={s.link}>{full ? "Show the relevant part" : "Show the whole cited passage"}</Text>

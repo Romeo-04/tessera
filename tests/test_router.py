@@ -49,7 +49,9 @@ def test_each_tier_maps_to_its_exact_model_id():
     assert MODEL_FOR_TIER[Tier.CHEAP] == "nvidia/Nemotron-3_5-Lightning"
     assert MODEL_FOR_TIER[Tier.TOOL] == "nvidia/nemotron-3-super-120b-a12b"
     assert MODEL_FOR_TIER[Tier.DEEP] == "nvidia/Nemotron-3-Ultra-550b-a55b"
-    assert MODEL_FOR_TIER[Tier.OMNI] == "nvidia/Nemotron-3-Nano-Omni"
+    # Omni is not served on Token Factory (404, absent from the catalog, 2026-10-04).
+    assert MODEL_FOR_TIER[Tier.VISION] == "openbmb/MiniCPM-V-4_5"
+    assert not hasattr(Tier, "OMNI")
 
 
 def test_router_sends_the_tier_model_and_returns_content(tmp_path):
@@ -85,3 +87,16 @@ def test_spent_since_sums_only_recent_calls(tmp_path):
     t.record(CallRecord("CHEAP", "m", 1, 1, 1.0, 0.05))
     assert abs(t.spent_since(0) - 0.30) < 1e-9
     assert t.spent_since(time.time() + 60) == 0.0
+
+
+def test_telemetry_survives_concurrent_writers(tmp_path):
+    """The API reads in a threadpool and the builder runs six workers; one
+    shared sqlite connection must not drop or corrupt concurrent records."""
+    from concurrent.futures import ThreadPoolExecutor
+    from tessera.telemetry import CallRecord, Telemetry
+    t = Telemetry(tmp_path / "t.sqlite")
+    rec = CallRecord("TOOL", "m", 10, 2, 1.0, 0.001)
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(lambda _: t.record(rec), range(400)))
+    assert len(t.all()) == 400
+    assert abs(t.spent_since(0) - 0.4) < 1e-9

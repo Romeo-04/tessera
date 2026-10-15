@@ -78,3 +78,31 @@ def test_three_drugs_resolve_every_known_pair(tmp_path):
     ])
     out = table.resolve(CodeSet(codes=["RXCUI:1", "RXCUI:2", "RXCUI:3"]))
     assert len(out) == 2
+
+
+def test_on_equal_severity_a_named_citation_beats_a_class_one(tmp_path):
+    """Either direction may cite the pair; the label that names the drug is
+    the stronger evidence, whichever side it sits on."""
+    table = _table(tmp_path, [
+        {"subject_rxcui": "RXCUI:1", "object_rxcui": "RXCUI:2",
+         "severity": "warning", "span_id": "by-class", "via_class": "ACE inhibitors"},
+        {"subject_rxcui": "RXCUI:2", "object_rxcui": "RXCUI:1",
+         "severity": "warning", "span_id": "by-name", "via_class": ""},
+    ])
+    (a,) = table.resolve(CodeSet(codes=["RXCUI:1", "RXCUI:2"]))
+    assert a.span_id == "by-name" and a.via_class is None
+
+
+def test_a_more_severe_class_warning_still_outranks_a_milder_named_one(tmp_path):
+    table = _table(tmp_path, [
+        {"subject_rxcui": "RXCUI:1", "object_rxcui": "RXCUI:2",
+         "severity": "contraindicated", "span_id": "by-class", "via_class": "MAOIs"},
+        {"subject_rxcui": "RXCUI:2", "object_rxcui": "RXCUI:1",
+         "severity": "monitor", "span_id": "by-name", "via_class": ""},
+    ])
+    (a,) = table.resolve(CodeSet(codes=["RXCUI:1", "RXCUI:2"]))
+    assert a.span_id == "by-class"
+
+
+def test_a_table_without_the_class_column_still_loads(table):
+    assert all(a.via_class is None for a in table.resolve(CodeSet(codes=["RXCUI:11289", "RXCUI:1191"])))

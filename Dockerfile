@@ -7,7 +7,7 @@ COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 RUN pip install --no-cache-dir .
 
-# Committed, reviewed scope. The built corpus (data/spl, data/index,
+# Committed, reviewed scope. The built corpus (data/spl and
 # data/interactions.csv) is mounted or baked in at deploy time; without it
 # the API serves /health and alerts and answers live routes with a demo
 # fallback rather than failing to start.

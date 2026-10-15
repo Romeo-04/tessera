@@ -87,3 +87,23 @@ describe("transcribe", () => {
     expect(r.ok).toBe(false);
   });
 });
+
+describe("serverStatus", () => {
+  it("reports voice only when the server says it can transcribe", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ status: "ok", live: true, voice: false }), { status: 200 })));
+    const { serverStatus } = await import("./api");
+    expect(await serverStatus()).toEqual({ live: true, voice: false });
+  });
+
+  it("treats a server that predates the voice flag as having no voice", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ status: "ok", live: true }), { status: 200 })));
+    const { serverStatus } = await import("./api");
+    expect(await serverStatus()).toEqual({ live: true, voice: false });
+  });
+
+  it("is neither live nor voiced when unreachable", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
+    const { serverStatus } = await import("./api");
+    expect(await serverStatus()).toEqual({ live: false, voice: false });
+  });
+});

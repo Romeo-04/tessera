@@ -136,8 +136,6 @@ def default_deps() -> Deps:
 
     limiter = RateLimiter(settings.calls_per_window, settings.window_seconds)
     alerts = settings.data_dir / "watch" / "alerts.json"
-    from tessera.transcribe import transcribe
-
     try:
         from tessera.cli import _load_corpus
         from tessera.pipeline import assess, perceive
@@ -155,7 +153,6 @@ def default_deps() -> Deps:
         limiter=limiter,
         ceiling=SpendCeiling(router.spent_since, settings.daily_usd),
         alerts_path=alerts,
-        transcribe_fn=lambda path, mime: transcribe(path, mime, router),
     )
 
 
@@ -214,7 +211,7 @@ def create_app(deps: Deps | None = None) -> FastAPI:
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "live": deps.live}
+        return {"status": "ok", "live": deps.live, "voice": deps.transcribe_fn is not None}
 
     @app.post("/api/assess", response_model=SessionResult)
     def assess_route(body: AssessRequest, request: Request):
@@ -249,7 +246,7 @@ def create_app(deps: Deps | None = None) -> FastAPI:
                 p = Path(tmp) / f"label-{i}{suffix}"
                 p.write_bytes(data)
                 paths.append(p)
-            # The Omni call and RxNorm lookups are blocking I/O. Run them off
+            # The vision call and RxNorm lookups are blocking I/O. Run them off
             # the event loop, or every other request - /health included -
             # stalls for the length of a vision call.
             perception, err = await run_in_threadpool(

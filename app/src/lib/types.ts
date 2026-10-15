@@ -27,6 +27,8 @@ export interface RankedRisk {
   source_url: string;
   action: string;
   quote: string | null;
+  // The class the label named instead of this drug ("ACE inhibitors").
+  via_class?: string | null;
 }
 
 export interface ConfirmationRequest {

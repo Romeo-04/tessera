@@ -29,7 +29,7 @@ class ScriptedRouter:
         self.extracted = extracted
 
     def complete(self, tier, messages, **kw):
-        if tier is Tier.OMNI:
+        if tier is Tier.VISION:
             return json.dumps({"drugs": self.extracted})
         if tier is Tier.DEEP:
             return json.dumps({"risks": [{
@@ -203,7 +203,7 @@ def test_more_interactions_than_the_cap_says_so(tmp_path):
 
 
 def test_reading_no_labels_is_distinct_from_photographing_one_bottle(tmp_path):
-    """I7: an Omni failure told the user their photos held too few drugs."""
+    """I7: a vision-model failure told the user their photos held too few drugs."""
     result = run_session(
         [_img(tmp_path)], FakeIndex(), FakeTable([ASSERTION]),
         ScriptedRouter([]), FORMULARY, match_fn=fake_match,

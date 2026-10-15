@@ -14,5 +14,6 @@ def test_settings_read_from_environment(monkeypatch, tmp_path):
 
 def test_settings_reject_missing_api_key(monkeypatch):
     monkeypatch.delenv("NEBIUS_API_KEY", raising=False)
+    # _env_file=None: a developer's real .env must not satisfy this test.
     with pytest.raises(Exception):
-        Settings()
+        Settings(_env_file=None)

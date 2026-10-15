@@ -9,6 +9,11 @@ from tessera.schemas import CodeSet, InteractionAssertion
 SEVERITY_RANK = {"monitor": 1, "warning": 2, "contraindicated": 3}
 
 
+def _strength(a: InteractionAssertion) -> tuple[int, bool]:
+    """Severity first; on a tie, a label naming the drug beats one naming its class."""
+    return SEVERITY_RANK[a.severity], a.via_class is None
+
+
 class InteractionTable:
     """Frozen, reviewed interaction assertions. Pure lookup, no inference.
 
@@ -23,7 +28,7 @@ class InteractionTable:
         for a in assertions:
             key = (a.subject_rxcui, a.object_rxcui)
             prev = self._by_pair.get(key)
-            if prev is None or SEVERITY_RANK[a.severity] > SEVERITY_RANK[prev.severity]:
+            if prev is None or _strength(a) > _strength(prev):
                 self._by_pair[key] = a
 
     @classmethod
@@ -41,7 +46,8 @@ class InteractionTable:
         appears twice with different grades. Those collapse to one assertion
         keeping the more severe grade - and crucially the citation follows the
         grade that won, so the evidence shown always supports the severity
-        claimed.
+        claimed. On equal grades the citation that names the drug wins over one
+        that only names its class.
         """
         found: list[InteractionAssertion] = []
         for a, b in combinations(sorted(set(codes.codes)), 2):
@@ -51,5 +57,5 @@ class InteractionTable:
                 if x is not None
             ]
             if candidates:
-                found.append(max(candidates, key=lambda x: SEVERITY_RANK[x.severity]))
+                found.append(max(candidates, key=_strength))
         return found
