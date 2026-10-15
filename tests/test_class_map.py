@@ -135,3 +135,8 @@ def test_diuretics_named_as_potassium_depleting_agents_are_not_potassium_sparing
                "agents (e.g., amphotericin B, diuretics), patients should be observed closely.")
     assert match_classes("diuretics", context) == ["potassium-depleting-diuretics"]
     assert match_classes("diuretics", "Diuretics: excessive drop in blood pressure.") == ["diuretics"]
+
+
+def test_a_cue_in_an_earlier_sentence_does_not_narrow_the_class():
+    context = "Avoid potassium-depleting agents. Diuretics: excessive drop in blood pressure."
+    assert match_classes("Diuretics", context) == ["diuretics"]

@@ -138,7 +138,8 @@ def assess(
         # words it chose. Either way the interaction is real and documented, so
         # "ok" would read as "nothing else found", the opposite of what happened.
         notes.append(
-            f"{unexplained + len(dropped)} documented interaction(s) are not shown. "
+            f"{unexplained + len(dropped)} of the {considered} most severe documented "
+            "interaction(s) are not shown. "
             "This result is incomplete - please ask a pharmacist."
         )
         status = "analysis_incomplete"

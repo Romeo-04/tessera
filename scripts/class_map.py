@@ -273,9 +273,13 @@ def match_classes(phrase: str, context: str = "") -> list[str]:
     narrow it (see _CONTEXT).
     """
     keys = _match(phrase)
-    at = normalize_phrase(context).lower().find(normalize_phrase(phrase).lower()) if context else -1
-    if at >= 0:
-        before = normalize_phrase(context)[max(0, at - _CONTEXT_WINDOW):at]
+    text = normalize_phrase(context)
+    hit = re.search(re.escape(normalize_phrase(phrase).strip()), text, re.IGNORECASE) if context else None
+    if hit:
+        # Only the phrase's own sentence: a cue in the sentence before is about
+        # something else, and reading it would drop real members.
+        before = text[max(0, hit.start() - _CONTEXT_WINDOW):hit.start()]
+        before = re.split(r"[.;]\s", before)[-1]
         for key, cue, instead in _CONTEXT:
             if key in keys and cue.search(before):
                 keys = [instead if k == key else k for k in keys]

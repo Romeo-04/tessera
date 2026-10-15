@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tessera.adjudicate import MAX_RISKS, adjudicate, rank_assertions
+from tessera.adjudicate import MAX_RISKS, adjudicate, focus_sentences, rank_assertions
 from tessera.errors import RateLimitedError
 from tessera.router import Tier
 from tessera.schemas import EvidenceSpan, InteractionAssertion
@@ -194,3 +194,40 @@ def test_without_a_matching_sentence_there_is_no_focus_line():
     router, capture = _capturing()
     adjudicate([assertion("warning", 1)], LongIndex(), router)
     assert "about this interaction:" not in capture["prompt"]
+
+
+def test_two_pairs_citing_one_passage_each_get_their_own_explanation():
+    """Review finding: answers keyed by span_id alone gave both pairs the last one."""
+    capture = {}
+
+    class R:
+        def complete(self, tier, messages, **kw):
+            prompt = messages[0]["content"]
+            ids = [line.split(": ", 1)[1] for line in prompt.splitlines() if line.startswith("span_id: ")]
+            capture["ids"] = ids
+            return json.dumps({"risks": [{"span_id": i, "mechanism": f"about {i}",
+                                          "action": "Ask a pharmacist."} for i in ids]})
+
+    a = assertion("warning", 1).model_copy(update={"object_rxcui": "RXCUI:11289"})
+    b = class_assertion("warning", 1, "SSRIs")
+    out = adjudicate([a, b], LongIndex(), R(), names={"RXCUI:11289": "warfarin"})
+    assert len(set(capture["ids"])) == 2
+    assert len({r.mechanism for r in out}) == 2
+    assert all(r.span_id == "s1" for r in out)
+
+
+def test_a_class_term_inside_a_narrower_class_is_not_the_focus():
+    text = ("Diuretics: excessive drop in blood pressure. "
+            "Potassium-sparing diuretics (spironolactone) can increase the risk of hyperkalemia.")
+    focus = focus_sentences(text, "diuretics")
+    assert focus == "Diuretics: excessive drop in blood pressure."
+
+
+def test_focus_does_not_split_on_e_g():
+    text = "Use caution with NSAIDs (e.g. ibuprofen) because of bleeding. Other text."
+    assert focus_sentences(text, "NSAIDs") == "Use caution with NSAIDs (e.g. ibuprofen) because of bleeding."
+
+
+def test_a_blank_term_or_one_ending_in_a_bracket_is_handled():
+    assert focus_sentences("Anything at all.", "   ") == ""
+    assert focus_sentences("Avoid ARBs (losartan). Other.", "ARBs (losartan)") == "Avoid ARBs (losartan)."

@@ -54,6 +54,14 @@ def rank_assertions(assertions, index) -> list[InteractionAssertion]:
     return sorted(assertions, key=lambda a: (-SEVERITY_RANK[a.severity], a.via_class is not None))
 
 
+# Sentence ends, but not "e.g. ", "i.e. " or "approx. " inside one.
+_SENTENCE = re.compile(r"(?<!e\.g\.)(?<!i\.e\.)(?<!approx\.)(?<=[.;])\s+")
+# Words that, right before a class term, make it a narrower class.
+_NARROWER = re.compile(
+    r"(\w+-\w+|sparing|depleting|loop|thiazide|strong|moderate|weak|potent|mild"
+    r"|dihydropyridine|cardioselective|selective|non)\s+$", re.IGNORECASE)
+
+
 def focus_sentences(text: str, term: str | None) -> str:
     """The sentences of a cited passage that mention `term`, verbatim.
 
@@ -62,10 +70,17 @@ def focus_sentences(text: str, term: str | None) -> str:
     result. Pointing at the sentences about this pair is still label text: the
     model is told which words matter, not anything about the user.
     """
+    term = (term or "").strip()
     if not term:
         return ""
-    want = re.compile(rf"\b{re.escape(term.strip())}\b", re.IGNORECASE)
-    return " ".join(x for x in re.split(r"(?<=[.;])\s+", text) if want.search(x))
+    want = re.compile(rf"(?<!\w){re.escape(term)}(?!\w)", re.IGNORECASE)
+
+    def about(sentence: str) -> bool:
+        # "diuretics" must not focus on "Potassium-sparing diuretics ...": a
+        # qualifier just before the term names a different, narrower class.
+        return any(not _NARROWER.search(sentence[:m.start()]) for m in want.finditer(sentence))
+
+    return " ".join(x for x in _SENTENCE.split(text) if about(x))
 
 
 def adjudicate(assertions, index, router, names: dict[str, str] | None = None) -> list[RankedRisk]:
@@ -84,15 +99,22 @@ def adjudicate(assertions, index, router, names: dict[str, str] | None = None) -
 
     top = rank_assertions(assertions, index)[:MAX_RISKS]
 
-    def entry(a: InteractionAssertion) -> str:
+    # One passage can cite several of the user's pairs, so the id the model
+    # answers to is the span_id only when that is unique in this session.
+    # Keyed by span_id alone, every pair from one passage got the last answer.
+    shared = {a.span_id for a in top if sum(b.span_id == a.span_id for b in top) > 1}
+    keys = [f"{a.span_id}#{i}" if a.span_id in shared else a.span_id
+            for i, a in enumerate(top, 1)]
+
+    def entry(key: str, a: InteractionAssertion) -> str:
         text = index.by_id(a.span_id).text
         focus = focus_sentences(text, a.via_class or (names or {}).get(a.object_rxcui))
-        return (f"span_id: {a.span_id}\nseverity: {a.severity}\n"
+        return (f"span_id: {key}\nseverity: {a.severity}\n"
                 + (f"the label names this drug's class: {a.via_class}\n" if a.via_class else "")
                 + (f"the sentences about this interaction: {focus}\n" if focus else "")
                 + f"label text: {text}")
 
-    block = "\n\n".join(entry(a) for a in top)
+    block = "\n\n".join(entry(k, a) for k, a in zip(keys, top))
 
     raw = router.complete(
         Tier.DEEP,
@@ -106,8 +128,8 @@ def adjudicate(assertions, index, router, names: dict[str, str] | None = None) -
         items = {}
 
     out: list[RankedRisk] = []
-    for a in top:
-        got = items.get(a.span_id)
+    for key, a in zip(keys, top):
+        got = items.get(key)
         if not got:
             # No explanation means no risk shown. A severity grade with no
             # plain-language mechanism is not something a caregiver can act on.
