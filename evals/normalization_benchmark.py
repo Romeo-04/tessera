@@ -104,12 +104,18 @@ def brand_case(brand: str, clean: str) -> str | None:
     return f"{brand.upper()} {m.group(0)}" if m else None
 
 
+# Formulary names RxNorm spells differently. Written out, not guessed: a
+# prefix rule would call prednisolone the same drug as prednisone.
+_SYNONYMS = {"ursodiol": {"ursodeoxycholate"}}
+
+
 def _same_drug(guess: str, truth: str) -> bool:
-    """Is an out-of-scope name the true drug under another RxNorm name?
-    A heuristic, stated as one: containment or a shared first four letters
-    ("ursodeoxycholate" / "ursodiol")."""
-    g, t = guess.lower(), truth.lower()
-    return t in g or g in t or g[:4] == t[:4]
+    """Is an out-of-scope name the true drug under another RxNorm name? Equal,
+    one name containing the other as whole words ("metformin" / "metformin
+    hydrochloride"), or a listed synonym."""
+    g, t = guess.lower().strip(), truth.lower().strip()
+    whole = lambda a, b: re.search(rf"\b{re.escape(a)}\b", b) is not None  # noqa: E731
+    return g == t or whole(t, g) or whole(g, t) or g in _SYNONYMS.get(t, set())
 
 
 def outcome(predicted: str | None, truth: str, in_formulary: bool,
@@ -164,21 +170,34 @@ def build_cases() -> list[dict]:
     return cases
 
 
-def run_cases(cases: list[dict], judge, progress: Path) -> list[dict]:
+def fingerprint() -> str:
+    """What a stored prediction depends on: the formulary and the matching code."""
+    import hashlib
+    h = hashlib.sha256()
+    for path in (FORMULARY, ROOT / "src" / "tessera" / "normalize.py",
+                 ROOT / "src" / "tessera" / "sources" / "rxnorm.py"):
+        h.update(path.read_bytes().replace(b"\r\n", b"\n"))
+    return h.hexdigest()[:16]
+
+
+def run_cases(cases: list[dict], judge, progress: Path, fingerprint: str = "") -> list[dict]:
     """judge(case) for every case, appending each result to `progress` as it
     lands; a rerun skips cases already there. A run stopped part-way (memory
-    pressure stopped one at case ~30 of 241) loses nothing."""
+    pressure stopped one at case ~30 of 241) loses nothing. A stored result
+    from a different formulary or matcher (`fingerprint`) is measured again,
+    so a fix can never be scored with the old behaviour."""
     done: dict[str, dict] = {}
     if progress.exists():
         for line in progress.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 r = json.loads(line)
-                done[r["kind"] + "|" + r["text"]] = r
+                if r.get("fingerprint", "") == fingerprint:
+                    done[r["kind"] + "|" + r["text"]] = r
     out = []
     for c in cases:
         key = c["kind"] + "|" + c["text"]
         if key not in done:
-            done[key] = judge(c)
+            done[key] = {**judge(c), "fingerprint": fingerprint}
             with progress.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps(done[key]) + "\n")
         out.append(done[key])
@@ -202,7 +221,7 @@ def main() -> None:
         return {**c, "predicted": d.rxcui, "in_formulary": d.in_formulary,
                 "best_guess": d.display_name, "outcome": o}
 
-    results = run_cases(cases, judge, PROGRESS)
+    results = run_cases(cases, judge, PROGRESS, fingerprint())
     # Score against the formulary as it is now, by ingredient name: the cached
     # truth code goes stale when a formulary row is corrected (ursodiol was
     # stored as a product code until 1.2.4). Predictions are stored, so

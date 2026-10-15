@@ -54,7 +54,8 @@
    "predicted": "RXCUI:16681",
    "in_formulary": true,
    "best_guess": "acarbose",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:16681",
@@ -64,7 +65,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:16681",
@@ -74,7 +76,8 @@
    "predicted": "RXCUI:16681",
    "in_formulary": true,
    "best_guess": "acarbose",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:161",
@@ -84,7 +87,8 @@
    "predicted": "RXCUI:161",
    "in_formulary": true,
    "best_guess": "acetaminophen",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:161",
@@ -94,7 +98,8 @@
    "predicted": "RXCUI:161",
    "in_formulary": true,
    "best_guess": "acetaminophen",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:161",
@@ -104,7 +109,8 @@
    "predicted": "RXCUI:161",
    "in_formulary": true,
    "best_guess": "acetaminophen",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:46041",
@@ -114,7 +120,8 @@
    "predicted": "RXCUI:46041",
    "in_formulary": true,
    "best_guess": "alendronate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:46041",
@@ -124,7 +131,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": "alendronate",
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:46041",
@@ -134,7 +142,8 @@
    "predicted": "RXCUI:46041",
    "in_formulary": true,
    "best_guess": "alendronate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17300",
@@ -144,7 +153,8 @@
    "predicted": "RXCUI:17300",
    "in_formulary": true,
    "best_guess": "alfuzosin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17300",
@@ -154,7 +164,8 @@
    "predicted": "RXCUI:17300",
    "in_formulary": true,
    "best_guess": "alfuzosin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17300",
@@ -164,7 +175,8 @@
    "predicted": "RXCUI:17300",
    "in_formulary": true,
    "best_guess": "alfuzosin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17767",
@@ -174,7 +186,8 @@
    "predicted": "RXCUI:17767",
    "in_formulary": true,
    "best_guess": "amlodipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17767",
@@ -184,7 +197,8 @@
    "predicted": "RXCUI:17767",
    "in_formulary": true,
    "best_guess": "amlodipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:17767",
@@ -194,7 +208,8 @@
    "predicted": "RXCUI:17767",
    "in_formulary": true,
    "best_guess": "amlodipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:596724",
@@ -204,7 +219,8 @@
    "predicted": "RXCUI:596724",
    "in_formulary": true,
    "best_guess": "anagrelide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:596724",
@@ -214,7 +230,8 @@
    "predicted": "RXCUI:596724",
    "in_formulary": true,
    "best_guess": "anagrelide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:596724",
@@ -224,7 +241,8 @@
    "predicted": "RXCUI:596724",
    "in_formulary": true,
    "best_guess": "anagrelide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1364430",
@@ -234,7 +252,8 @@
    "predicted": "RXCUI:1364430",
    "in_formulary": true,
    "best_guess": "apixaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1364430",
@@ -244,7 +263,8 @@
    "predicted": "RXCUI:1364430",
    "in_formulary": true,
    "best_guess": "apixaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1364430",
@@ -254,7 +274,8 @@
    "predicted": "RXCUI:1364430",
    "in_formulary": true,
    "best_guess": "apixaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:18993",
@@ -264,7 +285,8 @@
    "predicted": "RXCUI:18993",
    "in_formulary": true,
    "best_guess": "benzonatate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:18993",
@@ -274,7 +296,8 @@
    "predicted": "RXCUI:18993",
    "in_formulary": true,
    "best_guess": "benzonatate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:18993",
@@ -284,7 +307,8 @@
    "predicted": "RXCUI:18993",
    "in_formulary": true,
    "best_guess": "benzonatate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1588",
@@ -294,7 +318,8 @@
    "predicted": "RXCUI:1588",
    "in_formulary": true,
    "best_guess": "biotin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1588",
@@ -304,7 +329,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1588",
@@ -314,7 +340,8 @@
    "predicted": "RXCUI:1588",
    "in_formulary": true,
    "best_guess": "biotin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1808",
@@ -324,7 +351,8 @@
    "predicted": "RXCUI:1808",
    "in_formulary": true,
    "best_guess": "bumetanide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1808",
@@ -334,7 +362,8 @@
    "predicted": "RXCUI:1808",
    "in_formulary": true,
    "best_guess": "bumetanide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1808",
@@ -344,7 +373,8 @@
    "predicted": "RXCUI:1808",
    "in_formulary": true,
    "best_guess": "bumetanide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1897",
@@ -354,7 +384,8 @@
    "predicted": "RXCUI:1897",
    "in_formulary": true,
    "best_guess": "calcium carbonate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1897",
@@ -364,7 +395,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": "lanthanum carbonate",
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1897",
@@ -374,7 +406,8 @@
    "predicted": "RXCUI:1897",
    "in_formulary": true,
    "best_guess": "calcium carbonate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2002",
@@ -384,7 +417,8 @@
    "predicted": "RXCUI:2002",
    "in_formulary": true,
    "best_guess": "carbamazepine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2002",
@@ -394,7 +428,8 @@
    "predicted": "RXCUI:2002",
    "in_formulary": true,
    "best_guess": "carbamazepine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2002",
@@ -404,7 +439,8 @@
    "predicted": "RXCUI:2002",
    "in_formulary": true,
    "best_guess": "carbamazepine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2409",
@@ -414,7 +450,8 @@
    "predicted": "RXCUI:2409",
    "in_formulary": true,
    "best_guess": "chlorthalidone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2409",
@@ -424,7 +461,8 @@
    "predicted": "RXCUI:2409",
    "in_formulary": true,
    "best_guess": "chlorthalidone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2409",
@@ -434,7 +472,8 @@
    "predicted": "RXCUI:2409",
    "in_formulary": true,
    "best_guess": "chlorthalidone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2556",
@@ -444,7 +483,8 @@
    "predicted": "RXCUI:2556",
    "in_formulary": true,
    "best_guess": "citalopram",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2556",
@@ -454,7 +494,8 @@
    "predicted": "RXCUI:2556",
    "in_formulary": true,
    "best_guess": "citalopram",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2556",
@@ -464,7 +505,8 @@
    "predicted": "RXCUI:2556",
    "in_formulary": true,
    "best_guess": "citalopram",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:21212",
@@ -474,7 +516,8 @@
    "predicted": "RXCUI:21212",
    "in_formulary": true,
    "best_guess": "clarithromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:21212",
@@ -484,7 +527,8 @@
    "predicted": "RXCUI:21212",
    "in_formulary": true,
    "best_guess": "clarithromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:21212",
@@ -494,7 +538,8 @@
    "predicted": "RXCUI:21212",
    "in_formulary": true,
    "best_guess": "clarithromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2596",
@@ -504,7 +549,8 @@
    "predicted": "RXCUI:2596",
    "in_formulary": true,
    "best_guess": "clomiphene",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2596",
@@ -514,7 +560,8 @@
    "predicted": "RXCUI:2596",
    "in_formulary": true,
    "best_guess": "clomiphene",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:2596",
@@ -524,7 +571,8 @@
    "predicted": "RXCUI:2596",
    "in_formulary": true,
    "best_guess": "clomiphene",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3008",
@@ -534,7 +582,8 @@
    "predicted": "RXCUI:3008",
    "in_formulary": true,
    "best_guess": "cyclosporine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3008",
@@ -544,7 +593,8 @@
    "predicted": "RXCUI:3008",
    "in_formulary": true,
    "best_guess": "cyclosporine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3008",
@@ -554,7 +604,8 @@
    "predicted": "RXCUI:3008",
    "in_formulary": true,
    "best_guess": "cyclosporine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3102",
@@ -564,7 +615,8 @@
    "predicted": "RXCUI:3102",
    "in_formulary": true,
    "best_guess": "danazol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3102",
@@ -574,7 +626,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:195085",
@@ -584,7 +637,8 @@
    "predicted": "RXCUI:195085",
    "in_formulary": true,
    "best_guess": "efavirenz",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:195085",
@@ -594,7 +648,8 @@
    "predicted": "RXCUI:195085",
    "in_formulary": true,
    "best_guess": "efavirenz",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1545653",
@@ -604,7 +659,8 @@
    "predicted": "RXCUI:1545653",
    "in_formulary": true,
    "best_guess": "empagliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1545653",
@@ -614,7 +670,8 @@
    "predicted": "RXCUI:1545653",
    "in_formulary": true,
    "best_guess": "empagliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1545653",
@@ -624,7 +681,8 @@
    "predicted": "RXCUI:1545653",
    "in_formulary": true,
    "best_guess": "empagliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3827",
@@ -634,7 +692,8 @@
    "predicted": "RXCUI:3827",
    "in_formulary": true,
    "best_guess": "enalapril",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3827",
@@ -644,7 +703,8 @@
    "predicted": "RXCUI:3827",
    "in_formulary": true,
    "best_guess": "enalapril",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:3827",
@@ -654,7 +714,8 @@
    "predicted": "RXCUI:3827",
    "in_formulary": true,
    "best_guess": "enalapril",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1992672",
@@ -664,7 +725,8 @@
    "predicted": "RXCUI:1992672",
    "in_formulary": true,
    "best_guess": "ertugliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1992672",
@@ -674,7 +736,8 @@
    "predicted": "RXCUI:1992672",
    "in_formulary": true,
    "best_guess": "ertugliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1992672",
@@ -684,7 +747,8 @@
    "predicted": "RXCUI:1992672",
    "in_formulary": true,
    "best_guess": "ertugliflozin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4053",
@@ -694,7 +758,8 @@
    "predicted": "RXCUI:4053",
    "in_formulary": true,
    "best_guess": "erythromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4053",
@@ -704,7 +769,8 @@
    "predicted": "RXCUI:4053",
    "in_formulary": true,
    "best_guess": "erythromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4053",
@@ -714,7 +780,8 @@
    "predicted": "RXCUI:4053",
    "in_formulary": true,
    "best_guess": "erythromycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4083",
@@ -724,7 +791,8 @@
    "predicted": "RXCUI:4083",
    "in_formulary": true,
    "best_guess": "estradiol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4083",
@@ -734,7 +802,8 @@
    "predicted": "RXCUI:4083",
    "in_formulary": true,
    "best_guess": "estradiol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4083",
@@ -744,7 +813,8 @@
    "predicted": "RXCUI:4083",
    "in_formulary": true,
    "best_guess": "estradiol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4110",
@@ -754,7 +824,8 @@
    "predicted": "RXCUI:4110",
    "in_formulary": true,
    "best_guess": "ethambutol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4110",
@@ -764,7 +835,8 @@
    "predicted": "RXCUI:4110",
    "in_formulary": true,
    "best_guess": "ethambutol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4110",
@@ -774,7 +846,8 @@
    "predicted": "RXCUI:4110",
    "in_formulary": true,
    "best_guess": "ethambutol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:258494",
@@ -784,7 +857,8 @@
    "predicted": "RXCUI:258494",
    "in_formulary": true,
    "best_guess": "exemestane",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:258494",
@@ -794,7 +868,8 @@
    "predicted": "RXCUI:258494",
    "in_formulary": true,
    "best_guess": "exemestane",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:258494",
@@ -804,7 +879,8 @@
    "predicted": "RXCUI:258494",
    "in_formulary": true,
    "best_guess": "exemestane",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:24947",
@@ -814,7 +890,8 @@
    "predicted": "RXCUI:24947",
    "in_formulary": true,
    "best_guess": "ferrous sulfate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:24947",
@@ -824,7 +901,8 @@
    "predicted": "RXCUI:24947",
    "in_formulary": true,
    "best_guess": "ferrous sulfate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:24947",
@@ -834,7 +912,8 @@
    "predicted": "RXCUI:24947",
    "in_formulary": true,
    "best_guess": "ferrous sulfate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:87636",
@@ -844,7 +923,8 @@
    "predicted": "RXCUI:87636",
    "in_formulary": true,
    "best_guess": "fexofenadine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:87636",
@@ -854,7 +934,8 @@
    "predicted": "RXCUI:87636",
    "in_formulary": true,
    "best_guess": "fexofenadine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:87636",
@@ -864,7 +945,8 @@
    "predicted": "RXCUI:87636",
    "in_formulary": true,
    "best_guess": "fexofenadine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4815",
@@ -874,7 +956,8 @@
    "predicted": "RXCUI:4815",
    "in_formulary": true,
    "best_guess": "glyburide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4815",
@@ -884,7 +967,8 @@
    "predicted": "RXCUI:4815",
    "in_formulary": true,
    "best_guess": "glyburide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:4815",
@@ -894,7 +978,8 @@
    "predicted": "RXCUI:4815",
    "in_formulary": true,
    "best_guess": "glyburide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5032",
@@ -904,7 +989,8 @@
    "predicted": "RXCUI:5032",
    "in_formulary": true,
    "best_guess": "guaifenesin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5032",
@@ -914,7 +1000,8 @@
    "predicted": "RXCUI:5032",
    "in_formulary": true,
    "best_guess": "guaifenesin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5032",
@@ -924,7 +1011,8 @@
    "predicted": "RXCUI:5032",
    "in_formulary": true,
    "best_guess": "guaifenesin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5489",
@@ -934,7 +1022,8 @@
    "predicted": "RXCUI:5489",
    "in_formulary": true,
    "best_guess": "hydrocodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5489",
@@ -944,7 +1033,8 @@
    "predicted": "RXCUI:5489",
    "in_formulary": true,
    "best_guess": "hydrocodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5489",
@@ -954,7 +1044,8 @@
    "predicted": "RXCUI:5489",
    "in_formulary": true,
    "best_guess": "hydrocodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5492",
@@ -964,7 +1055,8 @@
    "predicted": "RXCUI:5492",
    "in_formulary": true,
    "best_guess": "hydrocortisone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5492",
@@ -974,7 +1066,8 @@
    "predicted": "RXCUI:5492",
    "in_formulary": true,
    "best_guess": "hydrocortisone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5492",
@@ -984,7 +1077,8 @@
    "predicted": "RXCUI:5492",
    "in_formulary": true,
    "best_guess": "hydrocortisone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5781",
@@ -994,7 +1088,8 @@
    "predicted": "RXCUI:5781",
    "in_formulary": true,
    "best_guess": "indomethacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5781",
@@ -1004,7 +1099,8 @@
    "predicted": "RXCUI:5781",
    "in_formulary": true,
    "best_guess": "indomethacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:5781",
@@ -1014,7 +1110,8 @@
    "predicted": "RXCUI:5781",
    "in_formulary": true,
    "best_guess": "indomethacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:72965",
@@ -1024,7 +1121,8 @@
    "predicted": "RXCUI:72965",
    "in_formulary": true,
    "best_guess": "letrozole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:72965",
@@ -1034,7 +1132,8 @@
    "predicted": "RXCUI:72965",
    "in_formulary": true,
    "best_guess": "letrozole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:72965",
@@ -1044,7 +1143,8 @@
    "predicted": "RXCUI:72965",
    "in_formulary": true,
    "best_guess": "letrozole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6375",
@@ -1054,7 +1154,8 @@
    "predicted": "RXCUI:6375",
    "in_formulary": true,
    "best_guess": "levodopa",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6375",
@@ -1064,7 +1165,8 @@
    "predicted": "RXCUI:6375",
    "in_formulary": true,
    "best_guess": "levodopa",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6373",
@@ -1074,7 +1176,8 @@
    "predicted": "RXCUI:6373",
    "in_formulary": true,
    "best_guess": "levonorgestrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6373",
@@ -1084,7 +1187,8 @@
    "predicted": "RXCUI:6373",
    "in_formulary": true,
    "best_guess": "levonorgestrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6373",
@@ -1094,7 +1198,8 @@
    "predicted": "RXCUI:6373",
    "in_formulary": true,
    "best_guess": "levonorgestrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10582",
@@ -1104,7 +1209,8 @@
    "predicted": "RXCUI:10582",
    "in_formulary": true,
    "best_guess": "levothyroxine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10582",
@@ -1114,7 +1220,8 @@
    "predicted": "RXCUI:10582",
    "in_formulary": true,
    "best_guess": "levothyroxine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10582",
@@ -1124,7 +1231,8 @@
    "predicted": "RXCUI:10582",
    "in_formulary": true,
    "best_guess": "levothyroxine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1100699",
@@ -1134,7 +1242,8 @@
    "predicted": "RXCUI:1100699",
    "in_formulary": true,
    "best_guess": "linagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1100699",
@@ -1144,7 +1253,8 @@
    "predicted": "RXCUI:1100699",
    "in_formulary": true,
    "best_guess": "linagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1100699",
@@ -1154,7 +1264,8 @@
    "predicted": "RXCUI:1100699",
    "in_formulary": true,
    "best_guess": "linagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:190376",
@@ -1164,7 +1275,8 @@
    "predicted": "RXCUI:190376",
    "in_formulary": true,
    "best_guess": "linezolid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:190376",
@@ -1174,7 +1286,8 @@
    "predicted": "RXCUI:190376",
    "in_formulary": true,
    "best_guess": "linezolid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:190376",
@@ -1184,7 +1297,8 @@
    "predicted": "RXCUI:190376",
    "in_formulary": true,
    "best_guess": "linezolid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10814",
@@ -1194,7 +1308,8 @@
    "predicted": "RXCUI:10814",
    "in_formulary": true,
    "best_guess": "liothyronine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10814",
@@ -1204,7 +1319,8 @@
    "predicted": "RXCUI:10814",
    "in_formulary": true,
    "best_guess": "liothyronine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10814",
@@ -1214,7 +1330,8 @@
    "predicted": "RXCUI:10814",
    "in_formulary": true,
    "best_guess": "liothyronine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52175",
@@ -1224,7 +1341,8 @@
    "predicted": "RXCUI:52175",
    "in_formulary": true,
    "best_guess": "losartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52175",
@@ -1234,7 +1352,8 @@
    "predicted": "RXCUI:52175",
    "in_formulary": true,
    "best_guess": "losartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52175",
@@ -1244,7 +1363,8 @@
    "predicted": "RXCUI:52175",
    "in_formulary": true,
    "best_guess": "losartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6691",
@@ -1254,7 +1374,8 @@
    "predicted": "RXCUI:6691",
    "in_formulary": true,
    "best_guess": "medroxyprogesterone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6691",
@@ -1264,7 +1385,8 @@
    "predicted": "RXCUI:6691",
    "in_formulary": true,
    "best_guess": "medroxyprogesterone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6691",
@@ -1274,7 +1396,8 @@
    "predicted": "RXCUI:6691",
    "in_formulary": true,
    "best_guess": "medroxyprogesterone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6719",
@@ -1284,7 +1407,8 @@
    "predicted": "RXCUI:6719",
    "in_formulary": true,
    "best_guess": "memantine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6719",
@@ -1294,7 +1418,8 @@
    "predicted": "RXCUI:6719",
    "in_formulary": true,
    "best_guess": "memantine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6719",
@@ -1304,7 +1429,8 @@
    "predicted": "RXCUI:6719",
    "in_formulary": true,
    "best_guess": "memantine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52582",
@@ -1314,7 +1440,8 @@
    "predicted": "RXCUI:52582",
    "in_formulary": true,
    "best_guess": "mesalamine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52582",
@@ -1324,7 +1451,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:52582",
@@ -1334,7 +1462,8 @@
    "predicted": "RXCUI:52582",
    "in_formulary": true,
    "best_guess": "mesalamine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6809",
@@ -1344,7 +1473,8 @@
    "predicted": "RXCUI:6809",
    "in_formulary": true,
    "best_guess": "metformin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6809",
@@ -1354,7 +1484,8 @@
    "predicted": "RXCUI:6809",
    "in_formulary": true,
    "best_guess": "metformin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6809",
@@ -1364,7 +1495,8 @@
    "predicted": "RXCUI:6809",
    "in_formulary": true,
    "best_guess": "metformin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6851",
@@ -1374,7 +1506,8 @@
    "predicted": "RXCUI:6851",
    "in_formulary": true,
    "best_guess": "methotrexate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6851",
@@ -1384,7 +1517,8 @@
    "predicted": "RXCUI:6851",
    "in_formulary": true,
    "best_guess": "methotrexate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6851",
@@ -1394,7 +1528,8 @@
    "predicted": "RXCUI:6851",
    "in_formulary": true,
    "best_guess": "methotrexate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6902",
@@ -1404,7 +1539,8 @@
    "predicted": "RXCUI:6902",
    "in_formulary": true,
    "best_guess": "methylprednisolone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6902",
@@ -1414,7 +1550,8 @@
    "predicted": "RXCUI:6902",
    "in_formulary": true,
    "best_guess": "methylprednisolone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6902",
@@ -1424,7 +1561,8 @@
    "predicted": "RXCUI:6902",
    "in_formulary": true,
    "best_guess": "methylprednisolone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6980",
@@ -1434,7 +1572,8 @@
    "predicted": "RXCUI:6980",
    "in_formulary": true,
    "best_guess": "minocycline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6980",
@@ -1444,7 +1583,8 @@
    "predicted": "RXCUI:6980",
    "in_formulary": true,
    "best_guess": "minocycline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:6980",
@@ -1454,7 +1594,8 @@
    "predicted": "RXCUI:6980",
    "in_formulary": true,
    "best_guess": "minocycline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:88249",
@@ -1464,7 +1605,8 @@
    "predicted": "RXCUI:88249",
    "in_formulary": true,
    "best_guess": "montelukast",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:88249",
@@ -1474,7 +1616,8 @@
    "predicted": "RXCUI:88249",
    "in_formulary": true,
    "best_guess": "montelukast",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:88249",
@@ -1484,7 +1627,8 @@
    "predicted": "RXCUI:88249",
    "in_formulary": true,
    "best_guess": "montelukast",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:139462",
@@ -1494,7 +1638,8 @@
    "predicted": "RXCUI:139462",
    "in_formulary": true,
    "best_guess": "moxifloxacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:139462",
@@ -1504,7 +1649,8 @@
    "predicted": "RXCUI:139462",
    "in_formulary": true,
    "best_guess": "moxifloxacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:139462",
@@ -1514,7 +1660,8 @@
    "predicted": "RXCUI:139462",
    "in_formulary": true,
    "best_guess": "moxifloxacin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:31555",
@@ -1524,7 +1671,8 @@
    "predicted": "RXCUI:31555",
    "in_formulary": true,
    "best_guess": "nebivolol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:31555",
@@ -1534,7 +1682,8 @@
    "predicted": "RXCUI:31555",
    "in_formulary": true,
    "best_guess": "nebivolol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:31555",
@@ -1544,7 +1693,8 @@
    "predicted": "RXCUI:31555",
    "in_formulary": true,
    "best_guess": "nebivolol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7417",
@@ -1554,7 +1704,8 @@
    "predicted": "RXCUI:7417",
    "in_formulary": true,
    "best_guess": "nifedipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7417",
@@ -1564,7 +1715,8 @@
    "predicted": "RXCUI:7417",
    "in_formulary": true,
    "best_guess": "nifedipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7417",
@@ -1574,7 +1726,8 @@
    "predicted": "RXCUI:7417",
    "in_formulary": true,
    "best_guess": "nifedipine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7514",
@@ -1584,7 +1737,8 @@
    "predicted": "RXCUI:7514",
    "in_formulary": true,
    "best_guess": "norethindrone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7514",
@@ -1594,7 +1748,8 @@
    "predicted": "RXCUI:7514",
    "in_formulary": true,
    "best_guess": "norethindrone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7514",
@@ -1604,7 +1759,8 @@
    "predicted": "RXCUI:7514",
    "in_formulary": true,
    "best_guess": "norethindrone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7804",
@@ -1614,7 +1770,8 @@
    "predicted": "RXCUI:7804",
    "in_formulary": true,
    "best_guess": "oxycodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7804",
@@ -1624,7 +1781,8 @@
    "predicted": "RXCUI:7804",
    "in_formulary": true,
    "best_guess": "oxycodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:7804",
@@ -1634,7 +1792,8 @@
    "predicted": "RXCUI:7804",
    "in_formulary": true,
    "best_guess": "oxycodone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:32937",
@@ -1644,7 +1803,8 @@
    "predicted": "RXCUI:32937",
    "in_formulary": true,
    "best_guess": "paroxetine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:32937",
@@ -1654,7 +1814,8 @@
    "predicted": "RXCUI:32937",
    "in_formulary": true,
    "best_guess": "paroxetine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:32937",
@@ -1664,7 +1825,8 @@
    "predicted": "RXCUI:32937",
    "in_formulary": true,
    "best_guess": "paroxetine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8183",
@@ -1674,7 +1836,8 @@
    "predicted": "RXCUI:8183",
    "in_formulary": true,
    "best_guess": "phenytoin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8183",
@@ -1684,7 +1847,8 @@
    "predicted": "RXCUI:8183",
    "in_formulary": true,
    "best_guess": "phenytoin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8183",
@@ -1694,7 +1858,8 @@
    "predicted": "RXCUI:8183",
    "in_formulary": true,
    "best_guess": "phenytoin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8308",
@@ -1704,7 +1869,8 @@
    "predicted": "RXCUI:8308",
    "in_formulary": true,
    "best_guess": "vitamin K1",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8308",
@@ -1714,7 +1880,8 @@
    "predicted": "RXCUI:8308",
    "in_formulary": true,
    "best_guess": "vitamin K1",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8308",
@@ -1724,7 +1891,8 @@
    "predicted": "RXCUI:8308",
    "in_formulary": true,
    "best_guess": "vitamin K1",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8591",
@@ -1734,7 +1902,8 @@
    "predicted": "RXCUI:8591",
    "in_formulary": true,
    "best_guess": "potassium chloride",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8591",
@@ -1744,7 +1913,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": "potassium chloride",
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:613391",
@@ -1754,7 +1924,8 @@
    "predicted": "RXCUI:613391",
    "in_formulary": true,
    "best_guess": "prasugrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:613391",
@@ -1764,7 +1935,8 @@
    "predicted": "RXCUI:613391",
    "in_formulary": true,
    "best_guess": "prasugrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:613391",
@@ -1774,7 +1946,8 @@
    "predicted": "RXCUI:613391",
    "in_formulary": true,
    "best_guess": "prasugrel",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8794",
@@ -1784,7 +1957,8 @@
    "predicted": "RXCUI:8794",
    "in_formulary": true,
    "best_guess": "propylthiouracil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8794",
@@ -1794,7 +1968,8 @@
    "predicted": "RXCUI:8794",
    "in_formulary": true,
    "best_guess": "propylthiouracil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8896",
@@ -1804,7 +1979,8 @@
    "predicted": "RXCUI:8896",
    "in_formulary": true,
    "best_guess": "pseudoephedrine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8896",
@@ -1814,7 +1990,8 @@
    "predicted": "RXCUI:8896",
    "in_formulary": true,
    "best_guess": "pseudoephedrine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8896",
@@ -1824,7 +2001,8 @@
    "predicted": "RXCUI:8896",
    "in_formulary": true,
    "best_guess": "pseudoephedrine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8987",
@@ -1834,7 +2012,8 @@
    "predicted": "RXCUI:8987",
    "in_formulary": true,
    "best_guess": "pyrazinamide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:8987",
@@ -1844,7 +2023,8 @@
    "predicted": "RXCUI:8987",
    "in_formulary": true,
    "best_guess": "pyrazinamide",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:684879",
@@ -1854,7 +2034,8 @@
    "predicted": "RXCUI:684879",
    "in_formulary": true,
    "best_guess": "pyridoxine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:684879",
@@ -1864,7 +2045,8 @@
    "predicted": "RXCUI:684879",
    "in_formulary": true,
    "best_guess": "pyridoxine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11246",
@@ -1874,7 +2056,8 @@
    "predicted": "RXCUI:11246",
    "in_formulary": true,
    "best_guess": "vitamin A",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11246",
@@ -1884,7 +2067,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:9346",
@@ -1894,7 +2078,8 @@
    "predicted": "RXCUI:9346",
    "in_formulary": true,
    "best_guess": "riboflavin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:9346",
@@ -1904,7 +2089,8 @@
    "predicted": "RXCUI:9346",
    "in_formulary": true,
    "best_guess": "riboflavin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:73056",
@@ -1914,7 +2100,8 @@
    "predicted": "RXCUI:73056",
    "in_formulary": true,
    "best_guess": "risedronate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:73056",
@@ -1924,7 +2111,8 @@
    "predicted": "RXCUI:73056",
    "in_formulary": true,
    "best_guess": "risedronate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:73056",
@@ -1934,7 +2122,8 @@
    "predicted": "RXCUI:73056",
    "in_formulary": true,
    "best_guess": "risedronate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1114195",
@@ -1944,7 +2133,8 @@
    "predicted": "RXCUI:1114195",
    "in_formulary": true,
    "best_guess": "rivaroxaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1114195",
@@ -1954,7 +2144,8 @@
    "predicted": "RXCUI:1114195",
    "in_formulary": true,
    "best_guess": "rivaroxaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:1114195",
@@ -1964,7 +2155,8 @@
    "predicted": "RXCUI:1114195",
    "in_formulary": true,
    "best_guess": "rivaroxaban",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:301542",
@@ -1974,7 +2166,8 @@
    "predicted": "RXCUI:301542",
    "in_formulary": true,
    "best_guess": "rosuvastatin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:301542",
@@ -1984,7 +2177,8 @@
    "predicted": "RXCUI:301542",
    "in_formulary": true,
    "best_guess": "rosuvastatin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:301542",
@@ -1994,7 +2188,8 @@
    "predicted": "RXCUI:301542",
    "in_formulary": true,
    "best_guess": "rosuvastatin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:857974",
@@ -2004,7 +2199,8 @@
    "predicted": "RXCUI:857974",
    "in_formulary": true,
    "best_guess": "saxagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:857974",
@@ -2014,7 +2210,8 @@
    "predicted": "RXCUI:857974",
    "in_formulary": true,
    "best_guess": "saxagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:857974",
@@ -2024,7 +2221,8 @@
    "predicted": "RXCUI:857974",
    "in_formulary": true,
    "best_guess": "saxagliptin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:36437",
@@ -2034,7 +2232,8 @@
    "predicted": "RXCUI:36437",
    "in_formulary": true,
    "best_guess": "sertraline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:36437",
@@ -2044,7 +2243,8 @@
    "predicted": "RXCUI:36437",
    "in_formulary": true,
    "best_guess": "sertraline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:36437",
@@ -2054,7 +2254,8 @@
    "predicted": "RXCUI:36437",
    "in_formulary": true,
    "best_guess": "sertraline",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:9997",
@@ -2064,7 +2265,8 @@
    "predicted": "RXCUI:9997",
    "in_formulary": true,
    "best_guess": "spironolactone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:9997",
@@ -2074,7 +2276,8 @@
    "predicted": "RXCUI:9997",
    "in_formulary": true,
    "best_guess": "spironolactone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:9997",
@@ -2084,7 +2287,8 @@
    "predicted": "RXCUI:9997",
    "in_formulary": true,
    "best_guess": "spironolactone",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:37418",
@@ -2094,7 +2298,8 @@
    "predicted": "RXCUI:37418",
    "in_formulary": true,
    "best_guess": "sumatriptan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:37418",
@@ -2104,7 +2309,8 @@
    "predicted": "RXCUI:37418",
    "in_formulary": true,
    "best_guess": "sumatriptan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:37418",
@@ -2114,7 +2320,8 @@
    "predicted": "RXCUI:37418",
    "in_formulary": true,
    "best_guess": "sumatriptan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:358263",
@@ -2124,7 +2331,8 @@
    "predicted": "RXCUI:358263",
    "in_formulary": true,
    "best_guess": "tadalafil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:358263",
@@ -2134,7 +2342,8 @@
    "predicted": "RXCUI:358263",
    "in_formulary": true,
    "best_guess": "tadalafil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:358263",
@@ -2144,7 +2353,8 @@
    "predicted": "RXCUI:358263",
    "in_formulary": true,
    "best_guess": "tadalafil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10324",
@@ -2154,7 +2364,8 @@
    "predicted": "RXCUI:10324",
    "in_formulary": true,
    "best_guess": "tamoxifen",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10324",
@@ -2164,7 +2375,8 @@
    "predicted": "RXCUI:10324",
    "in_formulary": true,
    "best_guess": "tamoxifen",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:119565",
@@ -2174,7 +2386,8 @@
    "predicted": "RXCUI:119565",
    "in_formulary": true,
    "best_guess": "tolterodine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:119565",
@@ -2184,7 +2397,8 @@
    "predicted": "RXCUI:119565",
    "in_formulary": true,
    "best_guess": "tolterodine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:119565",
@@ -2194,7 +2408,8 @@
    "predicted": "RXCUI:119565",
    "in_formulary": true,
    "best_guess": "tolterodine",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:38404",
@@ -2204,7 +2419,8 @@
    "predicted": "RXCUI:38404",
    "in_formulary": true,
    "best_guess": "topiramate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:38404",
@@ -2214,7 +2430,8 @@
    "predicted": "RXCUI:38404",
    "in_formulary": true,
    "best_guess": "topiramate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:38404",
@@ -2224,7 +2441,8 @@
    "predicted": "RXCUI:38404",
    "in_formulary": true,
    "best_guess": "topiramate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10689",
@@ -2234,7 +2452,8 @@
    "predicted": "RXCUI:10689",
    "in_formulary": true,
    "best_guess": "tramadol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10689",
@@ -2244,7 +2463,8 @@
    "predicted": "RXCUI:10689",
    "in_formulary": true,
    "best_guess": "tramadol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10689",
@@ -2254,7 +2474,8 @@
    "predicted": "RXCUI:10689",
    "in_formulary": true,
    "best_guess": "tramadol",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10691",
@@ -2264,7 +2485,8 @@
    "predicted": "RXCUI:10691",
    "in_formulary": true,
    "best_guess": "tranexamic acid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10691",
@@ -2274,7 +2496,8 @@
    "predicted": "RXCUI:10691",
    "in_formulary": true,
    "best_guess": "tranexamic acid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:10691",
@@ -2284,7 +2507,8 @@
    "predicted": "RXCUI:10691",
    "in_formulary": true,
    "best_guess": "tranexamic acid",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:62427",
@@ -2294,7 +2518,8 @@
    "predicted": "RXCUI:62427",
    "in_formulary": true,
    "best_guess": "ursodeoxycholate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:62427",
@@ -2304,7 +2529,8 @@
    "predicted": "RXCUI:62427",
    "in_formulary": true,
    "best_guess": "ursodeoxycholate",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:69749",
@@ -2314,7 +2540,8 @@
    "predicted": "RXCUI:69749",
    "in_formulary": true,
    "best_guess": "valsartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:69749",
@@ -2324,7 +2551,8 @@
    "predicted": "RXCUI:69749",
    "in_formulary": true,
    "best_guess": "valsartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:69749",
@@ -2334,7 +2562,8 @@
    "predicted": "RXCUI:69749",
    "in_formulary": true,
    "best_guess": "valsartan",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11124",
@@ -2344,7 +2573,8 @@
    "predicted": "RXCUI:11124",
    "in_formulary": true,
    "best_guess": "vancomycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11124",
@@ -2354,7 +2584,8 @@
    "predicted": null,
    "in_formulary": true,
    "best_guess": null,
-   "outcome": "asked"
+   "outcome": "asked",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11124",
@@ -2364,7 +2595,8 @@
    "predicted": "RXCUI:11124",
    "in_formulary": true,
    "best_guess": "vancomycin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11170",
@@ -2374,7 +2606,8 @@
    "predicted": "RXCUI:11170",
    "in_formulary": true,
    "best_guess": "verapamil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11170",
@@ -2384,7 +2617,8 @@
    "predicted": "RXCUI:11170",
    "in_formulary": true,
    "best_guess": "verapamil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11170",
@@ -2394,7 +2628,8 @@
    "predicted": "RXCUI:11170",
    "in_formulary": true,
    "best_guess": "verapamil",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:121243",
@@ -2404,7 +2639,8 @@
    "predicted": "RXCUI:121243",
    "in_formulary": true,
    "best_guess": "voriconazole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:121243",
@@ -2414,7 +2650,8 @@
    "predicted": "RXCUI:121243",
    "in_formulary": true,
    "best_guess": "voriconazole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:121243",
@@ -2424,7 +2661,8 @@
    "predicted": "RXCUI:121243",
    "in_formulary": true,
    "best_guess": "voriconazole",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11289",
@@ -2434,7 +2672,8 @@
    "predicted": "RXCUI:11289",
    "in_formulary": true,
    "best_guess": "warfarin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11289",
@@ -2444,7 +2683,8 @@
    "predicted": "RXCUI:11289",
    "in_formulary": true,
    "best_guess": "warfarin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   },
   {
    "truth": "RXCUI:11289",
@@ -2454,7 +2694,8 @@
    "predicted": "RXCUI:11289",
    "in_formulary": true,
    "best_guess": "warfarin",
-   "outcome": "correct"
+   "outcome": "correct",
+   "fingerprint": "63494e69845da868"
   }
  ]
 }

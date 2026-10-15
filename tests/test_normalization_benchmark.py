@@ -70,3 +70,26 @@ def test_a_rerun_skips_cases_already_measured(tmp_path):
     seen.clear()
     out = run_cases(cases, judge, progress)
     assert seen == ["C"] and [r["text"] for r in out] == ["A", "B", "C"]
+
+
+def test_a_look_alike_name_is_not_counted_as_the_same_drug():
+    """Review: a four-letter prefix rule would score prednisolone-for-prednisone
+    as an honest out-of-scope answer instead of a wrong one."""
+    assert outcome(None, "RXCUI:1", False, "prednisolone", "prednisone") == "wrong"
+    assert outcome(None, "RXCUI:1", False, "clonazepam", "clonidine") == "wrong"
+    assert outcome(None, "RXCUI:1", False, "ursodeoxycholate", "ursodiol") == "out of scope"
+
+
+def test_a_stored_prediction_from_other_code_is_measured_again(tmp_path):
+    from evals.normalization_benchmark import run_cases
+    case = {"truth": "RXCUI:1", "truth_name": "a", "kind": "clean", "text": "A"}
+    calls = []
+
+    def judge(c):
+        calls.append(c["text"])
+        return {**c, "outcome": "correct"}
+
+    progress = tmp_path / "p.jsonl"
+    run_cases([case], judge, progress, fingerprint="old")
+    run_cases([case], judge, progress, fingerprint="new")
+    assert calls == ["A", "A"]
