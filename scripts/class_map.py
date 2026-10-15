@@ -255,12 +255,34 @@ def normalize_phrase(phrase: str) -> str:
     return out
 
 
-def match_classes(phrase: str) -> list[str]:
+# The model extracts a phrase, but sometimes the label qualifies it just before:
+# corticosteroid labels warn about "potassium-depleting agents (e.g., amphotericin
+# B, diuretics)", and "diuretics" there excludes the potassium-sparing ones.
+# (key, cue in the text just before the phrase, key to read it as instead)
+_CONTEXT = [("diuretics", re.compile(r"potassium[- ]depleting", re.IGNORECASE),
+             "potassium-depleting-diuretics")]
+_CONTEXT_WINDOW = 150
+
+
+def match_classes(phrase: str, context: str = "") -> list[str]:
     """Every class key a label's class phrase refers to, in map order.
 
     Empty for an unmapped phrase, and for one that names only part of a class.
     The exclusion clause ("other than gemfibrozil") is not searched for classes.
+    `context`, the cited passage, lets a qualifier just before the phrase
+    narrow it (see _CONTEXT).
     """
+    keys = _match(phrase)
+    at = normalize_phrase(context).lower().find(normalize_phrase(phrase).lower()) if context else -1
+    if at >= 0:
+        before = normalize_phrase(context)[max(0, at - _CONTEXT_WINDOW):at]
+        for key, cue, instead in _CONTEXT:
+            if key in keys and cue.search(before):
+                keys = [instead if k == key else k for k in keys]
+    return keys
+
+
+def _match(phrase: str) -> list[str]:
     text = normalize_phrase(phrase)
     if not text.strip() or _SUBSET.search(text):
         return []

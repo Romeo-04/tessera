@@ -64,3 +64,30 @@ def ablation_table(calls) -> str:
             f"${sum(c.cost_usd for c in cs):.4f} |"
         )
     return "\n".join(lines)
+
+
+def session_summary(sessions: list[dict]) -> dict:
+    """Live end-to-end sessions -> cost, latency and verifier figures.
+
+    Median and worst case, not the mean: one slow Ultra call is what a
+    caregiver waiting at a kitchen table actually experiences, and a mean hides
+    it. `sentences_withheld` counts explanations the automated verifier refused
+    to show; `shown + withheld` is everything the model wrote.
+    """
+    from statistics import median
+
+    costs = [s["cost_usd"] for s in sessions]
+    lat = [s["latency_s"] for s in sessions]
+    statuses: dict[str, int] = {}
+    for s in sessions:
+        statuses[s["status"]] = statuses.get(s["status"], 0) + 1
+    return {
+        "n": len(sessions),
+        "cost_median": median(costs) if costs else None,
+        "cost_max": max(costs) if costs else None,
+        "latency_median": median(lat) if lat else None,
+        "latency_max": max(lat) if lat else None,
+        "sentences_written": sum(s["shown"] + s["withheld"] for s in sessions),
+        "sentences_withheld": sum(s["withheld"] for s in sessions),
+        "statuses": statuses,
+    }

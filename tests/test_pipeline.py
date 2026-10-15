@@ -127,6 +127,9 @@ def test_a_withheld_claim_is_reported_to_the_user(tmp_path):
     )
     assert result.risks == []
     assert any("withheld" in n.lower() for n in result.notes)
+    # A documented interaction exists and nothing is shown: that is not "ok".
+    # Measured live, 5 of 27 explanations were withheld in 13 sessions.
+    assert result.status == "analysis_incomplete"
 
 
 def test_an_adjudicator_that_explains_nothing_is_not_reported_as_all_clear(tmp_path):
