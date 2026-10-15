@@ -3,20 +3,20 @@
  "drugs_with_a_pill_product": 84,
  "all": {
   "n": 241,
-  "correct": 230,
-  "asked": 8,
-  "out of scope": 2,
-  "wrong": 1,
-  "accuracy_when_answered": 0.9956709956709957,
-  "wrong_rate": 0.004149377593360996,
-  "wrong_rate_lo": 0.0007328240816957699,
-  "wrong_rate_hi": 0.02312586659831939
+  "correct": 232,
+  "asked": 9,
+  "out of scope": 0,
+  "wrong": 0,
+  "accuracy_when_answered": 1.0,
+  "wrong_rate": 0.0,
+  "wrong_rate_lo": 0.0,
+  "wrong_rate_hi": 0.01569014415850901
  },
  "clean": {
   "n": 84,
-  "correct": 83,
+  "correct": 84,
   "asked": 0,
-  "out of scope": 1,
+  "out of scope": 0,
   "wrong": 0,
   "accuracy_when_answered": 1.0,
   "wrong_rate": 0.0,
@@ -25,14 +25,14 @@
  },
  "ocr": {
   "n": 84,
-  "correct": 74,
-  "asked": 8,
-  "out of scope": 1,
-  "wrong": 1,
-  "accuracy_when_answered": 0.9866666666666667,
-  "wrong_rate": 0.011904761904761904,
-  "wrong_rate_lo": 0.002104528901587875,
-  "wrong_rate_hi": 0.06439699201788535
+  "correct": 75,
+  "asked": 9,
+  "out of scope": 0,
+  "wrong": 0,
+  "accuracy_when_answered": 1.0,
+  "wrong_rate": 0.0,
+  "wrong_rate_lo": 0.0,
+  "wrong_rate_hi": 0.043733265332143306
  },
  "brand": {
   "n": 73,
@@ -362,9 +362,9 @@
    "kind": "ocr",
    "text": "CALC1URN CARBONATE 250 MG TABLET",
    "predicted": null,
-   "in_formulary": false,
+   "in_formulary": true,
    "best_guess": "lanthanum carbonate",
-   "outcome": "wrong"
+   "outcome": "asked"
   },
   {
    "truth": "RXCUI:1897",
@@ -2287,24 +2287,24 @@
    "outcome": "correct"
   },
   {
-   "truth": "RXCUI:858747",
+   "truth": "RXCUI:62427",
    "truth_name": "ursodiol",
    "kind": "clean",
    "text": "URSODIOL 300 MG CAPSULE",
-   "predicted": null,
-   "in_formulary": false,
+   "predicted": "RXCUI:62427",
+   "in_formulary": true,
    "best_guess": "ursodeoxycholate",
-   "outcome": "out of scope"
+   "outcome": "correct"
   },
   {
-   "truth": "RXCUI:858747",
+   "truth": "RXCUI:62427",
    "truth_name": "ursodiol",
    "kind": "ocr",
    "text": "URSODI01 300 MG CAPSULE",
-   "predicted": null,
-   "in_formulary": false,
+   "predicted": "RXCUI:62427",
+   "in_formulary": true,
    "best_guess": "ursodeoxycholate",
-   "outcome": "out of scope"
+   "outcome": "correct"
   },
   {
    "truth": "RXCUI:69749",

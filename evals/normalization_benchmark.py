@@ -203,6 +203,14 @@ def main() -> None:
                 "best_guess": d.display_name, "outcome": o}
 
     results = run_cases(cases, judge, PROGRESS)
+    # Score against the formulary as it is now, by ingredient name: the cached
+    # truth code goes stale when a formulary row is corrected (ursodiol was
+    # stored as a product code until 1.2.4). Predictions are stored, so
+    # re-scoring needs no lookups.
+    code_of = {r["ingredient"]: r["rxcui"] for r in csv.DictReader(FORMULARY.open(encoding="utf-8"))}
+    for r in results:
+        r["truth"] = code_of.get(r["truth_name"], r["truth"])
+        r["outcome"] = outcome(r["predicted"], r["truth"], r["in_formulary"], r["best_guess"], r["truth_name"])
 
     report = {"drugs_sampled": N_DRUGS, "drugs_with_a_pill_product": len({c["truth"] for c in cases}),
               "all": summarize([r["outcome"] for r in results])}

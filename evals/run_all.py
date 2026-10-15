@@ -57,12 +57,12 @@ def synthetic_normalization_section() -> str:
                 "`python -m evals.normalization_benchmark`.")
     r = json.loads(path.read_text(encoding="utf-8"))
     rows = "\n".join(
-        f"| {k} | {r[k]['n']} | {r[k]['correct']} | {r[k]['abstained']} | {r[k]['wrong']} "
-        f"(95% CI up to {r[k]['wrong_rate_hi']:.1%}) |"
+        f"| {k} | {r[k]['n']} | {r[k]['correct']} | {r[k]['asked']} | {r[k]['out of scope']} | "
+        f"{r[k]['wrong']} (95% CI up to {r[k]['wrong_rate_hi']:.1%}) |"
         for k in ("clean", "ocr", "brand", "all"))
-    return ("**Synthetic name benchmark** (`evals/normalization_benchmark.py`; label-like text "
+    return ("**Synthetic name benchmark** (`evals/normalization_benchmark.py`; pill-bottle text "
             "built from RxNorm product names, answers from RxNorm, no model involved):\n\n"
-            "| Input | n | Correct | Asked instead | Wrong |\n|---|---|---|---|---|\n" + rows)
+            "| Input | n | Correct | Asked | Out of scope | Wrong |\n|---|---|---|---|---|---|\n" + rows)
 
 
 def severity_section(live: bool) -> str:
