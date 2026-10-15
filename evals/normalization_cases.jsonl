@@ -1,0 +1,241 @@
+{"truth": "RXCUI:16681", "truth_name": "acarbose", "kind": "clean", "text": "ACARBOSE 25 MG TABLET"}
+{"truth": "RXCUI:16681", "truth_name": "acarbose", "kind": "ocr", "text": "ACRB0SE 25 MG TABLET"}
+{"truth": "RXCUI:16681", "truth_name": "acarbose", "kind": "brand", "text": "PRECOSE 25 MG"}
+{"truth": "RXCUI:161", "truth_name": "acetaminophen", "kind": "clean", "text": "ACETAMINOPHEN 80 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:161", "truth_name": "acetaminophen", "kind": "ocr", "text": "ACFTAMINOPHFN 80 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:161", "truth_name": "acetaminophen", "kind": "brand", "text": "MAPAP 80 MG"}
+{"truth": "RXCUI:46041", "truth_name": "alendronate", "kind": "clean", "text": "ALENDRONIC ACID 5 MG TABLET"}
+{"truth": "RXCUI:46041", "truth_name": "alendronate", "kind": "ocr", "text": "ALENR0NIC ACID 5 MG TABLET"}
+{"truth": "RXCUI:46041", "truth_name": "alendronate", "kind": "brand", "text": "BINOSTO 5 MG"}
+{"truth": "RXCUI:17300", "truth_name": "alfuzosin", "kind": "clean", "text": "ALFUZOSIN HYDROCHLORIDE 2.5 MG TABLET"}
+{"truth": "RXCUI:17300", "truth_name": "alfuzosin", "kind": "ocr", "text": "ALFUZ05IN HYDROCHLORIDE 2.5 MG TABLET"}
+{"truth": "RXCUI:17300", "truth_name": "alfuzosin", "kind": "brand", "text": "UROXATRAL 2.5 MG"}
+{"truth": "RXCUI:17767", "truth_name": "amlodipine", "kind": "clean", "text": "AMLODIPINE 2.5 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:17767", "truth_name": "amlodipine", "kind": "ocr", "text": "AMLODIP1NF 2.5 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:17767", "truth_name": "amlodipine", "kind": "brand", "text": "NORVASC 2.5 MG"}
+{"truth": "RXCUI:596724", "truth_name": "anagrelide", "kind": "clean", "text": "ANAGRELIDE 0.5 MG CAPSULE"}
+{"truth": "RXCUI:596724", "truth_name": "anagrelide", "kind": "ocr", "text": "ANAGREL1DF 0.5 MG CAPSULE"}
+{"truth": "RXCUI:596724", "truth_name": "anagrelide", "kind": "brand", "text": "AGRYLIN 0.5 MG"}
+{"truth": "RXCUI:1364430", "truth_name": "apixaban", "kind": "clean", "text": "APIXABAN 2.5 MG TABLET"}
+{"truth": "RXCUI:1364430", "truth_name": "apixaban", "kind": "ocr", "text": "AIXA8AN 2.5 MG TABLET"}
+{"truth": "RXCUI:1364430", "truth_name": "apixaban", "kind": "brand", "text": "ELIQUIS 2.5 MG"}
+{"truth": "RXCUI:18993", "truth_name": "benzonatate", "kind": "clean", "text": "BENZONATATE 100 MG CAPSULE"}
+{"truth": "RXCUI:18993", "truth_name": "benzonatate", "kind": "ocr", "text": "8ENZ0NATATE 100 MG CAPSULE"}
+{"truth": "RXCUI:18993", "truth_name": "benzonatate", "kind": "brand", "text": "TESSALON PERLES 100 MG"}
+{"truth": "RXCUI:1588", "truth_name": "biotin", "kind": "clean", "text": "BIOTIN 0.3 MG TABLET"}
+{"truth": "RXCUI:1588", "truth_name": "biotin", "kind": "ocr", "text": "B10TIN 0.3 MG TABLET"}
+{"truth": "RXCUI:1588", "truth_name": "biotin", "kind": "brand", "text": "APPEAREX 0.3 MG"}
+{"truth": "RXCUI:1808", "truth_name": "bumetanide", "kind": "clean", "text": "BUMETANIDE 0.5 MG TABLET"}
+{"truth": "RXCUI:1808", "truth_name": "bumetanide", "kind": "ocr", "text": "8UMETANIDF 0.5 MG TABLET"}
+{"truth": "RXCUI:1808", "truth_name": "bumetanide", "kind": "brand", "text": "BUMEX 0.5 MG"}
+{"truth": "RXCUI:1897", "truth_name": "calcium carbonate", "kind": "clean", "text": "CALCIUM CARBONATE 250 MG TABLET"}
+{"truth": "RXCUI:1897", "truth_name": "calcium carbonate", "kind": "ocr", "text": "CALC1URN CARBONATE 250 MG TABLET"}
+{"truth": "RXCUI:1897", "truth_name": "calcium carbonate", "kind": "brand", "text": "OSCAL 500 250 MG"}
+{"truth": "RXCUI:2002", "truth_name": "carbamazepine", "kind": "clean", "text": "CARBAMAZEPINE 100 MG TABLET"}
+{"truth": "RXCUI:2002", "truth_name": "carbamazepine", "kind": "ocr", "text": "CAR8ARNAZEPINE 100 MG TABLET"}
+{"truth": "RXCUI:2002", "truth_name": "carbamazepine", "kind": "brand", "text": "CARBATROL 100 MG"}
+{"truth": "RXCUI:2409", "truth_name": "chlorthalidone", "kind": "clean", "text": "CHLORTHALIDONE 12.5 MG TABLET"}
+{"truth": "RXCUI:2409", "truth_name": "chlorthalidone", "kind": "ocr", "text": "CHLORTHALDONF 12.5 MG TABLET"}
+{"truth": "RXCUI:2409", "truth_name": "chlorthalidone", "kind": "brand", "text": "HEMICLOR 12.5 MG"}
+{"truth": "RXCUI:2556", "truth_name": "citalopram", "kind": "clean", "text": "CITALOPRAM 10 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:2556", "truth_name": "citalopram", "kind": "ocr", "text": "CTA1OPRAM 10 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:2556", "truth_name": "citalopram", "kind": "brand", "text": "CELEXA 10 MG"}
+{"truth": "RXCUI:21212", "truth_name": "clarithromycin", "kind": "clean", "text": "CLARITHROMYCIN 250 MG TABLET"}
+{"truth": "RXCUI:21212", "truth_name": "clarithromycin", "kind": "ocr", "text": "C1ARITHR0MYCIN 250 MG TABLET"}
+{"truth": "RXCUI:21212", "truth_name": "clarithromycin", "kind": "brand", "text": "BIAXIN 250 MG"}
+{"truth": "RXCUI:2596", "truth_name": "clomiphene", "kind": "clean", "text": "CLOMIPHENE CITRATE 50 MG TABLET"}
+{"truth": "RXCUI:2596", "truth_name": "clomiphene", "kind": "ocr", "text": "C10MIPHENE CITRATE 50 MG TABLET"}
+{"truth": "RXCUI:2596", "truth_name": "clomiphene", "kind": "brand", "text": "CLOMID 50 MG"}
+{"truth": "RXCUI:3008", "truth_name": "cyclosporine", "kind": "clean", "text": "CYCLOSPORINE, MODIFIED 10 MG CAPSULE"}
+{"truth": "RXCUI:3008", "truth_name": "cyclosporine", "kind": "ocr", "text": "CYCLO5PORINF, MODIFIED 10 MG CAPSULE"}
+{"truth": "RXCUI:3008", "truth_name": "cyclosporine", "kind": "brand", "text": "SANDIMMUNE 10 MG"}
+{"truth": "RXCUI:3102", "truth_name": "danazol", "kind": "clean", "text": "DANAZOL 50 MG CAPSULE"}
+{"truth": "RXCUI:3102", "truth_name": "danazol", "kind": "ocr", "text": "DANAZ01 50 MG CAPSULE"}
+{"truth": "RXCUI:195085", "truth_name": "efavirenz", "kind": "clean", "text": "EFAVIRENZ 50 MG CAPSULE"}
+{"truth": "RXCUI:195085", "truth_name": "efavirenz", "kind": "ocr", "text": "FFAV1RENZ 50 MG CAPSULE"}
+{"truth": "RXCUI:1545653", "truth_name": "empagliflozin", "kind": "clean", "text": "EMPAGLIFLOZIN 10 MG TABLET"}
+{"truth": "RXCUI:1545653", "truth_name": "empagliflozin", "kind": "ocr", "text": "EMPLIFLOZIN 10 MG TABLET"}
+{"truth": "RXCUI:1545653", "truth_name": "empagliflozin", "kind": "brand", "text": "JARDIANCE 10 MG"}
+{"truth": "RXCUI:3827", "truth_name": "enalapril", "kind": "clean", "text": "ENALAPRIL MALEATE 2.5 MG TABLET"}
+{"truth": "RXCUI:3827", "truth_name": "enalapril", "kind": "ocr", "text": "ENAAPRIL MALEATE 2.5 MG TABLET"}
+{"truth": "RXCUI:3827", "truth_name": "enalapril", "kind": "brand", "text": "VASOTEC 2.5 MG"}
+{"truth": "RXCUI:1992672", "truth_name": "ertugliflozin", "kind": "clean", "text": "ERTUGLIFLOZIN 5 MG TABLET"}
+{"truth": "RXCUI:1992672", "truth_name": "ertugliflozin", "kind": "ocr", "text": "FRTUG1IFLOZIN 5 MG TABLET"}
+{"truth": "RXCUI:1992672", "truth_name": "ertugliflozin", "kind": "brand", "text": "STEGLATRO 5 MG"}
+{"truth": "RXCUI:4053", "truth_name": "erythromycin", "kind": "clean", "text": "ERYTHROMYCIN 250 MG CAPSULE"}
+{"truth": "RXCUI:4053", "truth_name": "erythromycin", "kind": "ocr", "text": "FRYTHRORNYCIN 250 MG CAPSULE"}
+{"truth": "RXCUI:4053", "truth_name": "erythromycin", "kind": "brand", "text": "ERY-TAB 250 MG"}
+{"truth": "RXCUI:4083", "truth_name": "estradiol", "kind": "clean", "text": "ESTRADIOL 0.45 MG TABLET"}
+{"truth": "RXCUI:4083", "truth_name": "estradiol", "kind": "ocr", "text": "ESRADI0L 0.45 MG TABLET"}
+{"truth": "RXCUI:4083", "truth_name": "estradiol", "kind": "brand", "text": "ESTRACE 0.45 MG"}
+{"truth": "RXCUI:4110", "truth_name": "ethambutol", "kind": "clean", "text": "ETHAMBUTOL HYDROCHLORIDE 100 MG TABLET"}
+{"truth": "RXCUI:4110", "truth_name": "ethambutol", "kind": "ocr", "text": "ETHAM8UT0L HYDROCHLORIDE 100 MG TABLET"}
+{"truth": "RXCUI:4110", "truth_name": "ethambutol", "kind": "brand", "text": "MYAMBUTOL 100 MG"}
+{"truth": "RXCUI:258494", "truth_name": "exemestane", "kind": "clean", "text": "EXEMESTANE 25 MG TABLET"}
+{"truth": "RXCUI:258494", "truth_name": "exemestane", "kind": "ocr", "text": "EXEMFSTANF 25 MG TABLET"}
+{"truth": "RXCUI:258494", "truth_name": "exemestane", "kind": "brand", "text": "AROMASIN 25 MG"}
+{"truth": "RXCUI:24947", "truth_name": "ferrous sulfate", "kind": "clean", "text": "FERROUS SULFATE 27 MG TABLET"}
+{"truth": "RXCUI:24947", "truth_name": "ferrous sulfate", "kind": "ocr", "text": "FERR0US 5ULFATE 27 MG TABLET"}
+{"truth": "RXCUI:24947", "truth_name": "ferrous sulfate", "kind": "brand", "text": "SLOW-FE 27 MG"}
+{"truth": "RXCUI:87636", "truth_name": "fexofenadine", "kind": "clean", "text": "FEXOFENADINE HYDROCHLORIDE 30 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:87636", "truth_name": "fexofenadine", "kind": "ocr", "text": "FEX0FFNADINE HYDROCHLORIDE 30 MG DISINTEGRATING TABLET"}
+{"truth": "RXCUI:87636", "truth_name": "fexofenadine", "kind": "brand", "text": "ALLEGRA 30 MG"}
+{"truth": "RXCUI:4815", "truth_name": "glyburide", "kind": "clean", "text": "GLYBURIDE 1.25 MG TABLET"}
+{"truth": "RXCUI:4815", "truth_name": "glyburide", "kind": "ocr", "text": "GLY8UR1DE 1.25 MG TABLET"}
+{"truth": "RXCUI:4815", "truth_name": "glyburide", "kind": "brand", "text": "GLYNASE 1.25 MG"}
+{"truth": "RXCUI:5032", "truth_name": "guaifenesin", "kind": "clean", "text": "GUAIFENESIN 100 MG TABLET"}
+{"truth": "RXCUI:5032", "truth_name": "guaifenesin", "kind": "ocr", "text": "GUA1FENESN 100 MG TABLET"}
+{"truth": "RXCUI:5032", "truth_name": "guaifenesin", "kind": "brand", "text": "MUCINEX 100 MG"}
+{"truth": "RXCUI:5489", "truth_name": "hydrocodone", "kind": "clean", "text": "HYDROCODONE BITARTRATE 7.5 MG TABLET"}
+{"truth": "RXCUI:5489", "truth_name": "hydrocodone", "kind": "ocr", "text": "HYDROC0D0NE BITARTRATE 7.5 MG TABLET"}
+{"truth": "RXCUI:5489", "truth_name": "hydrocodone", "kind": "brand", "text": "ZOHYDRO 7.5 MG"}
+{"truth": "RXCUI:5492", "truth_name": "hydrocortisone", "kind": "clean", "text": "HYDROCORTISONE 5 MG TABLET"}
+{"truth": "RXCUI:5492", "truth_name": "hydrocortisone", "kind": "ocr", "text": "HYDROCOT1SONE 5 MG TABLET"}
+{"truth": "RXCUI:5492", "truth_name": "hydrocortisone", "kind": "brand", "text": "CORTEF 5 MG"}
+{"truth": "RXCUI:5781", "truth_name": "indomethacin", "kind": "clean", "text": "INDOMETHACIN 20 MG CAPSULE"}
+{"truth": "RXCUI:5781", "truth_name": "indomethacin", "kind": "ocr", "text": "INDOMFTHAC1N 20 MG CAPSULE"}
+{"truth": "RXCUI:5781", "truth_name": "indomethacin", "kind": "brand", "text": "TIVORBEX 20 MG"}
+{"truth": "RXCUI:72965", "truth_name": "letrozole", "kind": "clean", "text": "LETROZOLE 2.5 MG TABLET"}
+{"truth": "RXCUI:72965", "truth_name": "letrozole", "kind": "ocr", "text": "1ETROZO1E 2.5 MG TABLET"}
+{"truth": "RXCUI:72965", "truth_name": "letrozole", "kind": "brand", "text": "FEMARA 2.5 MG"}
+{"truth": "RXCUI:6375", "truth_name": "levodopa", "kind": "clean", "text": "LEVODOPA 500 MG TABLET"}
+{"truth": "RXCUI:6375", "truth_name": "levodopa", "kind": "ocr", "text": "1EV0DOPA 500 MG TABLET"}
+{"truth": "RXCUI:6373", "truth_name": "levonorgestrel", "kind": "clean", "text": "LEVONORGESTREL 0.03 MG TABLET"}
+{"truth": "RXCUI:6373", "truth_name": "levonorgestrel", "kind": "ocr", "text": "LEVNORGESTRFL 0.03 MG TABLET"}
+{"truth": "RXCUI:6373", "truth_name": "levonorgestrel", "kind": "brand", "text": "AFTER BANGER 0.03 MG"}
+{"truth": "RXCUI:10582", "truth_name": "levothyroxine", "kind": "clean", "text": "LEVOTHYROXINE SODIUM 0.0125 MG TABLET"}
+{"truth": "RXCUI:10582", "truth_name": "levothyroxine", "kind": "ocr", "text": "LEV0THYROXINF SODIUM 0.0125 MG TABLET"}
+{"truth": "RXCUI:10582", "truth_name": "levothyroxine", "kind": "brand", "text": "TIROSINT 0.0125 MG"}
+{"truth": "RXCUI:1100699", "truth_name": "linagliptin", "kind": "clean", "text": "LINAGLIPTIN 5 MG TABLET"}
+{"truth": "RXCUI:1100699", "truth_name": "linagliptin", "kind": "ocr", "text": "LINAG11PTIN 5 MG TABLET"}
+{"truth": "RXCUI:1100699", "truth_name": "linagliptin", "kind": "brand", "text": "TRADJENTA 5 MG"}
+{"truth": "RXCUI:190376", "truth_name": "linezolid", "kind": "clean", "text": "LINEZOLID 400 MG TABLET"}
+{"truth": "RXCUI:190376", "truth_name": "linezolid", "kind": "ocr", "text": "L1NEZO1ID 400 MG TABLET"}
+{"truth": "RXCUI:190376", "truth_name": "linezolid", "kind": "brand", "text": "ZYVOX 400 MG"}
+{"truth": "RXCUI:10814", "truth_name": "liothyronine", "kind": "clean", "text": "LIOTHYRONINE SODIUM 0.005 MG TABLET"}
+{"truth": "RXCUI:10814", "truth_name": "liothyronine", "kind": "ocr", "text": "1IOTHYRNINE SODIUM 0.005 MG TABLET"}
+{"truth": "RXCUI:10814", "truth_name": "liothyronine", "kind": "brand", "text": "CYTOMEL 0.005 MG"}
+{"truth": "RXCUI:52175", "truth_name": "losartan", "kind": "clean", "text": "LOSARTAN POTASSIUM 25 MG TABLET"}
+{"truth": "RXCUI:52175", "truth_name": "losartan", "kind": "ocr", "text": "1OSRTAN POTASSIUM 25 MG TABLET"}
+{"truth": "RXCUI:52175", "truth_name": "losartan", "kind": "brand", "text": "COZAAR 25 MG"}
+{"truth": "RXCUI:6691", "truth_name": "medroxyprogesterone", "kind": "clean", "text": "MEDROXYPROGESTERONE ACETATE 2.5 MG TABLET"}
+{"truth": "RXCUI:6691", "truth_name": "medroxyprogesterone", "kind": "ocr", "text": "MFDOXYPROGESTERONE ACETATE 2.5 MG TABLET"}
+{"truth": "RXCUI:6691", "truth_name": "medroxyprogesterone", "kind": "brand", "text": "PROVERA 2.5 MG"}
+{"truth": "RXCUI:6719", "truth_name": "memantine", "kind": "clean", "text": "MEMANTINE HYDROCHLORIDE 5 MG TABLET"}
+{"truth": "RXCUI:6719", "truth_name": "memantine", "kind": "ocr", "text": "MFMANT1NE HYDROCHLORIDE 5 MG TABLET"}
+{"truth": "RXCUI:6719", "truth_name": "memantine", "kind": "brand", "text": "NAMENDA 5 MG"}
+{"truth": "RXCUI:52582", "truth_name": "mesalamine", "kind": "clean", "text": "MESALAMINE 250 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:52582", "truth_name": "mesalamine", "kind": "ocr", "text": "RNFSALAMINE 250 MG EXTENDED RELEASE CAPSULE"}
+{"truth": "RXCUI:52582", "truth_name": "mesalamine", "kind": "brand", "text": "APRISO 250 MG"}
+{"truth": "RXCUI:6809", "truth_name": "metformin", "kind": "clean", "text": "METFORMIN HYDROCHLORIDE 500 MG TABLET"}
+{"truth": "RXCUI:6809", "truth_name": "metformin", "kind": "ocr", "text": "RNTFORMIN HYDROCHLORIDE 500 MG TABLET"}
+{"truth": "RXCUI:6809", "truth_name": "metformin", "kind": "brand", "text": "GLUCOPHAGE 500 MG"}
+{"truth": "RXCUI:6851", "truth_name": "methotrexate", "kind": "clean", "text": "METHOTREXATE 2.5 MG TABLET"}
+{"truth": "RXCUI:6851", "truth_name": "methotrexate", "kind": "ocr", "text": "MFTHOTREXATF 2.5 MG TABLET"}
+{"truth": "RXCUI:6851", "truth_name": "methotrexate", "kind": "brand", "text": "TREXALL 2.5 MG"}
+{"truth": "RXCUI:6902", "truth_name": "methylprednisolone", "kind": "clean", "text": "METHYLPREDNISOLONE 2 MG TABLET"}
+{"truth": "RXCUI:6902", "truth_name": "methylprednisolone", "kind": "ocr", "text": "METHYLPREDN1SOLONF 2 MG TABLET"}
+{"truth": "RXCUI:6902", "truth_name": "methylprednisolone", "kind": "brand", "text": "MEDROL 2 MG"}
+{"truth": "RXCUI:6980", "truth_name": "minocycline", "kind": "clean", "text": "MINOCYCLINE 50 MG CAPSULE"}
+{"truth": "RXCUI:6980", "truth_name": "minocycline", "kind": "ocr", "text": "RN1NOCYCLINE 50 MG CAPSULE"}
+{"truth": "RXCUI:6980", "truth_name": "minocycline", "kind": "brand", "text": "MINOLIRA 50 MG"}
+{"truth": "RXCUI:88249", "truth_name": "montelukast", "kind": "clean", "text": "MONTELUKAST 4 MG TABLET"}
+{"truth": "RXCUI:88249", "truth_name": "montelukast", "kind": "ocr", "text": "M0NTELUKST 4 MG TABLET"}
+{"truth": "RXCUI:88249", "truth_name": "montelukast", "kind": "brand", "text": "SINGULAIR 4 MG"}
+{"truth": "RXCUI:139462", "truth_name": "moxifloxacin", "kind": "clean", "text": "MOXIFLOXACIN 400 MG TABLET"}
+{"truth": "RXCUI:139462", "truth_name": "moxifloxacin", "kind": "ocr", "text": "RNOXIFL0XACIN 400 MG TABLET"}
+{"truth": "RXCUI:139462", "truth_name": "moxifloxacin", "kind": "brand", "text": "AVELOX 400 MG"}
+{"truth": "RXCUI:31555", "truth_name": "nebivolol", "kind": "clean", "text": "NEBIVOLOL 2.5 MG TABLET"}
+{"truth": "RXCUI:31555", "truth_name": "nebivolol", "kind": "ocr", "text": "NE8IVO1OL 2.5 MG TABLET"}
+{"truth": "RXCUI:31555", "truth_name": "nebivolol", "kind": "brand", "text": "BYSTOLIC 2.5 MG"}
+{"truth": "RXCUI:7417", "truth_name": "nifedipine", "kind": "clean", "text": "NIFEDIPINE 5 MG CAPSULE"}
+{"truth": "RXCUI:7417", "truth_name": "nifedipine", "kind": "ocr", "text": "N1EDIPINE 5 MG CAPSULE"}
+{"truth": "RXCUI:7417", "truth_name": "nifedipine", "kind": "brand", "text": "AFEDITAB CR 5 MG"}
+{"truth": "RXCUI:7514", "truth_name": "norethindrone", "kind": "clean", "text": "NORETHINDRONE 0.35 MG TABLET"}
+{"truth": "RXCUI:7514", "truth_name": "norethindrone", "kind": "ocr", "text": "NORETHINDR0NF 0.35 MG TABLET"}
+{"truth": "RXCUI:7514", "truth_name": "norethindrone", "kind": "brand", "text": "GALLIFREY 0.35 MG"}
+{"truth": "RXCUI:7804", "truth_name": "oxycodone", "kind": "clean", "text": "ABUSE-DETERRENT OXYCODONE HYDROCHLORIDE 5 MG TABLET"}
+{"truth": "RXCUI:7804", "truth_name": "oxycodone", "kind": "ocr", "text": "ABUSE-DETERRENT OXC0DONE HYDROCHLORIDE 5 MG TABLET"}
+{"truth": "RXCUI:7804", "truth_name": "oxycodone", "kind": "brand", "text": "XTAMPZA 5 MG"}
+{"truth": "RXCUI:32937", "truth_name": "paroxetine", "kind": "clean", "text": "PAROXETINE MESYLATE 7.5 MG CAPSULE"}
+{"truth": "RXCUI:32937", "truth_name": "paroxetine", "kind": "ocr", "text": "PAR0XETINF MESYLATE 7.5 MG CAPSULE"}
+{"truth": "RXCUI:32937", "truth_name": "paroxetine", "kind": "brand", "text": "PAXIL 7.5 MG"}
+{"truth": "RXCUI:8183", "truth_name": "phenytoin", "kind": "clean", "text": "PHENYTOIN SODIUM 25 MG CAPSULE"}
+{"truth": "RXCUI:8183", "truth_name": "phenytoin", "kind": "ocr", "text": "PHFNYTO1N SODIUM 25 MG CAPSULE"}
+{"truth": "RXCUI:8183", "truth_name": "phenytoin", "kind": "brand", "text": "DILANTIN 25 MG"}
+{"truth": "RXCUI:8308", "truth_name": "phytonadione", "kind": "clean", "text": "VITAMIN K1 1 MG CAPSULE"}
+{"truth": "RXCUI:8308", "truth_name": "phytonadione", "kind": "ocr", "text": "V1AMIN K1 1 MG CAPSULE"}
+{"truth": "RXCUI:8308", "truth_name": "phytonadione", "kind": "brand", "text": "MEPHYTON 1 MG"}
+{"truth": "RXCUI:8591", "truth_name": "potassium chloride", "kind": "clean", "text": "POTASSIUM CHLORIDE 1.33 MEQ TABLET"}
+{"truth": "RXCUI:8591", "truth_name": "potassium chloride", "kind": "ocr", "text": "POTASSIUM CHLOR1DF 1.33 MEQ TABLET"}
+{"truth": "RXCUI:613391", "truth_name": "prasugrel", "kind": "clean", "text": "PRASUGREL 5 MG TABLET"}
+{"truth": "RXCUI:613391", "truth_name": "prasugrel", "kind": "ocr", "text": "PRASUGRF1 5 MG TABLET"}
+{"truth": "RXCUI:613391", "truth_name": "prasugrel", "kind": "brand", "text": "EFFIENT 5 MG"}
+{"truth": "RXCUI:8794", "truth_name": "propylthiouracil", "kind": "clean", "text": "PROPYLTHIOURACIL 50 MG TABLET"}
+{"truth": "RXCUI:8794", "truth_name": "propylthiouracil", "kind": "ocr", "text": "PROPYLTHI0URACI1 50 MG TABLET"}
+{"truth": "RXCUI:8896", "truth_name": "pseudoephedrine", "kind": "clean", "text": "PSEUDOEPHEDRINE HYDROCHLORIDE 30 MG CAPSULE"}
+{"truth": "RXCUI:8896", "truth_name": "pseudoephedrine", "kind": "ocr", "text": "PSEUDOEPHED1NE HYDROCHLORIDE 30 MG CAPSULE"}
+{"truth": "RXCUI:8896", "truth_name": "pseudoephedrine", "kind": "brand", "text": "CONTAC COLD 30 MG"}
+{"truth": "RXCUI:8987", "truth_name": "pyrazinamide", "kind": "clean", "text": "PYRAZINAMIDE 500 MG TABLET"}
+{"truth": "RXCUI:8987", "truth_name": "pyrazinamide", "kind": "ocr", "text": "PYRAZ1NARNIDE 500 MG TABLET"}
+{"truth": "RXCUI:684879", "truth_name": "pyridoxine", "kind": "clean", "text": "PYRIDOXINE HYDROCHLORIDE 25 MG TABLET"}
+{"truth": "RXCUI:684879", "truth_name": "pyridoxine", "kind": "ocr", "text": "PYR1D0XINE HYDROCHLORIDE 25 MG TABLET"}
+{"truth": "RXCUI:11246", "truth_name": "retinol", "kind": "clean", "text": "VITAMIN A 10000 UNT CAPSULE"}
+{"truth": "RXCUI:11246", "truth_name": "retinol", "kind": "ocr", "text": "V1TAM1N A 10000 UNT CAPSULE"}
+{"truth": "RXCUI:9346", "truth_name": "riboflavin", "kind": "clean", "text": "RIBOFLAVIN 5 MG TABLET"}
+{"truth": "RXCUI:9346", "truth_name": "riboflavin", "kind": "ocr", "text": "RIB0F1AVIN 5 MG TABLET"}
+{"truth": "RXCUI:73056", "truth_name": "risedronate", "kind": "clean", "text": "RISEDRONATE SODIUM 5 MG TABLET"}
+{"truth": "RXCUI:73056", "truth_name": "risedronate", "kind": "ocr", "text": "RISFDRONTE SODIUM 5 MG TABLET"}
+{"truth": "RXCUI:73056", "truth_name": "risedronate", "kind": "brand", "text": "ACTONEL 5 MG"}
+{"truth": "RXCUI:1114195", "truth_name": "rivaroxaban", "kind": "clean", "text": "RIVAROXABAN 2.5 MG TABLET"}
+{"truth": "RXCUI:1114195", "truth_name": "rivaroxaban", "kind": "ocr", "text": "RIVAR0XA8AN 2.5 MG TABLET"}
+{"truth": "RXCUI:1114195", "truth_name": "rivaroxaban", "kind": "brand", "text": "XARELTO 2.5 MG"}
+{"truth": "RXCUI:301542", "truth_name": "rosuvastatin", "kind": "clean", "text": "ROSUVASTATIN 5 MG CAPSULE"}
+{"truth": "RXCUI:301542", "truth_name": "rosuvastatin", "kind": "ocr", "text": "RSUVASTATIN 5 MG CAPSULE"}
+{"truth": "RXCUI:301542", "truth_name": "rosuvastatin", "kind": "brand", "text": "EZALLOR 5 MG"}
+{"truth": "RXCUI:857974", "truth_name": "saxagliptin", "kind": "clean", "text": "SAXAGLIPTIN 2.5 MG TABLET"}
+{"truth": "RXCUI:857974", "truth_name": "saxagliptin", "kind": "ocr", "text": "SAXGL1PTIN 2.5 MG TABLET"}
+{"truth": "RXCUI:857974", "truth_name": "saxagliptin", "kind": "brand", "text": "ONGLYZA 2.5 MG"}
+{"truth": "RXCUI:36437", "truth_name": "sertraline", "kind": "clean", "text": "SERTRALINE 25 MG TABLET"}
+{"truth": "RXCUI:36437", "truth_name": "sertraline", "kind": "ocr", "text": "SRTRAL1NE 25 MG TABLET"}
+{"truth": "RXCUI:36437", "truth_name": "sertraline", "kind": "brand", "text": "ZOLOFT 25 MG"}
+{"truth": "RXCUI:9997", "truth_name": "spironolactone", "kind": "clean", "text": "SPIRONOLACTONE 25 MG TABLET"}
+{"truth": "RXCUI:9997", "truth_name": "spironolactone", "kind": "ocr", "text": "SPIRON0LACONE 25 MG TABLET"}
+{"truth": "RXCUI:9997", "truth_name": "spironolactone", "kind": "brand", "text": "ALDACTONE 25 MG"}
+{"truth": "RXCUI:37418", "truth_name": "sumatriptan", "kind": "clean", "text": "SUMATRIPTAN 25 MG TABLET"}
+{"truth": "RXCUI:37418", "truth_name": "sumatriptan", "kind": "ocr", "text": "5UMATR1PTAN 25 MG TABLET"}
+{"truth": "RXCUI:37418", "truth_name": "sumatriptan", "kind": "brand", "text": "IMITREX 25 MG"}
+{"truth": "RXCUI:358263", "truth_name": "tadalafil", "kind": "clean", "text": "TADALAFIL 2.5 MG TABLET"}
+{"truth": "RXCUI:358263", "truth_name": "tadalafil", "kind": "ocr", "text": "TDALAF1L 2.5 MG TABLET"}
+{"truth": "RXCUI:358263", "truth_name": "tadalafil", "kind": "brand", "text": "ADCIRCA 2.5 MG"}
+{"truth": "RXCUI:10324", "truth_name": "tamoxifen", "kind": "clean", "text": "TAMOXIFEN 10 MG TABLET"}
+{"truth": "RXCUI:10324", "truth_name": "tamoxifen", "kind": "ocr", "text": "TAM0XIFFN 10 MG TABLET"}
+{"truth": "RXCUI:119565", "truth_name": "tolterodine", "kind": "clean", "text": "TOLTERODINE TARTRATE 1 MG TABLET"}
+{"truth": "RXCUI:119565", "truth_name": "tolterodine", "kind": "ocr", "text": "TOLTFRODINF TARTRATE 1 MG TABLET"}
+{"truth": "RXCUI:119565", "truth_name": "tolterodine", "kind": "brand", "text": "DETROL 1 MG"}
+{"truth": "RXCUI:38404", "truth_name": "topiramate", "kind": "clean", "text": "TOPIRAMATE 15 MG CAPSULE"}
+{"truth": "RXCUI:38404", "truth_name": "topiramate", "kind": "ocr", "text": "T0P1RAMATE 15 MG CAPSULE"}
+{"truth": "RXCUI:38404", "truth_name": "topiramate", "kind": "brand", "text": "TROKENDI 15 MG"}
+{"truth": "RXCUI:10689", "truth_name": "tramadol", "kind": "clean", "text": "TRAMADOL HYDROCHLORIDE 25 MG TABLET"}
+{"truth": "RXCUI:10689", "truth_name": "tramadol", "kind": "ocr", "text": "TRAMAD01 HYDROCHLORIDE 25 MG TABLET"}
+{"truth": "RXCUI:10689", "truth_name": "tramadol", "kind": "brand", "text": "CONZIP 25 MG"}
+{"truth": "RXCUI:10691", "truth_name": "tranexamic acid", "kind": "clean", "text": "TRANEXAMIC ACID 500 MG TABLET"}
+{"truth": "RXCUI:10691", "truth_name": "tranexamic acid", "kind": "ocr", "text": "TRANEAMC ACID 500 MG TABLET"}
+{"truth": "RXCUI:10691", "truth_name": "tranexamic acid", "kind": "brand", "text": "LYSTEDA 500 MG"}
+{"truth": "RXCUI:858747", "truth_name": "ursodiol", "kind": "clean", "text": "URSODIOL 300 MG CAPSULE"}
+{"truth": "RXCUI:858747", "truth_name": "ursodiol", "kind": "ocr", "text": "URSODI01 300 MG CAPSULE"}
+{"truth": "RXCUI:69749", "truth_name": "valsartan", "kind": "clean", "text": "VALSARTAN 40 MG CAPSULE"}
+{"truth": "RXCUI:69749", "truth_name": "valsartan", "kind": "ocr", "text": "VA15ARTAN 40 MG CAPSULE"}
+{"truth": "RXCUI:69749", "truth_name": "valsartan", "kind": "brand", "text": "DIOVAN 40 MG"}
+{"truth": "RXCUI:11124", "truth_name": "vancomycin", "kind": "clean", "text": "VANCOMYCIN 125 MG CAPSULE"}
+{"truth": "RXCUI:11124", "truth_name": "vancomycin", "kind": "ocr", "text": "VANCORNYC1N 125 MG CAPSULE"}
+{"truth": "RXCUI:11124", "truth_name": "vancomycin", "kind": "brand", "text": "VANCOCIN 125 MG"}
+{"truth": "RXCUI:11170", "truth_name": "verapamil", "kind": "clean", "text": "VERAPAMIL HYDROCHLORIDE 40 MG TABLET"}
+{"truth": "RXCUI:11170", "truth_name": "verapamil", "kind": "ocr", "text": "VFRAPAMI1 HYDROCHLORIDE 40 MG TABLET"}
+{"truth": "RXCUI:11170", "truth_name": "verapamil", "kind": "brand", "text": "VERELAN 40 MG"}
+{"truth": "RXCUI:121243", "truth_name": "voriconazole", "kind": "clean", "text": "VORICONAZOLE 50 MG TABLET"}
+{"truth": "RXCUI:121243", "truth_name": "voriconazole", "kind": "ocr", "text": "V0RIC0NAZOLE 50 MG TABLET"}
+{"truth": "RXCUI:121243", "truth_name": "voriconazole", "kind": "brand", "text": "VFEND 50 MG"}
+{"truth": "RXCUI:11289", "truth_name": "warfarin", "kind": "clean", "text": "WARFARIN SODIUM 0.5 MG TABLET"}
+{"truth": "RXCUI:11289", "truth_name": "warfarin", "kind": "ocr", "text": "WARFA1N SODIUM 0.5 MG TABLET"}
+{"truth": "RXCUI:11289", "truth_name": "warfarin", "kind": "brand", "text": "COUMADIN 0.5 MG"}
