@@ -12,7 +12,7 @@ const TITLES: Record<string, string> = {
 
 export function Mark({ sizePx = 22, accent = true }: { sizePx?: number; accent?: boolean }) {
   return (
-    <Svg width={sizePx} height={sizePx} viewBox="0 0 24 24" fill="none" accessibilityElementsHidden>
+    <Svg width={sizePx} height={sizePx} viewBox="0 0 24 24" fill="none" aria-hidden>
       <Path d="M12 2 4 7v10l8 5 8-5V7l-8-5Z" stroke={color.ink} strokeWidth={1.7} strokeLinejoin="round" />
       {accent && <Path d="m8 10 4 2.5L16 10" stroke={color.limeDeep} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />}
     </Svg>

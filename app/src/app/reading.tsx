@@ -16,7 +16,7 @@ export default function Reading() {
     <Screen>
       <T v="h">{busy ? (assessing ? "Checking for interactions…" : "Reading the labels…") : `Read ${total} label${total === 1 ? "" : "s"}`}</T>
       <T v="muted" style={{ marginBottom: space.s4 }}>
-        {assessing ? "Codes only, to the reasoning service" : `Nemotron 3 Nano Omni · one call for every photo${mode === "demo" ? " · demo" : ""}`}
+        {assessing ? "Codes only, to the reasoning service" : `MiniCPM-V · one call for every photo${mode === "demo" ? " · demo" : ""}`}
       </T>
       {busy && <ActivityIndicator color={color.ink} style={{ marginVertical: space.s5 }} />}
 

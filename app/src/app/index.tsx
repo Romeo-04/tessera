@@ -26,7 +26,7 @@ export default function Capture() {
 
   return (
     <Screen>
-      <View style={s.vf} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View style={s.vf} aria-hidden>
         <View style={s.bottles}>
           {HEIGHTS.map((h, i) => (
             <View key={i} style={{ justifyContent: "flex-end" }}>

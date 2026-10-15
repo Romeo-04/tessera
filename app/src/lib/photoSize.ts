@@ -1,4 +1,4 @@
-/** Long edge sent to the server. Enough for Omni to read a label; far less than a phone's 12 MP. */
+/** Long edge sent to the server. Enough for the vision model to read a label; far less than a phone's 12 MP. */
 export const MAX_EDGE = 1600;
 
 /**
