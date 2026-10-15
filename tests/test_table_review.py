@@ -138,3 +138,24 @@ def test_a_verdict_that_matches_no_claim_in_the_table_is_reported():
     bad = unmatched([{"span_id": "s", "subject_rxcui": "RXCUI:9", "claim": "Beta?blockers"},
                      {"span_id": "s", "subject_rxcui": "RXCUI:9", "claim": "nsaids"}], claims)
     assert [b["claim"] for b in bad] == ["Beta?blockers"]
+
+
+# ---- re-review findings --------------------------------------------------------
+
+def test_a_verdict_already_applied_is_not_reported_as_unmatched():
+    """After a rebuild the dropped claim is gone from the table; re-running
+    apply on the same sheet must not stop on the reviewer's own drop."""
+    already = {claim_key("s", "RXCUI:9", "NSAIDs")}
+    bad = unmatched([{"span_id": "s", "subject_rxcui": "RXCUI:9", "claim": "NSAIDs"}], set(), already)
+    assert bad == []
+
+
+def test_the_table_wide_estimate_waits_until_every_group_is_fully_reviewed():
+    sizes = {"named": 1608, "class": 663, "must review": 262}
+    partial = table_precision({"named": (40, 50), "class": (25, 50), "must review": (10, 10)}, sizes,
+                              expected={"named": 50, "class": 50, "must review": 262})
+    assert partial["estimate"] is None
+    done = table_precision({"named": (40, 50), "class": (25, 50), "must review": (250, 262)}, sizes,
+                           expected={"named": 50, "class": 50, "must review": 262})
+    assert done["estimate"] is not None
+    assert done["lo"] < done["estimate"] < done["hi"]

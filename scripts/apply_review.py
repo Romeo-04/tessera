@@ -95,9 +95,18 @@ def group_counts(rows: list[dict], grade_too: bool) -> dict[str, tuple[int, int]
     return {g: (k, n) for g, (k, n) in out.items()}
 
 
-def table_precision(groups: dict[str, tuple[int, int]], sizes: dict[str, int]) -> dict:
+def table_precision(groups: dict[str, tuple[int, int]], sizes: dict[str, int],
+                    expected: dict[str, int] | None = None) -> dict:
     """Per-group precision with 95% Wilson intervals, and the table-wide
-    estimate weighted by each group's share of the table's claims."""
+    estimate weighted by each group's share of the table's claims.
+
+    With `expected` (how many claims each group has on the sheet), the
+    table-wide estimate is withheld until every group is reviewed in full: a
+    half-done must-review group is neither complete nor random (the sheet is
+    sorted), and a missing group would quietly reweight the rest. Its interval
+    is the stratified normal approximation, with the finite-population
+    correction, so a group reviewed in full adds no uncertainty.
+    """
     from evals.metrics import wilson_interval
 
     per = {}
@@ -106,20 +115,33 @@ def table_precision(groups: dict[str, tuple[int, int]], sizes: dict[str, int]) -
         per[g] = {"k": k, "n": n, "p": k / n if n else None, "lo": lo, "hi": hi}
     measured = {g: v for g, v in per.items() if v["p"] is not None and sizes.get(g)}
     total = sum(sizes[g] for g in measured)
-    estimate = sum(sizes[g] * v["p"] for g, v in measured.items()) / total if total else None
-    return {"groups": per, "estimate": estimate, "covers": total, "of": sum(sizes.values())}
+    complete = expected is None or all(groups.get(g, (0, 0))[1] >= n for g, n in expected.items())
+    estimate = lo = hi = None
+    if total and complete:
+        estimate = sum(sizes[g] * v["p"] for g, v in measured.items()) / total
+        var = sum((sizes[g] / total) ** 2 * v["p"] * (1 - v["p"]) / v["n"]
+                  * max(0.0, 1 - v["n"] / sizes[g]) for g, v in measured.items())
+        lo, hi = max(0.0, estimate - 1.96 * var ** 0.5), min(1.0, estimate + 1.96 * var ** 0.5)
+    return {"groups": per, "estimate": estimate, "lo": lo, "hi": hi, "complete": complete,
+            "covers": total, "of": sum(sizes.values())}
 
 
-def unmatched(rejections: list[dict], claim_keys: set) -> list[dict]:
+def unmatched(rejections: list[dict], claim_keys: set, already: set = frozenset()) -> list[dict]:
     """Verdicts that would match nothing on rebuild - e.g. a phrase a
-    spreadsheet re-encoded. These stop the run; a warning would be missed."""
+    spreadsheet re-encoded. These stop the run; a warning would be missed.
+    A verdict already in the rejection file is fine: after a rebuild its claim
+    is gone from the table because it was applied."""
     from scripts.build_interactions import claim_key
     return [r for r in rejections
-            if claim_key(r["span_id"], r["subject_rxcui"], r["claim"]) not in claim_keys]
+            if (k := claim_key(r["span_id"], r["subject_rxcui"], r["claim"])) not in claim_keys
+            and k not in already]
 
 
 def _block(title: str, rows: list[dict], sizes: dict[str, int], grade_too: bool) -> list[str]:
-    t = table_precision(group_counts(rows, grade_too), sizes)
+    expected: dict[str, int] = {}
+    for r in rows:
+        expected[_group(r)] = expected.get(_group(r), 0) + 1
+    t = table_precision(group_counts(rows, grade_too), sizes, expected)
     out = [f"## {title}", ""]
     for g in GROUPS:
         v = t["groups"].get(g)
@@ -129,9 +151,10 @@ def _block(title: str, rows: list[dict], sizes: dict[str, int], grade_too: bool)
         out.append(f"- {g} ({sizes.get(g, '?')} claims in the table): **{v['k']}/{v['n']} ="
                    f" {v['p']:.1%}** (95% CI {v['lo']:.1%} to {v['hi']:.1%})")
     if t["estimate"] is not None:
-        out.append(f"- **Table-wide estimate: {t['estimate']:.1%}**, each group weighted by its"
-                   f" share of the table's claims ({t['covers']} of {t['of']} claims are in a"
-                   " reviewed group)")
+        out.append(f"- **Table-wide estimate: {t['estimate']:.1%}** (95% CI {t['lo']:.1%} to"
+                   f" {t['hi']:.1%}), each group weighted by its share of the table's claims")
+    else:
+        out.append("- Table-wide estimate: withheld until every group on the sheet is reviewed")
     return out + [""]
 
 
@@ -152,14 +175,24 @@ def main() -> int:
     table = list(csv.DictReader(TABLE.open(encoding="utf-8")))
     keys = {claim_key(r["span_id"], r["subject_rxcui"], r["via_class"] or r["object_rxcui"])
             for r in table}
-    bad = unmatched(new, keys)
+    existing = list(csv.DictReader(REJECTED.open(encoding="utf-8"))) if REJECTED.exists() else []
+    already = {claim_key(r["span_id"], r["subject_rxcui"], r["claim"]) for r in existing}
+    bad = unmatched(new, keys, already)
     if bad:
         for r in bad:
             print(f"  no such claim in the table: {r['subject_rxcui']} / {r['claim']!r} in {r['span_id']}")
         sys.exit(f"stopped: {len(bad)} verdict(s) match no claim, so they would silently do nothing."
                  " Was the sheet edited outside the verdict columns, or the table rebuilt?")
 
-    existing = list(csv.DictReader(REJECTED.open(encoding="utf-8"))) if REJECTED.exists() else []
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.exists() else {}
+    sizes = manifest.get("sizes", {})
+    drawn = {tuple(x) for x in manifest.get("sample", [])}
+    on_sheet = {(r["span_id"], r["subject_rxcui"], r["claim"]) for r in rows if r["section"] == "sample"}
+    if drawn != on_sheet:
+        sys.exit(f"stopped: the sheet's sample does not match {MANIFEST.name}, so the precision"
+                 " weights would be wrong. Regenerate both with scripts/review_sheet.py.")
+
+    # Nothing is written until every check above has passed.
     merged = {claim_key(r["span_id"], r["subject_rxcui"], r["claim"]): {f: r.get(f, "") for f in FIELDS}
               for r in existing}
     merged.update({claim_key(r["span_id"], r["subject_rxcui"], r["claim"]): r for r in new})
@@ -168,7 +201,6 @@ def main() -> int:
         w.writeheader()
         w.writerows(merged.values())
 
-    sizes = json.loads(MANIFEST.read_text(encoding="utf-8"))["sizes"] if MANIFEST.exists() else {}
     RESULT.write_text("\n".join([
         "# Interaction table: reviewed precision",
         "",
