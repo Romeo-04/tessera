@@ -41,13 +41,13 @@ export default function Risks() {
       <View style={{ marginTop: space.s3 }} accessibilityRole="list">
         {result.risks.map((r, i) => (
           <Pressable key={r.span_id + i} accessibilityRole="button"
-                     accessibilityLabel={`${r.severity}: ${pairLabel(r)}. ${r.mechanism} Opens the source.`}
+                     accessibilityLabel={`${r.severity}: ${pairLabel(r)}. ${r.mechanism} ${classLine(r) ?? ""} Opens the source.`}
                      onPress={() => router.push({ pathname: "/citation/[index]", params: { index: String(i) } })}
                      style={({ pressed }) => [s.risk, pressed && s.pressed]}>
             <Sev severity={r.severity} />
             <Text style={s.pair}>{pairLabel(r)}</Text>
             <T v="mech">{r.mechanism}</T>
-            {classLine(r) && <Text style={s.via}>{classLine(r)}</Text>}
+            {r.via_class ? <Text style={s.via}>{classLine(r)}</Text> : null}
             <Text style={s.cite}>↗ FDA label · read the source</Text>
           </Pressable>
         ))}
