@@ -9,11 +9,19 @@ import sys
 import time
 from pathlib import Path
 
-from tessera.sources.rxnorm import approximate_match
+from tessera.sources.rxnorm import approximate_match, ingredients_of, match_ingredients
 
 ROOT = Path(__file__).resolve().parents[1]
 SEED = ROOT / "data" / "formulary_seed.csv"
 OUT = ROOT / "data" / "formulary.csv"
+
+
+def resolve(name: str, match_fn=approximate_match, ingredient_fn=ingredients_of):
+    """A seed name -> its RxNorm ingredient (or None). The formulary is keyed
+    by ingredient; taking approximateTerm's top match as-is once stored a
+    product ("ursodiol 300 MG Oral Capsule") for ursodiol."""
+    cands = match_ingredients(name, max_entries=5, match_fn=match_fn, ingredient_fn=ingredient_fn)
+    return cands[0] if cands else None
 
 
 def main() -> int:
@@ -27,17 +35,16 @@ def main() -> int:
         if not name:
             continue
         try:
-            cands = approximate_match(name, max_entries=5)
+            best = resolve(name)
         except Exception as exc:  # a public API; keep going on a blip
             print(f"[{i}/{len(seeds)}] {name}: ERROR {exc}")
             unresolved.append(name)
             continue
 
-        if not cands:
+        if best is None:
             unresolved.append(name)
             print(f"[{i}/{len(seeds)}] {name}: NONE")
         else:
-            best = cands[0]
             if best.rxcui in seen_rxcui:
                 # Two seed names resolving to one concept is a seed-list
                 # duplicate, not a data problem. Keep the first.

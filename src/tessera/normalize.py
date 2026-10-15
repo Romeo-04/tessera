@@ -58,9 +58,14 @@ def normalize_drugs(
             continue
 
         best = candidates[0]
+        tied = len(candidates) > 1 and (best.score - candidates[1].score) < AMBIGUITY_MARGIN
 
         # Out of scope: we carry no label evidence for what this actually is.
-        if best.rxcui not in formulary_rxcuis:
+        # Only when the best match is clear. In a tie the top is not an
+        # identification of anything, and telling the user "this is
+        # lanthanum carbonate, outside our list" when it is as likely calcium
+        # carbonate is naming the wrong drug; the tie is asked below.
+        if best.rxcui not in formulary_rxcuis and not tied:
             out.append(NormalizedDrug(
                 record=rec, rxcui=None, display_name=best.display_name,
                 confidence=0.0, candidates=candidates[:3], in_formulary=False,
