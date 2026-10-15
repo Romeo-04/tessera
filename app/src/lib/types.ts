@@ -14,6 +14,8 @@ export interface Candidate {
   rxcui: string;
   display_name: string;
   score: number;
+  /** False when Tessera holds no label evidence for it: picking it means it goes unchecked. */
+  in_formulary?: boolean;
 }
 
 export interface RankedRisk {

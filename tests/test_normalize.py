@@ -145,3 +145,38 @@ def test_every_input_record_produces_exactly_one_output_row():
         FORMULARY, fake_match([]),
     )
     assert len(out) == 3
+
+
+def test_a_tie_with_an_out_of_scope_drug_on_top_is_asked_not_declared_out_of_scope():
+    """Measured (synthetic benchmark): "CALC1URN CARBONATE 250 MG TABLET" tied
+    lanthanum, lithium and calcium carbonate at 1.0. Lanthanum sorted first, so
+    the user was told it was lanthanum carbonate, outside the list. A tie is not
+    an identification of anything; the user is asked."""
+    out = normalize_drugs(
+        [DrugRecord(raw_name="CALC1URN CARBONATE 250 MG TABLET")], FORMULARY,
+        fake_match([("RXCUI:234416", "lanthanum carbonate", 1.0),
+                    ("RXCUI:860975", "calcium carbonate", 1.0)]),
+    )
+    assert out[0].rxcui is None
+    assert out[0].in_formulary is True          # not "outside our list"
+    assert [c.display_name for c in out[0].candidates[:2]] == ["lanthanum carbonate", "calcium carbonate"]
+
+
+def test_a_tie_between_drugs_all_outside_the_list_is_out_of_scope_not_a_question():
+    """Review: asking the user to choose between two drugs neither of which can
+    be checked helps no one."""
+    out = normalize_drugs(
+        [DrugRecord(raw_name="X")], FORMULARY,
+        fake_match([("RXCUI:1", "lanthanum carbonate", 1.0), ("RXCUI:2", "lithium carbonate", 0.98),
+                    ("RXCUI:860975", "calcium carbonate", 0.5)]),
+    )
+    assert out[0].rxcui is None and out[0].in_formulary is False
+
+
+def test_every_option_in_a_question_says_whether_tessera_can_check_it():
+    out = normalize_drugs(
+        [DrugRecord(raw_name="CALC1URN CARBONATE")], FORMULARY,
+        fake_match([("RXCUI:234416", "lanthanum carbonate", 1.0), ("RXCUI:860975", "calcium carbonate", 1.0)]),
+    )
+    assert [(c.display_name, c.in_formulary) for c in out[0].candidates[:2]] == [
+        ("lanthanum carbonate", False), ("calcium carbonate", True)]

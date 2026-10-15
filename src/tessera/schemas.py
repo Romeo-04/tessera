@@ -31,6 +31,9 @@ class Candidate(BaseModel):
     # The source's own unbounded score, carried because `score` is 1.0 for the
     # top candidate by construction and so cannot say whether ANY match is good.
     raw_score: float | None = None
+    # Set by normalize: whether Tessera holds evidence for this drug, so a
+    # confirmation question can flag the options it could not check.
+    in_formulary: bool = True
 
 
 class NormalizedDrug(BaseModel):

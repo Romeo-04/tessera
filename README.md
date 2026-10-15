@@ -243,7 +243,7 @@ npx tsc --noEmit && npx expo lint
 Building the evidence corpus (the first two need no API key):
 
 ```bash
-python scripts/build_formulary.py      # RxNorm  -> data/formulary.csv   (committed)
+python scripts/build_formulary.py      # RxNorm  -> data/formulary.csv   (committed; see note below)
 python scripts/fetch_spl.py            # DailyMed -> data/spl/           (gitignored)
 python scripts/build_class_members.py  # RxClass -> data/class_members.json (committed, no key)
 python scripts/build_interactions.py   # label text -> data/interactions.csv  (model-extracted: REVIEW IT)
@@ -281,6 +281,12 @@ per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
    `data/spl/sections.jsonl`) onto the volume with `fly ssh sftp shell`, and
    `fly machine restart` so the API loads it. `/health` reports `"live": true` once it has.
 5. Rebuild the app with `EXPO_PUBLIC_API_URL=https://<app>.fly.dev` and redeploy the web demo.
+
+`data/formulary.csv` is committed and normally never rebuilt. Rerunning `build_formulary.py`
+re-resolves all 358 ingredients against live RxNorm, whose answers drift between releases, and
+every label section and interaction row is keyed by those codes. If you do rerun it, diff
+`formulary.csv` first and rebuild the corpus (`fetch_spl.py`, then `build_interactions.py`) for
+any code that changed.
 
 `build_interactions.py` prints a reminder to hand-check its output. That is not ceremony:
 everything this product asserts flows from that table.
