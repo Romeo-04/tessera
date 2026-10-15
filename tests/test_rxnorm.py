@@ -201,3 +201,29 @@ def test_a_failed_ingredient_lookup_keeps_the_candidate_rather_than_dropping_it(
         raise httpx.ConnectError("down")
     match = lambda term, max_entries=20: [Candidate(rxcui="RXCUI:316256", display_name="m", score=1.0)]  # noqa: E731
     assert [c.rxcui for c in match_ingredients("m", match_fn=match, ingredient_fn=boom)] == ["RXCUI:316256"]
+
+
+def test_a_nameless_concept_with_no_ingredient_is_not_a_candidate():
+    """Seen live: for "24 HR METFORMIN HYDROCHLORIDE 500 MG EXTENDED RELEASE
+    TABLET", approximateTerm returned a nameless, not-current concept from a
+    proprietary vocabulary (RXCUI:1808202, no ingredient) tied with the real
+    product. It sorted first, kept its own code, and the bottle read as out of
+    scope."""
+    match, ing = _fake(
+        [Candidate(rxcui="RXCUI:1808202", display_name="", score=1.0, raw_score=16.0),
+         Candidate(rxcui="RXCUI:860975", display_name="24 HR metformin ...", score=1.0, raw_score=16.0)],
+        {"RXCUI:860975": (("RXCUI:6809", "metformin"),)},
+    )
+    out = match_ingredients("24 HR METFORMIN ...", match_fn=match, ingredient_fn=ing)
+    assert [c.rxcui for c in out] == ["RXCUI:6809"]
+
+
+def test_a_nameless_concept_that_maps_to_an_ingredient_is_kept():
+    """"WARF SOD": the fuzzy match's entries are often unnamed until the
+    ingredient lookup names them. Those must survive."""
+    match, ing = _fake(
+        [Candidate(rxcui="RXCUI:202421", display_name="", score=1.0, raw_score=9.0)],
+        {"RXCUI:202421": (("RXCUI:11289", "warfarin"),)},
+    )
+    out = match_ingredients("WARF SOD", match_fn=match, ingredient_fn=ing)
+    assert [(c.rxcui, c.display_name) for c in out] == [("RXCUI:11289", "warfarin")]

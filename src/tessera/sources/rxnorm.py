@@ -149,11 +149,11 @@ def match_ingredients(
     name a drug the patient does not take alone), and a concept whose
     ingredient lookup failed.
     """
-    def lookup(c: Candidate) -> tuple[tuple[str, str], ...]:
+    def lookup(c: Candidate) -> tuple[tuple[str, str], ...] | None:
         try:
             return ingredient_fn(c.rxcui)
         except httpx.HTTPError:
-            return ()
+            return None  # failed, which is not the same as "has no ingredient"
 
     top = match_fn(term, max_entries=max_entries)[:MAP_TOP]
     # One lookup per candidate, concurrently: sequential lookups made a
@@ -163,7 +163,13 @@ def match_ingredients(
 
     out: dict[str, Candidate] = {}
     for c, ings in zip(top, mapped):
-        if len(ings) == 1:
+        if ings == () and not c.display_name:
+            # Nothing names it and it has no ingredient: a proprietary
+            # vocabulary's placeholder, not a drug. Seen tying the real metformin
+            # ER product at the top. A named concept with no ingredient is kept,
+            # so the result abstains rather than promoting a runner-up.
+            continue
+        if ings and len(ings) == 1:
             code, name = ings[0]
             c = c.model_copy(update={"rxcui": code, "display_name": name or c.display_name})
         if c.rxcui not in out:
