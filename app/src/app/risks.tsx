@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
 import { Button, Note, Screen, Sev, T } from "../components/ui";
+import { classLine } from "../lib/names";
 import { pairLabel, statusCopy } from "../lib/status";
 import { sameList, useSaved } from "../session/SavedProvider";
 import { useSession } from "../session/SessionProvider";
@@ -40,12 +41,13 @@ export default function Risks() {
       <View style={{ marginTop: space.s3 }} accessibilityRole="list">
         {result.risks.map((r, i) => (
           <Pressable key={r.span_id + i} accessibilityRole="button"
-                     accessibilityLabel={`${r.severity}: ${pairLabel(r)}. ${r.mechanism} Opens the source.`}
+                     accessibilityLabel={`${r.severity}: ${pairLabel(r)}. ${r.mechanism} ${classLine(r) ?? ""} Opens the source.`}
                      onPress={() => router.push({ pathname: "/citation/[index]", params: { index: String(i) } })}
                      style={({ pressed }) => [s.risk, pressed && s.pressed]}>
             <Sev severity={r.severity} />
             <Text style={s.pair}>{pairLabel(r)}</Text>
             <T v="mech">{r.mechanism}</T>
+            {r.via_class ? <Text style={s.via}>{classLine(r)}</Text> : null}
             <Text style={s.cite}>↗ FDA label · read the source</Text>
           </Pressable>
         ))}
@@ -77,4 +79,5 @@ const s = StyleSheet.create({
   pressed: { borderColor: color.ink },
   pair: { fontFamily: font.display, fontSize: size.sm, color: color.ink },
   cite: { fontFamily: font.bodyMedium, fontSize: size.xs, color: color.muted, marginTop: 2 },
+  via: { fontFamily: font.body, fontSize: size.xs, color: color.ink3, fontStyle: "italic" },
 });

@@ -84,3 +84,11 @@ describe("an incomplete list stays incomplete", () => {
     expect(await loadList(kv)).toBeNull();
   });
 });
+
+describe("a list saved before names were tidied", () => {
+  it("loads with the same capitalised names a fresh check shows", async () => {
+    const kv = memory();
+    await saveList([d("lisinopril", "RXCUI:29046")], kv);
+    expect((await loadList(kv))?.drugs[0].display_name).toBe("Lisinopril");
+  });
+});

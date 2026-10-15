@@ -1,4 +1,5 @@
 import type { Drug } from "./types";
+import { drugName } from "./names";
 
 /**
  * The saved medication list. It lives on this device only - AsyncStorage on
@@ -60,7 +61,7 @@ export async function loadList(kv: KV): Promise<SavedList | null> {
   return {
     savedAt: p.savedAt,
     drugs: p.drugs.map((d) => ({ raw_name: d.raw_name, strength: d.strength ?? null, form: d.form ?? null,
-      rxcui: d.rxcui, display_name: d.display_name })),
+      rxcui: d.rxcui, display_name: drugName(d.display_name) })),
     incomplete: incomplete as string[],
   };
 }
