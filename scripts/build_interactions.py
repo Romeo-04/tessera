@@ -183,8 +183,14 @@ def assertions_from(
     return out
 
 
-def _claim_key(span_id: str, subject: str, claim: str) -> tuple[str, str, str]:
-    return span_id, subject, " ".join(claim.split()).casefold()
+_HYPHENS = re.compile(r"[\u00ad\u2010-\u2015\u2212]")
+
+
+def claim_key(span_id: str, subject: str, claim: str) -> tuple[str, str, str]:
+    """How a claim is identified everywhere: rebuild, review sheet, rejections.
+    Case, spacing and typographic hyphens are ignored, so a reviewer's tool
+    re-saving "Beta‑blockers" as "Beta-blockers" still matches."""
+    return span_id, subject, " ".join(_HYPHENS.sub("-", claim).split()).casefold()
 
 
 def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict],
@@ -199,11 +205,11 @@ def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict
     longer matches anything goes to `unused` instead of failing silently.
     Rejections live in a committed file so a rebuild cannot bring them back.
     """
-    gone = {_claim_key(r["span_id"], r["subject_rxcui"], r["claim"]): r for r in rejected}
+    gone = {claim_key(r["span_id"], r["subject_rxcui"], r["claim"]): r for r in rejected}
     hit = set()
     kept = []
     for a in assertions:
-        key = _claim_key(a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui)
+        key = claim_key(a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui)
         if key not in gone:
             kept.append(a)
             continue
