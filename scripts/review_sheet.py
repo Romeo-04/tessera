@@ -9,6 +9,7 @@ and sorted to the top:
   error: a drug inferred from a class the label mentions, e.g. "diuretics")
 - the row comes from a class warning ("via class"): check the class phrase
   covers this drug, and flag it harder if the phrase is not in the passage
+- the model gave the drug two grades in one passage ("grades disagree")
 - the grade is "contraindicated" (the strongest claim the product makes)
 - either drug is in the seeded demo (what judges will see)
 
@@ -26,6 +27,7 @@ TABLE = ROOT / "data" / "interactions.csv"
 FORMULARY = ROOT / "data" / "formulary.csv"
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
 OUT = ROOT / "data" / "review" / "interactions-review.csv"
+CONFLICTS = ROOT / "data" / "review" / "grade-conflicts.csv"
 
 # The seven medications in the seeded demo (app/src/demo/scenario.json).
 DEMO = {"RXCUI:29046", "RXCUI:9997", "RXCUI:4603", "RXCUI:3407",
@@ -36,7 +38,8 @@ def _named(name: str, text: str) -> bool:
     return bool(name) and re.search(rf"\b{re.escape(name)}\b", text, re.IGNORECASE) is not None
 
 
-def review_flags(row: dict, passage: str, names: dict[str, str], demo: set[str]) -> list[str]:
+def review_flags(row: dict, passage: str, names: dict[str, str], demo: set[str],
+                 conflicts: set[tuple[str, str, str]] = frozenset()) -> list[str]:
     """Why a person should look at this row first; empty when nothing stands out."""
     flags = []
     phrase = row.get("via_class") or ""
@@ -47,6 +50,10 @@ def review_flags(row: dict, passage: str, names: dict[str, str], demo: set[str])
             flags.append("class phrase not in passage")
     elif not _named(names.get(row["object_rxcui"], ""), passage):
         flags.append("object not named in passage")
+    if (row["subject_rxcui"], row["object_rxcui"], row["span_id"]) in conflicts:
+        # The model gave this drug two grades in one passage; the most severe
+        # was kept, and only a person reading the passage can say which is right.
+        flags.append("grades disagree")
     if row["severity"] == "contraindicated":
         flags.append("contraindicated: always reviewed")
     if row["subject_rxcui"] in demo or row["object_rxcui"] in demo:
@@ -68,11 +75,14 @@ def main() -> int:
     names = {r["rxcui"]: r["ingredient"] for r in csv.DictReader(FORMULARY.open(encoding="utf-8"))}
     spans = SpanStore.from_sections(SECTIONS)
     rows = list(csv.DictReader(TABLE.open(encoding="utf-8")))
+    conflicts = ({(r["subject_rxcui"], r["object_rxcui"], r["span_id"])
+                  for r in csv.DictReader(CONFLICTS.open(encoding="utf-8"))}
+                 if CONFLICTS.exists() else set())
 
     out = []
     for r in rows:
         span = spans.by_id(r["span_id"])
-        flags = review_flags(r, span.text, names, DEMO)
+        flags = review_flags(r, span.text, names, DEMO, conflicts)
         out.append({
             "flags": "; ".join(flags),
             "subject": names.get(r["subject_rxcui"], r["subject_rxcui"]),

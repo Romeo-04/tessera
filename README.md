@@ -155,8 +155,8 @@ back is one line in `router.py`.
 
 ## How Nebius is used
 
-- **Token Factory** — all inference, OpenAI-compatible, routed across four Nemotron tiers by a
-  single module so a tier swap is one line and its cost is measurable.
+- **Token Factory** — all inference, OpenAI-compatible, routed by a single module across
+  MiniCPM-V (reading labels) and three Nemotron tiers (Lightning, Super, Ultra), so a tier swap is one line and its cost is measurable.
 - **Nemotron Lightning** — triages the formulary-wide FDA safety watcher (`src/tessera/watch.py`).
   It returns indices only; what a user reads is the FDA page's own text.
 - **Spend control** — the router's per-call cost telemetry also feeds a daily USD ceiling and a
@@ -172,7 +172,7 @@ claimed.** What exists today:
 
 | Metric | Status |
 |---|---|
-| Test suite | **197 Python + 91 app, passing** |
+| Test suite | **307 Python + 95 app, passing** |
 | Formulary coverage | **358** chronic-care drugs resolved to RXCUI |
 | Label evidence coverage | a strict subset of the formulary — drugs we recognise but hold no label for are reported as *unchecked*, never as safe |
 | RXCUI top-1 accuracy | not yet measured — needs the gold set |
@@ -225,7 +225,7 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -e ".[dev]"  # macOS / Linux
 
 cp .env.example .env        # add your NEBIUS_API_KEY
-pytest                      # 197 tests, no credentials needed
+pytest                      # 307 tests, no credentials needed
 cd app && npm install && npm test   # 91 tests
 npx tsc --noEmit && npx expo lint
 ```
@@ -235,6 +235,7 @@ Building the evidence corpus (the first two need no API key):
 ```bash
 python scripts/build_formulary.py      # RxNorm  -> data/formulary.csv   (committed)
 python scripts/fetch_spl.py            # DailyMed -> data/spl/           (gitignored)
+python scripts/build_class_members.py  # RxClass -> data/class_members.json (committed, no key)
 python scripts/build_interactions.py   # label text -> data/interactions.csv  (model-extracted: REVIEW IT)
 tessera check photos/*.jpg
 ```
@@ -273,6 +274,15 @@ per-caller rate limit cannot be dodged with a forged `X-Forwarded-For`.
 
 `build_interactions.py` prints a reminder to hand-check its output. That is not ceremony:
 everything this product asserts flows from that table.
+
+Labels often warn about a class ("ACE inhibitors", "antidiabetic medicines") instead of naming
+each drug. The model returns those class phrases as written; `scripts/class_map.py`, a short
+hand-written map, decides which formulary drugs each phrase covers, and every such row carries
+the phrase (`via_class`) so the app can say *why* a quoted passage does not name the drug. The
+map errs toward claiming less: "certain" or "select" members expand to nothing, "other than X"
+removes X, and "non-potassium-sparing diuretics" means loop and thiazide diuretics. The model's
+raw reading is stored, so changing the map re-derives the table offline at no cost. Claims a
+reviewer rejects go in `data/interactions.rejected.csv` and stay rejected across rebuilds.
 
 ## Data sources
 

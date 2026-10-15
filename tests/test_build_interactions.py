@@ -274,3 +274,65 @@ def test_a_rejected_named_claim_is_matched_by_its_code():
     rows = [_row("RXCUI:6448"), _row("RXCUI:6448", span="other")]
     rejected = [{"span_id": "s", "subject_rxcui": "RXCUI:4603", "claim": "RXCUI:6448", "reason": "x"}]
     assert [a.span_id for a in apply_rejections(rows, rejected)] == ["other"]
+
+
+# ---- review findings: unions, exclusions, conflicting grades -----------------
+
+def test_a_phrase_naming_two_classes_reaches_both():
+    members = {"ace-inhibitors": ["RXCUI:1191"], "arbs": ["RXCUI:860975"]}
+    raw = {"interactions": [], "classes": [{"class": "ACE Inhibitors and ARBs", "severity": "warning"}]}
+    out = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, members)
+    assert sorted(a.object_rxcui for a in out) == ["RXCUI:1191", "RXCUI:860975"]
+
+
+def test_a_drug_the_phrase_excludes_is_left_out():
+    """"NSAIDs (but not acetyl salicylic acid)" does not mean aspirin."""
+    raw = {"interactions": [], "classes": [
+        {"class": "Non-steroidal anti-inflammatory drugs (but not acetyl salicylic acid)",
+         "severity": "warning"}]}
+    out = assertions_from(raw, "RXCUI:860975", "s", BY_NAME, MEMBERS)
+    assert [a.object_rxcui for a in out] == ["RXCUI:11289"]
+
+
+def test_conflicting_grades_for_one_drug_take_the_most_severe_and_are_reported():
+    """Seen live: ritonavir's reading listed atorvastatin as both contraindicated
+    and monitor. Emission order must not decide; a reviewer must see it."""
+    conflicts = []
+    raw = {"interactions": [{"drug": "aspirin", "severity": "monitor"},
+                            {"drug": "aspirin", "severity": "contraindicated"}], "classes": []}
+    (a,) = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, MEMBERS, on_conflict=conflicts.append)
+    assert a.severity == "contraindicated"
+    assert conflicts == [("RXCUI:11289", "RXCUI:1191", "s", ["contraindicated", "monitor"])]
+
+
+def test_a_named_grade_beats_a_class_grade_for_the_same_drug():
+    conflicts = []
+    raw = {"interactions": [{"drug": "aspirin", "severity": "monitor"}],
+           "classes": [{"class": "NSAIDs", "severity": "contraindicated"}]}
+    out = assertions_from(raw, "RXCUI:860975", "s", BY_NAME, MEMBERS, on_conflict=conflicts.append)
+    aspirin = next(a for a in out if a.object_rxcui == "RXCUI:1191")
+    assert (aspirin.severity, aspirin.via_class) == ("monitor", None)
+    assert conflicts == []
+
+
+def test_one_drug_reached_by_two_class_phrases_keeps_the_more_severe():
+    members = {"nsaids": ["RXCUI:1191"], "salicylates": ["RXCUI:1191"]}
+    raw = {"interactions": [], "classes": [{"class": "NSAIDs", "severity": "monitor"},
+                                           {"class": "salicylates", "severity": "warning"}]}
+    (a,) = assertions_from(raw, "RXCUI:11289", "s", BY_NAME, members, on_conflict=lambda c: None)
+    assert (a.severity, a.via_class) == ("warning", "salicylates")
+
+
+def test_a_rejection_still_applies_when_the_model_changes_the_phrase_case():
+    rows = [_row("RXCUI:9997", via="HMG-CoA reductase inhibitors ")]
+    rejected = [{"span_id": "s", "subject_rxcui": "RXCUI:4603", "claim": "HMG-CoA Reductase Inhibitors",
+                 "reason": "x"}]
+    assert apply_rejections(rows, rejected) == []
+
+
+def test_a_rejection_that_matches_nothing_is_reported():
+    unused = []
+    apply_rejections([_row("RXCUI:6448")],
+                     [{"span_id": "gone", "subject_rxcui": "RXCUI:4603", "claim": "diuretics", "reason": "x"}],
+                     unused=unused.append)
+    assert [r["span_id"] for r in unused] == ["gone"]

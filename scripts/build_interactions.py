@@ -16,7 +16,7 @@ import re
 import sys
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from tessera.errors import TesseraError
@@ -24,9 +24,9 @@ from tessera.router import Tier
 from tessera.schemas import InteractionAssertion
 
 try:
-    from scripts.class_map import match_class
+    from scripts.class_map import excluded_text, match_classes
 except ImportError:  # run as `python scripts/build_interactions.py`
-    from class_map import match_class
+    from class_map import excluded_text, match_classes
 
 ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = ROOT / "data" / "spl" / "sections.jsonl"
@@ -36,6 +36,7 @@ PROGRESS = ROOT / "data" / "interactions.raw.jsonl"
 FAILED = ROOT / "data" / "interactions.failed.txt"
 CLASS_MEMBERS = ROOT / "data" / "class_members.json"
 REJECTED = ROOT / "data" / "interactions.rejected.csv"
+CONFLICTS = ROOT / "data" / "review" / "grade-conflicts.csv"
 
 PROMPT = """You are reading one section of an FDA-approved drug label.
 
@@ -120,53 +121,92 @@ def _items(raw: dict, list_key: str, name_key: str):
             yield str(item.get(name_key, "")), str(item.get("severity", "")).strip().lower()
 
 
+SEVERITY_ORDER = {"monitor": 1, "warning": 2, "contraindicated": 3}
+
+
 def assertions_from(
     raw: dict,
     subject_rxcui: str,
     span_id: str,
     by_name: dict[str, str],
     class_members: dict[str, list[str]],
+    on_conflict=lambda conflict: None,
 ) -> list[InteractionAssertion]:
     """One raw reading -> assertions about formulary drugs, offline.
 
     A drug we do not carry, an invented severity grade, a class we have not
     mapped, or a label that names nothing all yield no assertion - the
-    alternative is inventing a safety claim. Named drugs come first, so a drug
-    the label both names and covers by class is cited for its name.
-    """
-    out: list[InteractionAssertion] = []
-    seen: set[str] = {subject_rxcui}
+    alternative is inventing a safety claim.
 
-    def add(obj: str, severity: str, via_class: str | None) -> None:
-        if obj in seen or severity not in VALID_SEVERITY:
-            return
-        seen.add(obj)
-        out.append(InteractionAssertion(subject_rxcui=subject_rxcui, object_rxcui=obj,
-                                        severity=severity, span_id=span_id,
-                                        via_class=via_class))
+    One drug can be reached several ways in one passage. A grade from a named
+    mention beats any grade from a class; among grades of the same kind the most
+    severe wins, as it does across labels in the resolver. Emission order never
+    decides. When named grades disagree, `on_conflict` receives
+    (subject, object, span_id, grades) so a reviewer sees it.
+    """
+    name_of = {code: name for name, code in by_name.items()}
+    named: dict[str, set[str]] = {}
+    by_class: dict[str, list[tuple[str, str]]] = {}
 
     for name, severity in _items(raw, "interactions", "drug"):
         obj = _resolve_object(name, by_name)
-        if obj:
-            add(obj, severity, None)
+        if obj and obj != subject_rxcui and severity in VALID_SEVERITY:
+            named.setdefault(obj, set()).add(severity)
     for phrase, severity in _items(raw, "classes", "class"):
-        key = match_class(phrase)
-        for obj in class_members.get(key, []) if key else []:
-            add(obj, severity, phrase.strip())
+        if severity not in VALID_SEVERITY:
+            continue
+        excluded = excluded_text(phrase)
+        members = {m for key in match_classes(phrase) for m in class_members.get(key, [])}
+        for obj in sorted(members):
+            if obj == subject_rxcui or obj in named:
+                continue
+            if excluded and re.search(rf"\b{re.escape(name_of.get(obj, '~'))}\b", excluded):
+                continue
+            by_class.setdefault(obj, []).append((severity, phrase.strip()))
+
+    out: list[InteractionAssertion] = []
+    for obj, grades in named.items():
+        if len(grades) > 1:
+            on_conflict((subject_rxcui, obj, span_id,
+                         sorted(grades, key=lambda g: -SEVERITY_ORDER[g])))
+        out.append(InteractionAssertion(subject_rxcui=subject_rxcui, object_rxcui=obj,
+                                        severity=max(grades, key=SEVERITY_ORDER.get),
+                                        span_id=span_id))
+    for obj, options in by_class.items():
+        severity, phrase = max(options, key=lambda o: SEVERITY_ORDER[o[0]])
+        out.append(InteractionAssertion(subject_rxcui=subject_rxcui, object_rxcui=obj,
+                                        severity=severity, span_id=span_id, via_class=phrase))
     return out
 
 
-def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict]
-                     ) -> list[InteractionAssertion]:
+def _claim_key(span_id: str, subject: str, claim: str) -> tuple[str, str, str]:
+    return span_id, subject, " ".join(claim.split()).casefold()
+
+
+def apply_rejections(assertions: list[InteractionAssertion], rejected: list[dict],
+                     unused=lambda rejection: None) -> list[InteractionAssertion]:
     """Drop claims a reviewer rejected, keyed by span, subject and claim.
 
     `claim` is the class phrase for a class claim, so one rejection removes
     every drug that phrase expanded to, or the object code for a named one.
+    Phrases compare case- and space-insensitively, because a rebuild may
+    re-read the same label with different capitalisation; a rejection that no
+    longer matches anything goes to `unused` instead of failing silently.
     Rejections live in a committed file so a rebuild cannot bring them back.
     """
-    gone = {(r["span_id"], r["subject_rxcui"], r["claim"]) for r in rejected}
-    return [a for a in assertions
-            if (a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui) not in gone]
+    gone = {_claim_key(r["span_id"], r["subject_rxcui"], r["claim"]): r for r in rejected}
+    hit = set()
+    kept = []
+    for a in assertions:
+        key = _claim_key(a.span_id, a.subject_rxcui, a.via_class or a.object_rxcui)
+        if key in gone:
+            hit.add(key)
+        else:
+            kept.append(a)
+    for key, r in gone.items():
+        if key not in hit:
+            unused(r)
+    return kept
 
 
 def extract_assertions(
@@ -218,7 +258,10 @@ def build_table(jobs, extract, progress: Path, workers: int = 6, retries: int = 
     todo = [j for j in jobs if j not in finished]
     failed = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        for job, result in pool.map(one, todo):
+        # as_completed, not map: a finished call is saved the moment it lands,
+        # not held in memory behind a slower one.
+        for future in as_completed([pool.submit(one, j) for j in todo]):
+            job, result = future.result()
             with lock, progress.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps({"job": job, "result": result}) + "\n")
             if result is None:
@@ -261,13 +304,27 @@ def main() -> int:
         print(f"no {CLASS_MEMBERS.name}: class warnings are skipped."
               " Run scripts/build_class_members.py first.")
     by_name = {name.lower(): rxcui for rxcui, name in formulary.items()}
-    assertions = [a for span_id, raw in raws.items()
-                  for a in assertions_from(raw, spans[span_id][1], span_id, by_name, members)]
+    conflicts: list[tuple] = []
+    assertions = [a for span_id in spans if span_id in raws
+                  for a in assertions_from(raws[span_id], spans[span_id][1], span_id, by_name,
+                                           members, on_conflict=conflicts.append)]
     rejected = (list(csv.DictReader(REJECTED.open(encoding="utf-8")))
                 if REJECTED.exists() else [])
+    unused: list[dict] = []
     before = len(assertions)
-    assertions = apply_rejections(assertions, rejected)
+    assertions = apply_rejections(assertions, rejected, unused=unused.append)
     print(f"{len(rejected)} reviewed rejections removed {before - len(assertions)} rows")
+    for r in unused:
+        print(f"  WARNING: rejection no longer matches any row: {r['subject_rxcui']} / {r['claim']}"
+              f" in {r['span_id']}")
+
+    CONFLICTS.parent.mkdir(parents=True, exist_ok=True)
+    with CONFLICTS.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["subject_rxcui", "object_rxcui", "span_id", "grades"])
+        w.writerows((s, o, sp, " / ".join(g)) for s, o, sp, g in conflicts)
+    print(f"{len(conflicts)} pairs where the model gave one drug two grades; the most severe"
+          f" was kept and each is flagged in the review sheet ({CONFLICTS.name})")
 
     with OUT.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(
@@ -280,6 +337,7 @@ def main() -> int:
     named = sum(a.via_class is None for a in assertions)
     print(f"\nwrote {len(assertions)} assertions to {OUT}"
           f" ({named} named, {len(assertions) - named} through a class)")
+    FAILED.unlink(missing_ok=True)  # a list from an earlier run is not this run's
     if failed:
         FAILED.write_text("\n".join(failed) + "\n", encoding="utf-8")
         print(f"{len(failed)} spans could not be read and are NOT in the table: {FAILED}."

@@ -67,6 +67,12 @@
   "RXCUI:38404",
   "RXCUI:39998"
  ],
+ "cardioselective-beta-blockers": [
+  "RXCUI:1202",
+  "RXCUI:19484",
+  "RXCUI:31555",
+  "RXCUI:6918"
+ ],
  "coumarins": [
   "RXCUI:11289"
  ],
@@ -94,6 +100,10 @@
   "RXCUI:4450",
   "RXCUI:85762"
  ],
+ "cyp3a4-moderate-inducers": [
+  "RXCUI:195085",
+  "RXCUI:8134"
+ ],
  "cyp3a4-moderate-inhibitors": [
   "RXCUI:11170",
   "RXCUI:233698",
@@ -115,8 +125,34 @@
   "RXCUI:28031",
   "RXCUI:85762"
  ],
+ "cyp3a4-strong-or-moderate-inducers": [
+  "RXCUI:195085",
+  "RXCUI:2002",
+  "RXCUI:8134",
+  "RXCUI:8183",
+  "RXCUI:9384"
+ ],
+ "cyp3a4-strong-or-moderate-inhibitors": [
+  "RXCUI:11170",
+  "RXCUI:121243",
+  "RXCUI:21212",
+  "RXCUI:233698",
+  "RXCUI:2551",
+  "RXCUI:28031",
+  "RXCUI:3008",
+  "RXCUI:3443",
+  "RXCUI:4053",
+  "RXCUI:42355",
+  "RXCUI:4450",
+  "RXCUI:85762"
+ ],
  "digitalis": [
   "RXCUI:3407"
+ ],
+ "dihydropyridine-ccbs": [
+  "RXCUI:17767",
+  "RXCUI:4316",
+  "RXCUI:7417"
  ],
  "diuretics": [
   "RXCUI:1808",
@@ -127,6 +163,7 @@
   "RXCUI:5764",
   "RXCUI:9997"
  ],
+ "fenamates": [],
  "fibrates": [
   "RXCUI:4719",
   "RXCUI:8703"
@@ -147,9 +184,18 @@
   "RXCUI:1808",
   "RXCUI:4603"
  ],
+ "macrolides": [
+  "RXCUI:18631",
+  "RXCUI:21212",
+  "RXCUI:4053"
+ ],
  "maois": [
   "RXCUI:134748",
   "RXCUI:9639"
+ ],
+ "non-dihydropyridine-ccbs": [
+  "RXCUI:11170",
+  "RXCUI:3443"
  ],
  "nsaids": [
   "RXCUI:1191",
@@ -174,6 +220,13 @@
   "RXCUI:1819"
  ],
  "phenothiazines": [],
+ "potassium-depleting-diuretics": [
+  "RXCUI:1808",
+  "RXCUI:2409",
+  "RXCUI:4603",
+  "RXCUI:5487",
+  "RXCUI:5764"
+ ],
  "potassium-sparing-diuretics": [
   "RXCUI:298869",
   "RXCUI:9997"
@@ -195,6 +248,11 @@
  ],
  "salicylates": [
   "RXCUI:1191"
+ ],
+ "snris": [
+  "RXCUI:39786",
+  "RXCUI:72625",
+  "RXCUI:734064"
  ],
  "ssris": [
   "RXCUI:2556",

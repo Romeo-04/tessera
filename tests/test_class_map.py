@@ -1,29 +1,104 @@
-from scripts.class_map import CLASS_MAP, match_class
+import pytest
+
+from scripts.class_map import CLASS_MAP, excluded_text, match_classes
+
+# Every phrase here is one the extraction returned from a real label.
+CASES = {
+    # one class, as labels write it
+    "angiotensin converting enzyme inhibitors": ["ace-inhibitors"],
+    "ACE inhibitor therapy": ["ace-inhibitors"],
+    "antidiabetic medicines (insulins, oral hypoglycemic agents)": ["insulins", "antidiabetics"],
+    "Potassium-sparing diuretics": ["potassium-sparing-diuretics"],
+    "NSAIDs": ["nsaids"],
+    "Non-steroidal Anti-inflammatory Drugs": ["nsaids"],
+    "calcium channel blocking drugs": ["calcium-channel-blockers"],
+    "angiotensin II receptor blocking agents": ["arbs"],
+    "digitalis glycosides": ["digitalis"],
+    "thyroid products": ["thyroid"],
+    "salicylates": ["salicylates"],
+    "agents that affect the RAS": ["ras-inhibitors"],
+    "carbonic anhydrase inhibitors": ["carbonic-anhydrase-inhibitors"],
+    "tricyclic antidepressants (TCAs)": ["tricyclics"],
+    "azole antifungals": ["azole-antifungals"],
+    "protease inhibitors": ["hiv-protease-inhibitors"],
+    "Coumarin anticoagulants": ["coumarins"],
+    "Long Acting Barbiturates": ["barbiturates"],
+    "other opioids": ["opioids"],
+
+    # a narrower class is not read as its parent ...
+    "loop diuretics": ["loop-diuretics"],
+    "thiazide-type diuretics": ["thiazide-diuretics"],
+    "dihydropyridine calcium channel blockers": ["dihydropyridine-ccbs"],
+    "Verapamil- or diltiazem-type calcium channel blockers": ["non-dihydropyridine-ccbs"],
+    "calcium channel blockers of the verapamil or diltiazem type": ["non-dihydropyridine-ccbs"],
+    "cardioselective beta-blockers": ["cardioselective-beta-blockers"],
+    "Non-Steroidal Anti- inflammatory Drugs - Fenamates": ["fenamates"],
+    "Mixed Agonist/Antagonist and Partial Agonist Opioid Analgesics": ["partial-agonist-opioids"],
+    # ... but a phrase naming a class and its parent means both
+    "Thiazides and other diuretics": ["thiazide-diuretics", "diuretics"],
+
+    # negation means the opposite set
+    "Non-Potassium-Sparing Diuretics": ["potassium-depleting-diuretics"],
+    "non‑potassium‑sparing diuretics": ["potassium-depleting-diuretics"],
+    "nonpotassium-sparing diuretics": ["potassium-depleting-diuretics"],
+    "potassium-depleting diuretics": ["potassium-depleting-diuretics"],
+    "Analgesics, Non-opioid (selective blocker of Na v 1.8 sodium channels)": [],
+
+    # several classes in one phrase: all of them
+    "ACE Inhibitors and ARBs": ["ace-inhibitors", "arbs"],
+    "Insulin Secretagogues or Insulin": ["insulin-secretagogues", "insulins"],
+    "SSRIs/SNRIs": ["ssris", "snris"],
+    "selective serotonin and serotonin norepinephrine reuptake inhibitors (SSRIs, SNRIs)": ["ssris", "snris"],
+    "SSRIs, Tricyclics and Related Antidepressants": ["tricyclics", "ssris"],
+    "CYP3A4 Inhibitors and Inducers": ["cyp3a4-inhibitors", "cyp3a4-inducers"],
+    "CYP 3A4 inducers and inhibitors": ["cyp3a4-inhibitors", "cyp3a4-inducers"],
+
+    # CYP3A4 strength comes from the label's own word
+    "strong CYP3A4 inhibitors": ["cyp3a4-strong-inhibitors"],
+    "Potent CYP3A4 Inhibitors": ["cyp3a4-strong-inhibitors"],
+    "potent inhibitor of CYP3A4": ["cyp3a4-strong-inhibitors"],
+    "Strong CYP2D6 and CYP3A4 inhibitors": ["cyp3a4-strong-inhibitors"],
+    "combined P-gp and strong CYP3A inhibitors": ["cyp3a4-strong-inhibitors"],
+    "moderate inhibitors of CYP3A": ["cyp3a4-moderate-inhibitors"],
+    "Moderate CYP3A4 Inducers": ["cyp3a4-moderate-inducers"],
+    "moderate inducers of CYP3A": ["cyp3a4-moderate-inducers"],
+    "strong and moderate CYP3A4 inhibitors": ["cyp3a4-strong-or-moderate-inhibitors"],
+    "moderate or strong CYP3A4 inhibitors": ["cyp3a4-strong-or-moderate-inhibitors"],
+    "Strong or Moderate Inducers of CYP3A": ["cyp3a4-strong-or-moderate-inducers"],
+    "CYP3A4 inhibitors": ["cyp3a4-inhibitors"],
+    "Inhibitors of CYP3A4": ["cyp3a4-inhibitors"],
+    "any known CYP3A4 inducer": ["cyp3a4-inducers"],
+
+    # a phrase that only resembles a class matches nothing
+    "CYP2C8 and CYP3A4 Inducers and Drugs That May Decrease the Blood Glucose Lowering Effect of Repaglinide": ["cyp3a4-inducers"],
+    "Aminosalicylates": [],
+    "HCV protease inhibitors": [],
+    "drugs that prolong the QT interval": [],
+    "sympathomimetics": [],
+    "drugs that reduce metformin clearance": [],
+    "neprilysin inhibitor": [],
+    "": [],
+
+    # only part of a class: the label names which ones elsewhere
+    "certain phenothiazines": [],
+    "select HIV protease inhibitors": [],
+    "intravenous beta adrenergic blocking agents": [],
+
+    # the exclusion clause is not searched for classes
+    "Fibrates (other than Gemfibrozil)": ["fibrates"],
+    "Non-steroidal anti-inflammatory drugs (but not acetyl salicylic acid)": ["nsaids"],
+}
 
 
-def test_label_wordings_map_to_their_class():
-    assert match_class("angiotensin converting enzyme inhibitors") == "ace-inhibitors"
-    assert match_class("ACE inhibitors") == "ace-inhibitors"
-    assert match_class("antidiabetic medicines (insulins, oral hypoglycemic agents)") == "antidiabetics"
-    assert match_class("Potassium-sparing diuretics") == "potassium-sparing-diuretics"
-    assert match_class("NSAIDs") == "nsaids"
-    assert match_class("non-steroidal anti-inflammatory drugs") == "nsaids"
+@pytest.mark.parametrize("phrase,keys", CASES.items())
+def test_label_wording_maps_to_exactly_these_classes(phrase, keys):
+    assert match_classes(phrase) == keys
 
 
-def test_the_most_specific_class_wins():
-    """'thiazide diuretics' must not be read as every diuretic."""
-    assert match_class("thiazide-type diuretics") == "thiazide-diuretics"
-    assert match_class("loop diuretics") == "loop-diuretics"
-    assert match_class("diuretics") == "diuretics"
-
-
-def test_an_unknown_class_matches_nothing():
-    assert match_class("drugs that prolong the QT interval") is None
-    assert match_class("") is None
-
-
-def test_inducers_are_not_read_as_inhibitors():
-    assert match_class("CYP3A4 inducers") == "cyp3a4-inducers"
+def test_an_exclusion_names_the_drug_left_out():
+    assert "gemfibrozil" in excluded_text("Fibrates (other than Gemfibrozil)")
+    assert "aspirin" in excluded_text("NSAIDs (but not acetyl salicylic acid)")
+    assert excluded_text("NSAIDs") == ""
 
 
 def test_every_class_has_a_key_and_patterns():
@@ -31,54 +106,13 @@ def test_every_class_has_a_key_and_patterns():
         assert entry["key"] and entry["patterns"], entry
 
 
-def test_cyp3a4_strength_is_read_from_the_label_wording():
-    assert match_class("strong CYP3A4 inhibitors") == "cyp3a4-strong-inhibitors"
-    assert match_class("moderate CYP3A inhibitors") == "cyp3a4-moderate-inhibitors"
-    # "strong or moderate" is both, so the general class - not the first word.
-    assert match_class("strong or moderate CYP3A4 inhibitors") == "cyp3a4-inhibitors"
-    assert match_class("inhibitors of CYP3A4") == "cyp3a4-inhibitors"
-    assert match_class("strong CYP3A4 inducers") == "cyp3a4-strong-inducers"
-
-
 def test_every_entry_lists_members_one_way():
     for entry in CLASS_MAP:
         assert bool(entry.get("rxclass")) != bool(entry.get("ingredients")), entry["key"]
 
 
-def test_wordings_seen_in_the_corpus_map_to_their_class():
-    """Each line is a phrase the extraction actually returned from a label."""
-    cases = {
-        "calcium channel blocking drugs": "calcium-channel-blockers",
-        "angiotensin II receptor blocking agents": "arbs",
-        "insulin secretagogues or insulin": "insulin-secretagogues",
-        "digitalis glycosides": "digitalis",
-        "thyroid products": "thyroid",
-        "selective cyclooxygenase-2 inhibitors (COX-2 inhibitors)": "cox2-inhibitors",
-        "salicylates": "salicylates",
-        "dual inhibition of the renin-angiotensin system": "ras-inhibitors",
-        "agents that affect the RAS": "ras-inhibitors",
-        "carbonic anhydrase inhibitors": "carbonic-anhydrase-inhibitors",
-        "tricyclic antidepressants": "tricyclics",
-        "certain phenothiazines": "phenothiazines",
-        "azole antifungals": "azole-antifungals",
-        "protease inhibitors": "hiv-protease-inhibitors",
-        "coumarins": "coumarins",
-        "fibrates": "fibrates",
-    }
-    for phrase, key in cases.items():
-        assert match_class(phrase) == key, phrase
-
-
-def test_vague_wordings_stay_unmapped():
-    for phrase in ["sympathomimetics", "drugs that reduce metformin clearance",
-                   "drugs affecting glycemic control", "neprilysin inhibitor"]:
-        assert match_class(phrase) is None, phrase
-
-
-def test_non_opioid_is_not_an_opioid():
-    assert match_class("Analgesics, Non-opioid (selective blocker of Na v 1.8 sodium channels)") is None
-
-
-def test_partial_agonist_opioids_are_their_own_class_not_every_opioid():
-    assert match_class("Mixed Agonist/Antagonist and Partial Agonist Opioid Analgesics") == "partial-agonist-opioids"
-    assert match_class("other opioids") == "opioids"
+def test_keys_are_unique_and_refinements_point_at_real_keys():
+    keys = [e["key"] for e in CLASS_MAP]
+    assert len(keys) == len(set(keys))
+    for e in CLASS_MAP:
+        assert set(e.get("refines", [])) <= set(keys), e["key"]

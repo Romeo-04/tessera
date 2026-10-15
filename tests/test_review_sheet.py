@@ -55,3 +55,9 @@ def test_a_class_phrase_missing_from_its_passage_is_flagged():
     flags = review_flags(class_row("RXCUI:29046", "RXCUI:4603", "loop diuretics"),
                          "Diuretics: excessive drop.", NAMES, set())
     assert "class phrase not in passage" in flags
+
+
+def test_a_pair_the_model_graded_two_ways_is_flagged():
+    conflicts = {("RXCUI:29046", "RXCUI:9997", "s")}
+    flags = review_flags(row("RXCUI:29046", "RXCUI:9997"), "spironolactone", NAMES, set(), conflicts)
+    assert "grades disagree" in flags

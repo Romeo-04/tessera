@@ -126,6 +126,22 @@ EXPLAIN = {
         "Lisinopril's label warns that with diabetes medicines such as metformin it can lower "
         "blood sugar further, with a risk of hypoglycemia.",
         "Ask a pharmacist which signs of low blood sugar to watch for."),
+    (METFORMIN, FUROSEMIDE): (
+        "When such drugs are withdrawn from a patient receiving metformin hydrochloride "
+        "extended-release tablets, observe the patient closely for hypoglycemia. Examples: "
+        "Thiazides and other diuretics",
+        "Metformin's label lists diuretics such as furosemide and says that if one is stopped, "
+        "he should be watched closely for low blood sugar.",
+        "Ask a pharmacist which signs of low blood sugar to watch for if his furosemide is "
+        "ever stopped."),
+    (METFORMIN, SPIRONOLACTONE): (
+        "When such drugs are withdrawn from a patient receiving metformin hydrochloride "
+        "extended-release tablets, observe the patient closely for hypoglycemia. Examples: "
+        "Thiazides and other diuretics",
+        "Metformin's label lists diuretics such as spironolactone and says that if one is "
+        "stopped, he should be watched closely for low blood sugar.",
+        "Ask a pharmacist which signs of low blood sugar to watch for if his spironolactone is "
+        "ever stopped."),
 }
 
 
