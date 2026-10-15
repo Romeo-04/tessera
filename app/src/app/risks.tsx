@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ResultTabs } from "../components/chrome";
 import { Button, Note, Screen, Sev, T } from "../components/ui";
+import { classLine } from "../lib/names";
 import { pairLabel, statusCopy } from "../lib/status";
 import { sameList, useSaved } from "../session/SavedProvider";
 import { useSession } from "../session/SessionProvider";
@@ -46,6 +47,7 @@ export default function Risks() {
             <Sev severity={r.severity} />
             <Text style={s.pair}>{pairLabel(r)}</Text>
             <T v="mech">{r.mechanism}</T>
+            {classLine(r) && <Text style={s.via}>{classLine(r)}</Text>}
             <Text style={s.cite}>↗ FDA label · read the source</Text>
           </Pressable>
         ))}
@@ -77,4 +79,5 @@ const s = StyleSheet.create({
   pressed: { borderColor: color.ink },
   pair: { fontFamily: font.display, fontSize: size.sm, color: color.ink },
   cite: { fontFamily: font.bodyMedium, fontSize: size.xs, color: color.muted, marginTop: 2 },
+  via: { fontFamily: font.body, fontSize: size.xs, color: color.ink3, fontStyle: "italic" },
 });

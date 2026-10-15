@@ -1,6 +1,7 @@
 import { codeSetFor } from "./session";
 import type { ConfirmationRequest, Drug, SessionResult } from "./types";
 import type { AlertsFile } from "./watch";
+import { tidyRead } from "./names";
 
 
 // Expo inlines EXPO_PUBLIC_* at build time. Empty means same origin, which only
@@ -87,7 +88,9 @@ export async function readLive(photos: PhotoInput[]): Promise<Outcome<ReadResult
     if (part instanceof Blob) form.append("photos", part, photos[i].name);
     else form.append("photos", part as unknown as Blob);
   });
-  return call<ReadResult>("/api/read", { method: "POST", body: form });
+  const r = await call<ReadResult>("/api/read", { method: "POST", body: form });
+  // Names are written one way from here on; see names.ts.
+  return r.ok ? { ...r, value: tidyRead(r.value) } : r;
 }
 
 export async function assessLive(codes: string[]): Promise<
